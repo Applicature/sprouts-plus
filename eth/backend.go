@@ -31,6 +31,7 @@ import (
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/consensus/clique"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/sprouts"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/bloombits"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -214,6 +215,11 @@ func CreateConsensusEngine(ctx *node.ServiceContext, config *Config, chainConfig
 	if chainConfig.Clique != nil {
 		return clique.New(chainConfig.Clique, db)
 	}
+
+	if chainConfig.Sprouts != nil {
+		return sprouts.New(chainConfig.Sprouts, db)
+	}
+
 	// Otherwise assume proof-of-work
 	switch {
 	case config.PowFake:
