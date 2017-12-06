@@ -3,44 +3,72 @@ package sprouts
 import (
 	"errors"
 	"math/big"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/crypto/sha3"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/rpc"
+	lru "github.com/hashicorp/golang-lru"
+)
+
+const (
+	inmemorySignatures = 4096 // Number of recent block signatures to keep in memory
 )
 
 var (
-	minBlockTime big.Int = big.Int{}
+	minBlockTime big.Int = *big.NewInt(0)
+	blockPeriod  uint64  = 15
+	minFee       int     = 1
+
+	extraSeal = 65 // Fixed number of extra-data suffix bytes reserved for signer seal
+)
+
+// errors
+var (
+	// errMissingSignature is returned if a block's extra-data section doesn't seem
+	// to contain a 65 byte secp256k1 signature.
+	errMissingSignature = errors.New("extra-data 65 byte suffix signature missing")
+
+	errUnclesAreInvalid = errors.New("uncles are invalid")
+
+	errInvalidSignature = errors.New("invalid signature")
+
+	// errInvalidTimestamp is returned if the timestamp of a block is lower than
+	// the previous block's timestamp + the minimum block period.
+	errInvalidTimestamp = errors.New("invalid timestamp")
 )
 
 type PoS struct {
+	signatures *lru.ARCCache
 }
 
 // signers set to the ones provided by the user.
 func New(config *params.SproutsConfig, db ethdb.Database) *PoS {
-	return &PoS{}
+	signatures, _ := lru.NewARC(inmemorySignatures)
+	return &PoS{
+		signatures: signatures,
+	}
 }
 
 // Author retrieves the Ethereum address of the account that minted the given
 // block, which may be different from the header's coinbase if a consensus
 // engine is based on signatures.
 func (engine *PoS) Author(header *types.Header) (common.Address, error) {
-	// use ecrecover as in clique? why is it confined to that packge?
-	return common.Address{}, nil
+	return ecrecover(header, engine.signatures)
 }
 
 // VerifyHeader checks whether a header conforms to the consensus rules of a
 // given engine. Verifying the seal may be done optionally here, or explicitly
 // via the VerifySeal method.
 func (engine *PoS) VerifyHeader(chain consensus.ChainReader, header *types.Header, seal bool) error {
-	// time, signature, parents, no uncles
-	// header.UncleHash
-	// nonce, difficulty, forks?
-	return nil
+	return engine.verifyHeader(chain, header, seal)
 }
 
 // VerifyHeaders is similar to VerifyHeader, but verifies a batch of headers
@@ -123,4 +151,101 @@ func (engine *PoS) APIs(chain consensus.ChainReader) []rpc.API {
 // 0.08 = r&d (to a Sprouts+ address D)
 func calcRewards(chainConfig *params.ChainConfig, state *state.StateDB, header *types.Header) {
 
+}
+
+// borrowing two PoA (clique) methods for signing blocks:
+
+// sigHash returns the hash which is used as input for the proof-of-authority
+// signing. It is the hash of the entire header apart from the 65 byte signature
+// contained at the end of the extra data.
+//
+// Note, the method requires the extra data to be at least 65 bytes, otherwise it
+// panics. This is done to avoid accidentally using both forms (signature present
+// or not), which could be abused to produce different hashes for the same header.
+func sigHash(header *types.Header) (hash common.Hash) {
+	hasher := sha3.NewKeccak256()
+
+	rlp.Encode(hasher, []interface{}{
+		header.ParentHash,
+		header.UncleHash,
+		header.Coinbase,
+		header.Root,
+		header.TxHash,
+		header.ReceiptHash,
+		header.Bloom,
+		header.Difficulty,
+		header.Number,
+		header.GasLimit,
+		header.GasUsed,
+		header.Time,
+		header.Extra[:len(header.Extra)-65], // Yes, this will panic if extra is too short
+		header.MixDigest,
+		header.Nonce,
+	})
+	hasher.Sum(hash[:0])
+	return hash
+}
+
+// ecrecover extracts the Ethereum account address from a signed header.
+func ecrecover(header *types.Header, sigcache *lru.ARCCache) (common.Address, error) {
+	// If the signature's already cached, return that
+	hash := header.Hash()
+	if address, known := sigcache.Get(hash); known {
+		return address.(common.Address), nil
+	}
+	// Retrieve the signature from the header extra-data
+	if len(header.Extra) < extraSeal {
+		return common.Address{}, errMissingSignature
+	}
+	signature := header.Extra[len(header.Extra)-extraSeal:]
+
+	// Recover the public key and the Ethereum address
+	pubkey, err := crypto.Ecrecover(sigHash(header).Bytes(), signature)
+	if err != nil {
+		return common.Address{}, err
+	}
+	var signer common.Address
+	copy(signer[:], crypto.Keccak256(pubkey[1:])[12:])
+
+	sigcache.Add(hash, signer)
+	return signer, nil
+}
+
+func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Header, seal bool) error {
+	// who is this?
+	if header.Number == nil {
+		return consensus.ErrInvalidNumber
+	}
+	number := header.Number.Uint64()
+
+	// no future blocks
+	if header.Time.Cmp(big.NewInt(time.Now().Unix())) > 0 {
+		return consensus.ErrFutureBlock
+	}
+	// time?
+
+	// no uncles
+	if header.UncleHash != types.CalcUncleHash(nil) {
+		return errUnclesAreInvalid
+	}
+
+	// signature check
+	if len(header.Extra) < extraSeal {
+		return errInvalidSignature
+	}
+
+	// for non-genesis block check parents
+	if number != 0 {
+		parent := chain.GetHeader(header.ParentHash, number-1)
+		if parent == nil || parent.Number.Uint64() != number-1 || parent.Hash() != header.ParentHash {
+			return consensus.ErrUnknownAncestor
+		}
+
+		if parent.Time.Uint64()+minBlockTime.Uint64() > header.Time.Uint64() {
+			return errInvalidTimestamp
+		}
+	}
+
+	// nonce, difficulty, forks?
+	return nil
 }
