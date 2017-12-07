@@ -3,8 +3,10 @@ package sprouts
 import (
 	"errors"
 	"math/big"
+	"sync"
 	"time"
 
+	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core/state"
@@ -20,18 +22,22 @@ import (
 
 const (
 	inmemorySignatures = 4096 // Number of recent block signatures to keep in memory
+	centValue          = 10000
+	coinValue          = 1000000
 )
 
 var (
-	minBlockTime big.Int = *big.NewInt(0)
-	blockPeriod  uint64  = 15
-	minFee       int     = 1
+	coinAgePeriod *big.Int = new(big.Int).SetUint64(1000000) // how far down the chain to accumulate transaction values
+	blockPeriod   uint64   = 15                              // min period between blocks
+	minFee        int      = 1
 
 	extraSeal = 65 // Fixed number of extra-data suffix bytes reserved for signer seal
 )
 
 // errors
 var (
+	errUnknownBlock = errors.New("unknown block")
+
 	// errMissingSignature is returned if a block's extra-data section doesn't seem
 	// to contain a 65 byte secp256k1 signature.
 	errMissingSignature = errors.New("extra-data 65 byte suffix signature missing")
@@ -47,6 +53,9 @@ var (
 
 type PoS struct {
 	signatures *lru.ARCCache
+	signer     common.Address
+	signerFn   func(account accounts.Account, hash []byte) ([]byte, error)
+	lock       sync.RWMutex
 }
 
 // signers set to the ones provided by the user.
@@ -54,7 +63,18 @@ func New(config *params.SproutsConfig, db ethdb.Database) *PoS {
 	signatures, _ := lru.NewARC(inmemorySignatures)
 	return &PoS{
 		signatures: signatures,
+		lock:       sync.RWMutex{},
 	}
+}
+
+// Authorize injects a private key into the consensus engine to mint new blocks
+// with.
+func (engine *PoS) Authorize(signer common.Address, signFn func(account accounts.Account, hash []byte) ([]byte, error)) {
+	engine.lock.Lock()
+	defer engine.lock.Unlock()
+
+	engine.signer = signer
+	engine.signerFn = signFn
 }
 
 // Author retrieves the Ethereum address of the account that minted the given
@@ -136,8 +156,31 @@ func (engine *PoS) Finalize(chain consensus.ChainReader, header *types.Header, s
 // Seal generates a new block for the given input block with the local miner's
 // seal place on top.
 func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-chan struct{}) (*types.Block, error) {
-	// main dish, sir!
-	return nil, nil
+	header := block.Header()
+
+	// Sealing the genesis block is not supported
+	number := header.Number.Uint64()
+	if number == 0 {
+		return nil, errUnknownBlock
+	}
+
+	age := engine.calcCoinAge(chain, block, number)
+	// block coin age minimum 1 coin-day
+	if age == 0 {
+		age = 1
+	}
+
+	engine.lock.RLock()
+	signer, signerFn := engine.signer, engine.signerFn
+	engine.lock.RUnlock()
+
+	signature, err := signerFn(accounts.Account{Address: signer}, sigHash(header).Bytes())
+	if err != nil {
+		return nil, err
+	}
+	copy(header.Extra[len(header.Extra)-extraSeal:], signature)
+
+	return block, nil
 }
 
 // APIs returns the RPC APIs this consensus engine provides.
@@ -241,11 +284,15 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 			return consensus.ErrUnknownAncestor
 		}
 
-		if parent.Time.Uint64()+minBlockTime.Uint64() > header.Time.Uint64() {
+		if parent.Time.Uint64()+blockPeriod > header.Time.Uint64() {
 			return errInvalidTimestamp
 		}
 	}
 
 	// nonce, difficulty, forks?
+
+	if seal {
+		return engine.VerifySeal(chain, header)
+	}
 	return nil
 }
