@@ -34,6 +34,9 @@ func (engine *PoS) calcCoinAge(chain consensus.ChainReader, block *types.Block, 
 	for lastTime.Cmp(limit) == -1 {
 		// traverse the blocks
 		block = chain.GetBlock(block.ParentHash(), number-1)
+		if block.Number().Uint64() == 0 {
+			break
+		}
 		age.Add(age, engine.blockAge(block))
 		age.Div(age, new(big.Int).SetUint64(centValue))
 	}
