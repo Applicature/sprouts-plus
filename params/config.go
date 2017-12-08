@@ -143,7 +143,10 @@ func (c *CliqueConfig) String() string {
 }
 
 // SproutsConfig is the consensus engine configs for proof-of-stake based sealing.
-type SproutsConfig struct{}
+type SproutsConfig struct {
+	CharityAccount common.Address
+	RDAccount      common.Address
+}
 
 func (c *SproutsConfig) String() string {
 	return "sprouts"
@@ -157,6 +160,8 @@ func (c *ChainConfig) String() string {
 		engine = c.Ethash
 	case c.Clique != nil:
 		engine = c.Clique
+	case c.Sprouts != nil:
+		engine = c.Sprouts
 	default:
 		engine = "unknown"
 	}

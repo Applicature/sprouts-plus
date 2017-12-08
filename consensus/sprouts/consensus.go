@@ -11,11 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/sha3"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/rpc"
 	lru "github.com/hashicorp/golang-lru"
 )
@@ -30,6 +27,10 @@ var (
 	coinAgePeriod *big.Int = new(big.Int).SetUint64(1000000) // how far down the chain to accumulate transaction values
 	blockPeriod   uint64   = 15                              // min period between blocks
 	minFee        int      = 1
+
+	// Use these parameters for transactions with reward after minting.
+	gasLimit *big.Int = new(big.Int).SetUint64(10)
+	gasPrice *big.Int = new(big.Int).SetUint64(10)
 
 	extraSeal = 65 // Fixed number of extra-data suffix bytes reserved for signer seal
 )
@@ -49,21 +50,29 @@ var (
 	// errInvalidTimestamp is returned if the timestamp of a block is lower than
 	// the previous block's timestamp + the minimum block period.
 	errInvalidTimestamp = errors.New("invalid timestamp")
+
+	errNotEnoughBalance = errors.New("not enough balance")
+
+	errZeroTransactions = errors.New("zero sum transactions")
 )
 
 type PoS struct {
-	signatures *lru.ARCCache
-	signer     common.Address
-	signerFn   func(account accounts.Account, hash []byte) ([]byte, error)
-	lock       sync.RWMutex
+	config        *params.SproutsConfig
+	signatures    *lru.ARCCache
+	signer        common.Address
+	signerFn      func(account accounts.Account, hash []byte) ([]byte, error)
+	stakeModifier *big.Int
+	lock          sync.RWMutex
 }
 
 // signers set to the ones provided by the user.
 func New(config *params.SproutsConfig, db ethdb.Database) *PoS {
 	signatures, _ := lru.NewARC(inmemorySignatures)
 	return &PoS{
-		signatures: signatures,
-		lock:       sync.RWMutex{},
+		config:        config,
+		signatures:    signatures,
+		stakeModifier: new(big.Int).SetInt64(0),
+		lock:          sync.RWMutex{},
 	}
 }
 
@@ -128,7 +137,8 @@ func (engine *PoS) VerifyUncles(chain consensus.ChainReader, block *types.Block)
 // the consensus rules of the given engine.
 func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header) error {
 	// score > 0, stakeholders
-	return nil
+
+	return engine.checkKernelHash(header)
 }
 
 // Prepare initializes the consensus fields of a block header according to the
@@ -144,7 +154,7 @@ func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) er
 // consensus rules that happen at finalization (e.g. block rewards).
 func (engine *PoS) Finalize(chain consensus.ChainReader, header *types.Header, state *state.StateDB, txs []*types.Transaction,
 	uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
-	calcRewards(chain.Config(), state, header)
+	engine.accumulateRewards(chain, header, state, txs, receipts)
 
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 	// no uncles
@@ -164,15 +174,29 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 		return nil, errUnknownBlock
 	}
 
-	age := engine.calcCoinAge(chain, block, number)
-	// block coin age minimum 1 coin-day
-	if age == 0 {
-		age = 1
+	reward, err := engine.getKernel(block, stop)
+	if err != nil {
+		return nil, err
 	}
 
 	engine.lock.RLock()
 	signer, signerFn := engine.signer, engine.signerFn
 	engine.lock.RUnlock()
+
+	if reward.Uint64() == 0 {
+		return nil, errZeroTransactions
+	}
+	// TODO
+	// if reward < balance {
+	// return nil, errNotEnoughBalance
+	// }
+
+	age := engine.calcCoinAge(chain, block, number)
+	// block coin age minimum 1 coin-day
+	if age.Uint64() == 0 {
+		age.SetUint64(1)
+	}
+	reward.Add(reward, calcReward(age))
 
 	signature, err := signerFn(accounts.Account{Address: signer}, sigHash(header).Bytes())
 	if err != nil {
@@ -188,72 +212,6 @@ func (engine *PoS) APIs(chain consensus.ChainReader) []rpc.API {
 	return nil
 }
 
-// 8% annual reward split in 365 daily rewards
-// 0.84 = netto reward
-// 0.08 = charity (to a Sprouts+ address C)
-// 0.08 = r&d (to a Sprouts+ address D)
-func calcRewards(chainConfig *params.ChainConfig, state *state.StateDB, header *types.Header) {
-
-}
-
-// borrowing two PoA (clique) methods for signing blocks:
-
-// sigHash returns the hash which is used as input for the proof-of-authority
-// signing. It is the hash of the entire header apart from the 65 byte signature
-// contained at the end of the extra data.
-//
-// Note, the method requires the extra data to be at least 65 bytes, otherwise it
-// panics. This is done to avoid accidentally using both forms (signature present
-// or not), which could be abused to produce different hashes for the same header.
-func sigHash(header *types.Header) (hash common.Hash) {
-	hasher := sha3.NewKeccak256()
-
-	rlp.Encode(hasher, []interface{}{
-		header.ParentHash,
-		header.UncleHash,
-		header.Coinbase,
-		header.Root,
-		header.TxHash,
-		header.ReceiptHash,
-		header.Bloom,
-		header.Difficulty,
-		header.Number,
-		header.GasLimit,
-		header.GasUsed,
-		header.Time,
-		header.Extra[:len(header.Extra)-65], // Yes, this will panic if extra is too short
-		header.MixDigest,
-		header.Nonce,
-	})
-	hasher.Sum(hash[:0])
-	return hash
-}
-
-// ecrecover extracts the Ethereum account address from a signed header.
-func ecrecover(header *types.Header, sigcache *lru.ARCCache) (common.Address, error) {
-	// If the signature's already cached, return that
-	hash := header.Hash()
-	if address, known := sigcache.Get(hash); known {
-		return address.(common.Address), nil
-	}
-	// Retrieve the signature from the header extra-data
-	if len(header.Extra) < extraSeal {
-		return common.Address{}, errMissingSignature
-	}
-	signature := header.Extra[len(header.Extra)-extraSeal:]
-
-	// Recover the public key and the Ethereum address
-	pubkey, err := crypto.Ecrecover(sigHash(header).Bytes(), signature)
-	if err != nil {
-		return common.Address{}, err
-	}
-	var signer common.Address
-	copy(signer[:], crypto.Keccak256(pubkey[1:])[12:])
-
-	sigcache.Add(hash, signer)
-	return signer, nil
-}
-
 func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Header, seal bool) error {
 	// who is this?
 	if header.Number == nil {
@@ -265,7 +223,6 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 	if header.Time.Cmp(big.NewInt(time.Now().Unix())) > 0 {
 		return consensus.ErrFutureBlock
 	}
-	// time?
 
 	// no uncles
 	if header.UncleHash != types.CalcUncleHash(nil) {
@@ -287,6 +244,10 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		if parent.Time.Uint64()+blockPeriod > header.Time.Uint64() {
 			return errInvalidTimestamp
 		}
+	}
+
+	if err := engine.checkKernelHash(header); err != nil {
+		return err
 	}
 
 	// nonce, difficulty, forks?
