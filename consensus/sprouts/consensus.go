@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto/sha3"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -32,7 +33,11 @@ var (
 	gasLimit *big.Int = new(big.Int).SetUint64(10)
 	gasPrice *big.Int = new(big.Int).SetUint64(10)
 
-	extraSeal = 65 // Fixed number of extra-data suffix bytes reserved for signer seal
+	// Genesis block should start with 0 stakeModifier
+	stakeModifier *big.Int = new(big.Int).SetUint64(0)
+
+	extraKernel = 32 + 32 // Fixed number of extra-data bytes reserved from kernel
+	extraSeal   = 65      // Fixed number of extra-data suffix bytes reserved for signer seal
 )
 
 // errors
@@ -54,10 +59,15 @@ var (
 	errNotEnoughBalance = errors.New("not enough balance")
 
 	errZeroTransactions = errors.New("zero sum transactions")
+
+	errCantFindKernel = errors.New("no kernel found")
+
+	errWrongKernel = errors.New("kernel check failed")
 )
 
 type PoS struct {
 	config        *params.SproutsConfig
+	db            ethdb.Database
 	signatures    *lru.ARCCache
 	signer        common.Address
 	signerFn      func(account accounts.Account, hash []byte) ([]byte, error)
@@ -70,6 +80,7 @@ func New(config *params.SproutsConfig, db ethdb.Database) *PoS {
 	signatures, _ := lru.NewARC(inmemorySignatures)
 	return &PoS{
 		config:        config,
+		db:            db,
 		signatures:    signatures,
 		stakeModifier: new(big.Int).SetInt64(0),
 		lock:          sync.RWMutex{},
@@ -136,15 +147,22 @@ func (engine *PoS) VerifyUncles(chain consensus.ChainReader, block *types.Block)
 // VerifySeal checks whether the crypto seal on a header is valid according to
 // the consensus rules of the given engine.
 func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header) error {
-	// score > 0, stakeholders
+	// what else is needed here, after VerifyHeaders?
 
-	return engine.checkKernelHash(header)
+	return engine.checkKernelHash(chain, header)
 }
 
 // Prepare initializes the consensus fields of a block header according to the
 // rules of a particular engine. The changes are executed inline.
 func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) error {
-	// ...
+	header.Coinbase = common.Address{}
+	header.Nonce = types.BlockNonce{}
+
+	header.Difficulty = computeDifficulty(chain, header.Number.Uint64())
+
+	if header.Time.Int64() < time.Now().Unix() {
+		header.Time = big.NewInt(time.Now().Unix())
+	}
 	return nil
 }
 
@@ -174,29 +192,30 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 		return nil, errUnknownBlock
 	}
 
-	reward, err := engine.getKernel(block, stop)
-	if err != nil {
-		return nil, err
-	}
-
-	engine.lock.RLock()
-	signer, signerFn := engine.signer, engine.signerFn
-	engine.lock.RUnlock()
-
-	if reward.Uint64() == 0 {
-		return nil, errZeroTransactions
-	}
-	// TODO
-	// if reward < balance {
-	// return nil, errNotEnoughBalance
-	// }
-
+	// Coin age at this point
 	age := engine.calcCoinAge(chain, block, number)
 	// block coin age minimum 1 coin-day
 	if age.Uint64() == 0 {
 		age.SetUint64(1)
 	}
-	reward.Add(reward, calcReward(age))
+
+	// Try to find kernel
+	hash, timestamp, err := engine.computeKernel(age, block.Header())
+	if err != nil {
+		return nil, err
+	}
+
+	h := sha3.NewShake256()
+	h.Write(timestamp.Bytes())
+	hashedTimestamp := make([]byte, 32)
+	h.Read(hashedTimestamp)
+
+	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel:], hash.Bytes())
+	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel/2:], hashedTimestamp)
+
+	engine.lock.RLock()
+	signer, signerFn := engine.signer, engine.signerFn
+	engine.lock.RUnlock()
 
 	signature, err := signerFn(accounts.Account{Address: signer}, sigHash(header).Bytes())
 	if err != nil {
@@ -230,7 +249,7 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 	}
 
 	// signature check
-	if len(header.Extra) < extraSeal {
+	if len(header.Extra) < extraSeal+extraKernel {
 		return errInvalidSignature
 	}
 
@@ -246,7 +265,7 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		}
 	}
 
-	if err := engine.checkKernelHash(header); err != nil {
+	if err := engine.checkKernelHash(chain, header); err != nil {
 		return err
 	}
 

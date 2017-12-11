@@ -1,7 +1,9 @@
 package sprouts
 
 import (
+	"encoding/binary"
 	"math/big"
+	"strconv"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -18,6 +20,21 @@ var (
 	big8   = big.NewInt(8)
 	big100 = big.NewInt(100)
 )
+
+func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
+	prevBlockTime := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Time)
+	timeDelta := prevBlockTime.Sub(prevBlockTime, chain.GetHeaderByNumber(number-2).Time).Uint64()
+
+	diff := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Difficulty)
+
+	// 1 week / 10 min
+	targetSpacing := uint64(10 * 60)
+	nInt := uint64((7 * 24 * 60 * 60) / targetSpacing)
+
+	diff.Mul(diff, new(big.Int).SetUint64((nInt-1)*targetSpacing+2*timeDelta))
+	diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
+	return diff
+}
 
 func (engine *PoS) blockAge(block *types.Block) *big.Int {
 	bAge := big.NewInt(0)
@@ -68,17 +85,69 @@ func (engine *PoS) isItMe(address common.Address) bool {
 	return true
 }
 
-func (engine *PoS) computeKernel(header *types.Header) *big.Int {
-	// hash(nStakeModifier+txPrev.block.nTime+txPrev.offset+txPrev.nTime+txPrev.vout.n+nTime) < bnTarget*nCoinDayWeight
-	kernel := new(big.Int)
-	// kernel.Add(engine.stakeModifier, header.Time)
-	// kernel.Add(kernel, header.)
-	return kernel
+func (engine *PoS) computeKernel(stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
+	hash = new(big.Int)
+	timestamp = new(big.Int).SetInt64(0)
+	err = errCantFindKernel
+
+	now := uint64(time.Now().Unix())
+	till := uint64(60)
+	if now-header.Time.Uint64() < till {
+		till = now - header.Time.Uint64()
+	}
+
+	for t := now; t >= now-till; t-- {
+		target := new(big.Int).Set(header.Difficulty)
+		target.Mul(target, stake)
+		target.Mul(target, new(big.Int).SetUint64((now-header.Time.Uint64())/coinValue/(24*60*60)))
+
+		rawHash := sha3.NewShake256()
+		rawHash.Write(stakeModifier.Bytes())
+		rawHash.Write(header.Time.Bytes())
+		rawHash.Write([]byte(strconv.FormatUint(uint64(binary.Size(*header)), 10)))
+		rawHash.Write([]byte(strconv.FormatUint(now, 10)))
+		rawHash.Write([]byte(strconv.FormatUint(now-t, 10)))
+
+		h := make([]byte, 32)
+		rawHash.Read(h)
+		hash.SetBytes(h)
+		if hash.Cmp(target) == 1 {
+			err = nil
+			timestamp.SetUint64(t)
+			return
+		}
+	}
+
+	return
 }
 
-func (engine *PoS) checkKernelHash(header *types.Header) error {
-	// kernel := engine.computeKernel(header)
-	// compare kernel
+func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.Header) error {
+	hash, timestamp, err := engine.computeKernel(
+		engine.calcCoinAge(chain, chain.GetBlock(header.Hash(), header.Number.Uint64()), header.Number.Uint64()),
+		header)
+	if err != nil {
+		return err
+	}
+
+	h := sha3.NewShake256()
+	h.Write(timestamp.Bytes())
+	hashedTimestamp := make([]byte, 32)
+	h.Read(hashedTimestamp)
+
+	hashAsBytes := hash.Bytes()
+
+	// compare kernel and timestamp
+	kernel := header.Extra[len(header.Extra)-extraKernel:]
+	for i := 0; i < extraKernel/2; i++ {
+		if kernel[i] != hashAsBytes[i] {
+			return errWrongKernel
+		}
+	}
+	for i := extraKernel / 2; i < extraKernel; i++ {
+		if kernel[i] != hashedTimestamp[i] {
+			return errWrongKernel
+		}
+	}
 	return nil
 }
 
@@ -99,6 +168,7 @@ func (engine *PoS) accumulateRewards(chain consensus.ChainReader, header *types.
 	rdReward.Div(rdReward, big100)
 	rdReward.Mul(rdReward, big8)
 
+	// TODO confirm mechanism for rewards
 	txs = append(txs, types.NewTransaction(0, engine.config.CharityAccount, charityReward, gasLimit, gasPrice, nil))
 	txs = append(txs, types.NewTransaction(0, engine.config.RDAccount, rdReward, gasLimit, gasPrice, nil))
 }
@@ -107,7 +177,14 @@ func (engine *PoS) accumulateRewards(chain consensus.ChainReader, header *types.
 // 8% annual reward split in 365 daily rewards
 func estimateBlockReward() *big.Int {
 	reward := big.NewInt(0)
+	// TODO should reward be dependent on anything?
+
 	return reward
+}
+
+func calcReward(coinAge *big.Int) *big.Int {
+	rewardCoinYear := uint64(centValue * 8)
+	return new(big.Int).SetUint64(coinAge.Uint64() * 33 / (365*33 + 8) * rewardCoinYear)
 }
 
 // borrowing two PoA (clique) methods for signing blocks:
@@ -166,14 +243,4 @@ func ecrecover(header *types.Header, sigcache *lru.ARCCache) (common.Address, er
 
 	sigcache.Add(hash, signer)
 	return signer, nil
-}
-
-func (engine *PoS) getKernel(block *types.Block, stop <-chan struct{}) (credit *big.Int, err error) {
-	credit = new(big.Int)
-	return
-}
-
-func calcReward(coinAge *big.Int) *big.Int {
-	rewardCoinYear := uint64(centValue * 8)
-	return new(big.Int).SetUint64(coinAge.Uint64() * 33 / (365*33 + 8) * rewardCoinYear)
 }
