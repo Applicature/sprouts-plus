@@ -25,14 +25,10 @@ const (
 )
 
 var (
-	coinAgePeriod      *big.Int = new(big.Int).SetUint64(1000000)          // how far down the chain to accumulate transaction values
-	coinAgeRecalculate *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 7) // one week
-	blockPeriod        uint64   = 15                                       // min period between blocks
+	coinAgePeriod      *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 30 * 12) // how far down the chain to accumulate transaction values
+	coinAgeRecalculate *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 3)       // how often to recalculate coin age in db; 3 days (equals to staking time)
+	blockPeriod        uint64   = 15                                             // min period between blocks
 	minFee             int      = 1
-
-	// Use these parameters for transactions with reward after minting.
-	gasLimit *big.Int = new(big.Int).SetUint64(10)
-	gasPrice *big.Int = new(big.Int).SetUint64(10)
 
 	// Genesis block should start with 0 stakeModifier
 	stakeModifier *big.Int = new(big.Int).SetUint64(0)
@@ -156,7 +152,11 @@ func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header)
 // Prepare initializes the consensus fields of a block header according to the
 // rules of a particular engine. The changes are executed inline.
 func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) error {
-	header.Coinbase = common.Address{}
+	signer, err := ecrecover(header, engine.signatures)
+	if err != nil {
+		return err
+	}
+	header.Coinbase = signer
 	header.Nonce = types.BlockNonce{}
 
 	header.Difficulty = computeDifficulty(chain, header.Number.Uint64())
@@ -177,6 +177,7 @@ func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) er
 func (engine *PoS) Finalize(chain consensus.ChainReader, header *types.Header, state *state.StateDB, txs []*types.Transaction,
 	uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
 	engine.accumulateRewards(chain, header, state, txs, receipts)
+	reduceCoinAge(state, engine.db, header, nil)
 
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 	// no uncles
@@ -197,14 +198,14 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	}
 
 	// Coin age at this point
-	age := engine.calcCoinAge(chain, block, number)
+	age := engine.coinAge(chain).Age
 	// block coin age minimum 1 coin-day
-	if age.Uint64() == 0 {
-		age.SetUint64(1)
+	if age == 0 {
+		age = 1
 	}
 
 	// Try to find kernel
-	hash, timestamp, err := engine.computeKernel(age, block.Header())
+	hash, timestamp, err := engine.computeKernel(new(big.Int).SetUint64(age), block.Header())
 	if err != nil {
 		return nil, err
 	}

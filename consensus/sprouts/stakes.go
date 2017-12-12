@@ -3,8 +3,10 @@ package sprouts
 import (
 	"encoding/json"
 	"math/big"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
 )
@@ -41,6 +43,19 @@ func (c *coinAge) saveCoinAge(db ethdb.Database, hash common.Address) error {
 		return err
 	}
 	return db.Put(append([]byte("coinage"), hash[:]...), blob)
+}
+
+func reduceCoinAge(state *state.StateDB, db ethdb.Database, header *types.Header, stake *big.Int) {
+	ca, err := loadCoinAge(db, header.Coinbase)
+	if err != nil || stake == nil {
+		ca = &coinAge{0, uint64(time.Now().Unix())}
+	} else {
+		updatedAge := new(big.Int).SetUint64(ca.Age)
+		updatedAge.Sub(updatedAge, stake)
+		ca.Age = updatedAge.Uint64()
+		ca.Time = uint64(time.Now().Unix())
+	}
+	ca.saveCoinAge(db, header.Coinbase)
 }
 
 type stake struct {
