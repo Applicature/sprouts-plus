@@ -18,6 +18,7 @@ import (
 
 var (
 	big8   = big.NewInt(8)
+	big16  = big.NewInt(16)
 	big100 = big.NewInt(100)
 )
 
@@ -75,6 +76,24 @@ func (engine *PoS) calcCoinAge(chain consensus.ChainReader, block *types.Block, 
 	return age
 }
 
+func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
+	lastCoinAge, err := loadCoinAge(engine.db, engine.signer)
+	if err != nil {
+		// look into errors
+	}
+	// time to recalculate coin age
+	if uint64(time.Now().Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
+		// recalc
+	}
+	return lastCoinAge
+}
+
+func (engine *PoS) extractStake(header *types.Header) (*coinAge, error) {
+	// stakeBytes := header.Extra[len(header.Extra)-extraKernel-extraSeal:]
+	// return parseStake(stakeBytes)
+	return loadCoinAge(engine.db, engine.signer)
+}
+
 // TODO is there an shortcut for this in Ethereum?
 func (engine *PoS) isItMe(address common.Address) bool {
 	for i := range address {
@@ -122,8 +141,12 @@ func (engine *PoS) computeKernel(stake *big.Int, header *types.Header) (hash *bi
 }
 
 func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.Header) error {
+	stake, err := engine.extractStake(header)
+	if err != nil {
+		return err
+	}
 	hash, timestamp, err := engine.computeKernel(
-		engine.calcCoinAge(chain, chain.GetBlock(header.Hash(), header.Number.Uint64()), header.Number.Uint64()),
+		new(big.Int).SetUint64(stake.Age),
 		header)
 	if err != nil {
 		return err
@@ -157,34 +180,29 @@ func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.He
 func (engine *PoS) accumulateRewards(chain consensus.ChainReader, header *types.Header, state *state.StateDB, txs []*types.Transaction,
 	receipts []*types.Receipt) {
 	// first transfer complete reward to miner
-	reward := new(big.Int).Set(estimateBlockReward())
-	state.AddBalance(header.Coinbase, reward)
+	reward := new(big.Int).Set(engine.estimateBlockReward(header))
 
-	// now form and send transactions to charity and r&d
-	charityReward := new(big.Int).Set(reward)
-	rdReward := new(big.Int).Set(reward)
-	charityReward.Div(charityReward, big100)
-	charityReward.Mul(charityReward, big8)
-	rdReward.Div(rdReward, big100)
-	rdReward.Mul(rdReward, big8)
+	// now form rewards to charity and r&d, which take 16% combined
+	bruttoReward := new(big.Int).Set(reward)
+	bruttoReward.Div(bruttoReward, big100)
+	bruttoReward.Mul(bruttoReward, big16)
 
-	// TODO confirm mechanism for rewards
-	txs = append(txs, types.NewTransaction(0, engine.config.CharityAccount, charityReward, gasLimit, gasPrice, nil))
-	txs = append(txs, types.NewTransaction(0, engine.config.RDAccount, rdReward, gasLimit, gasPrice, nil))
+	// minter's reward is the rest
+	nettoReward := new(big.Int).Set(reward)
+	nettoReward.Sub(nettoReward, bruttoReward)
+
+	// add rewards to balances
+	state.AddBalance(header.Coinbase, nettoReward)
+	state.AddBalance(engine.config.RewardsAccount, bruttoReward)
 }
 
 // total reward for the block
 // 8% annual reward split in 365 daily rewards
-func estimateBlockReward() *big.Int {
-	reward := big.NewInt(0)
-	// TODO should reward be dependent on anything?
-
-	return reward
-}
-
-func calcReward(coinAge *big.Int) *big.Int {
+func (engine *PoS) estimateBlockReward(header *types.Header) *big.Int {
+	// TODO need to check error here?
+	stake, _ := engine.extractStake(header)
 	rewardCoinYear := uint64(centValue * 8)
-	return new(big.Int).SetUint64(coinAge.Uint64() * 33 / (365*33 + 8) * rewardCoinYear)
+	return new(big.Int).SetUint64(stake.Age * 33 / (365*33 + 8) * rewardCoinYear)
 }
 
 // borrowing two PoA (clique) methods for signing blocks:

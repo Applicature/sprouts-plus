@@ -144,8 +144,9 @@ func (c *CliqueConfig) String() string {
 
 // SproutsConfig is the consensus engine configs for proof-of-stake based sealing.
 type SproutsConfig struct {
-	CharityAccount common.Address
-	RDAccount      common.Address
+	RewardsAccount common.Address
+	// CharityAccount common.Address
+	// RDAccount      common.Address
 }
 
 func (c *SproutsConfig) String() string {

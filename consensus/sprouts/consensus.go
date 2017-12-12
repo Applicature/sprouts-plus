@@ -19,15 +19,16 @@ import (
 )
 
 const (
-	inmemorySignatures = 4096 // Number of recent block signatures to keep in memory
+	inMemorySignatures = 4096 // Number of recent block signatures to keep in memory
 	centValue          = 10000
 	coinValue          = 1000000
 )
 
 var (
-	coinAgePeriod *big.Int = new(big.Int).SetUint64(1000000) // how far down the chain to accumulate transaction values
-	blockPeriod   uint64   = 15                              // min period between blocks
-	minFee        int      = 1
+	coinAgePeriod      *big.Int = new(big.Int).SetUint64(1000000)          // how far down the chain to accumulate transaction values
+	coinAgeRecalculate *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 7) // one week
+	blockPeriod        uint64   = 15                                       // min period between blocks
+	minFee             int      = 1
 
 	// Use these parameters for transactions with reward after minting.
 	gasLimit *big.Int = new(big.Int).SetUint64(10)
@@ -77,7 +78,7 @@ type PoS struct {
 
 // signers set to the ones provided by the user.
 func New(config *params.SproutsConfig, db ethdb.Database) *PoS {
-	signatures, _ := lru.NewARC(inmemorySignatures)
+	signatures, _ := lru.NewARC(inMemorySignatures)
 	return &PoS{
 		config:        config,
 		db:            db,
@@ -163,6 +164,9 @@ func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) er
 	if header.Time.Int64() < time.Now().Unix() {
 		header.Time = big.NewInt(time.Now().Unix())
 	}
+
+	coinAge := engine.coinAge(chain)
+	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel:], coinAge.bytes())
 	return nil
 }
 
