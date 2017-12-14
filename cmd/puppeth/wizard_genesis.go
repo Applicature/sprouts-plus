@@ -52,6 +52,7 @@ func (w *wizard) makeGenesis() {
 	fmt.Println("Which consensus engine to use? (default = clique)")
 	fmt.Println(" 1. Ethash - proof-of-work")
 	fmt.Println(" 2. Clique - proof-of-authority")
+	fmt.Println(" 3. Sprouts+ - proof-of-stake")
 
 	choice := w.read()
 	switch {
@@ -98,6 +99,21 @@ func (w *wizard) makeGenesis() {
 			copy(genesis.ExtraData[32+i*common.AddressLength:], signer[:])
 		}
 
+	case choice == "3":
+		genesis.Difficulty = big.NewInt(1)
+		genesis.Config.Sprouts = &params.SproutsConfig{
+			RewardsAccount: common.Address{},
+		}
+
+		fmt.Println()
+		fmt.Println("Who is a rewards account?")
+
+		if address := w.readAddress(); address != nil {
+			genesis.Config.Sprouts.RewardsAccount = *address
+		} else {
+			log.Crit("Can't proceed without reward address")
+		}
+		genesis.ExtraData = make([]byte, 32+65+64+32)
 	default:
 		log.Crit("Invalid consensus engine choice", "choice", choice)
 	}
