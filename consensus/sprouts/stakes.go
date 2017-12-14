@@ -1,6 +1,7 @@
 package sprouts
 
 import (
+	"bytes"
 	"encoding/json"
 	"math/big"
 	"time"
@@ -17,14 +18,36 @@ type coinAge struct {
 }
 
 func (c *coinAge) bytes() []byte {
-	return []byte{}
+	b := new(big.Int).SetUint64(c.Age).Bytes()
+	if len(b) < 20 {
+		b = append(b, bytes.Repeat([]byte{0x00}, 20-len(b))...)
+	}
+
+	b = append(b, bytes.Repeat([]byte{0x00}, 32-20)...)
+	copy(b[20:], new(big.Int).SetUint64(c.Time).Bytes())
+	return b
 }
 
 func parseStake(stakeBytes []byte) (*coinAge, error) {
-	ca := new(coinAge)
-	if err := json.Unmarshal(stakeBytes, ca); err != nil {
-		return nil, err
+	if len(stakeBytes) != extraCoinAge {
+		return nil, errWrongKernel
 	}
+
+	ca := new(coinAge)
+	i := 0
+	for ; i < len(stakeBytes); i++ {
+		if stakeBytes[i] == 0 || i == 20 {
+			break
+		}
+	}
+	ca.Age = new(big.Int).SetBytes(stakeBytes[:i]).Uint64()
+
+	for i = 20; i < len(stakeBytes); i++ {
+		if stakeBytes[i] == 0 {
+			break
+		}
+	}
+	ca.Time = new(big.Int).SetBytes(stakeBytes[20:i]).Uint64()
 	return ca, nil
 }
 
@@ -34,7 +57,11 @@ func loadCoinAge(db ethdb.Database, hash common.Address) (*coinAge, error) {
 		return nil, err
 	}
 
-	return parseStake(caData)
+	ca := new(coinAge)
+	if err := json.Unmarshal(caData, ca); err != nil {
+		return nil, err
+	}
+	return ca, nil
 }
 
 func (c *coinAge) saveCoinAge(db ethdb.Database, hash common.Address) error {

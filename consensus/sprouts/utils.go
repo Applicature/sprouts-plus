@@ -1,6 +1,7 @@
 package sprouts
 
 import (
+	"crypto/sha256"
 	"encoding/binary"
 	"errors"
 	"math/big"
@@ -26,14 +27,25 @@ var (
 )
 
 func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
-	prevBlockTime := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Time)
-	timeDelta := prevBlockTime.Sub(prevBlockTime, chain.GetHeaderByNumber(number-2).Time).Uint64()
+	if number == 0 {
+		// should never get here
+		return big.NewInt(0)
+	}
 
 	diff := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Difficulty)
 
 	// 1 week / 10 min
 	targetSpacing := uint64(10 * 60)
 	nInt := uint64((7 * 24 * 60 * 60) / targetSpacing)
+
+	if number < 2 {
+		diff.Mul(diff, new(big.Int).SetUint64((nInt-1)*targetSpacing))
+		diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
+		return diff
+	}
+
+	prevBlockTime := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Time)
+	timeDelta := prevBlockTime.Sub(prevBlockTime, chain.GetHeaderByNumber(number-2).Time).Uint64()
 
 	diff.Mul(diff, new(big.Int).SetUint64((nInt-1)*targetSpacing+2*timeDelta))
 	diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
@@ -86,7 +98,10 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	accumulateCoinAge := func(fromTime, toTime, number uint64) {
 		for {
 			header := chain.GetHeaderByNumber(number)
-			t := header.Time.Uint64()
+			if header == nil {
+				return
+			}
+			t := new(big.Int).Set(header.Time).Uint64()
 			if t > fromTime && t < toTime {
 				diffTime := toTime - t
 				lastCoinAge.Age += engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime)).Uint64()
@@ -99,7 +114,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	}
 
 	// In case coin age is not saved in db or it is time to recalculate coin age
-	if err != ldberrors.ErrNotFound || uint64(now.Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
+	if err == ldberrors.ErrNotFound || lastCoinAge == nil || uint64(now.Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
 		// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
 		accumulateCoinAge(uint64(now.AddDate(-1, 0, 0).Unix()),
 			uint64(now.AddDate(0, 0, -30).Unix()),
@@ -112,9 +127,8 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 }
 
 func (engine *PoS) extractStake(header *types.Header) (*coinAge, error) {
-	// stakeBytes := header.Extra[len(header.Extra)-extraKernel-extraSeal:]
-	// return parseStake(stakeBytes)
-	return loadCoinAge(engine.db, engine.signer)
+	stakeBytes := header.Extra[len(header.Extra)-extraCoinAge:]
+	return parseStake(stakeBytes)
 }
 
 // TODO is there an shortcut for this in Ethereum?
@@ -127,34 +141,39 @@ func (engine *PoS) isItMe(address common.Address) bool {
 	return true
 }
 
-func (engine *PoS) computeKernel(stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
+func (engine *PoS) computeKernel(chain consensus.ChainReader, stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
 	hash = new(big.Int)
 	timestamp = new(big.Int).SetInt64(0)
 	err = errCantFindKernel
 
-	now := uint64(time.Now().Unix())
-	till := uint64(60)
-	if now-header.Time.Uint64() < till {
-		till = now - header.Time.Uint64()
+	if header.Number.Uint64() < 1 {
+		return
 	}
 
-	for t := now; t >= now-till; t-- {
+	till := uint64(60)
+
+	prevBlock := chain.GetHeaderByNumber(header.Number.Uint64() - 1)
+
+	for t := uint64(0); t < till; t++ {
+		timeWeight := header.Time.Uint64() - t - prevBlock.Time.Uint64()
 		target := new(big.Int).Set(header.Difficulty)
 		target.Mul(target, stake)
-		target.Mul(target, new(big.Int).SetUint64((now-header.Time.Uint64())/coinValue/(24*60*60)))
+		target.Mul(target, new(big.Int).SetUint64(timeWeight))
+		target.Div(target, new(big.Int).SetUint64(coinValue))
+		target.Div(target, new(big.Int).SetUint64(24*60*60))
 
-		rawHash := sha3.NewShake256()
-		rawHash.Write(stakeModifier.Bytes())
-		rawHash.Write(header.Time.Bytes())
-		rawHash.Write([]byte(strconv.FormatUint(uint64(binary.Size(*header)), 10)))
-		rawHash.Write([]byte(strconv.FormatUint(now, 10)))
-		rawHash.Write([]byte(strconv.FormatUint(now-t, 10)))
+		rawHash := append(stakeModifier.Bytes(), prevBlock.Time.Bytes()...)
+		rawHash = append(rawHash, []byte(strconv.FormatUint(uint64(binary.Size(*header)), 10))...)
+		rawHash = append(rawHash, []byte(strconv.FormatUint(header.Time.Uint64()-t, 10))...)
+		h1 := sha256.New()
+		h1.Write(rawHash)
+		h2 := sha256.New()
+		h2.Write(h1.Sum(nil))
 
-		h := make([]byte, 32)
-		rawHash.Read(h)
-		hash.SetBytes(h)
-		if hash.Cmp(target) == 1 {
+		if new(big.Int).SetUint64(uint64(binary.LittleEndian.Uint32(h2.Sum(nil)))).Cmp(target) == -1 {
+			// kernel found
 			err = nil
+			hash.SetBytes(h2.Sum(nil))
 			timestamp.SetUint64(t)
 			return
 		}
@@ -169,6 +188,7 @@ func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.He
 		return err
 	}
 	hash, timestamp, err := engine.computeKernel(
+		chain,
 		new(big.Int).SetUint64(stake.Age),
 		header)
 	if err != nil {
@@ -183,7 +203,7 @@ func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.He
 	hashAsBytes := hash.Bytes()
 
 	// compare kernel and timestamp
-	kernel := header.Extra[len(header.Extra)-extraKernel:]
+	kernel := header.Extra[len(header.Extra)-extraCoinAge-extraKernel:]
 	for i := 0; i < extraKernel/2; i++ {
 		if kernel[i] != hashAsBytes[i] {
 			return errWrongKernel

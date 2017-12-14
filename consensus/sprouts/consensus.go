@@ -1,6 +1,7 @@
 package sprouts
 
 import (
+	"bytes"
 	"errors"
 	"math/big"
 	"sync"
@@ -33,8 +34,12 @@ var (
 	// Genesis block should start with 0 stakeModifier
 	stakeModifier *big.Int = new(big.Int).SetUint64(0)
 
-	extraKernel = 32 + 32 // Fixed number of extra-data bytes reserved from kernel
-	extraSeal   = 65      // Fixed number of extra-data suffix bytes reserved for signer seal
+	// Header's extra data field is supposed to be structured in the following way:
+	// 32 bytes reserved + 65 for signature + 64 for kernel + 32 for stake
+	extraDefault = 32      // reserved bytes
+	extraSeal    = 65      // Fixed number of extra-data bytes reserved for signer seal
+	extraKernel  = 32 + 32 // Fixed number of extra-data bytes reserved for kernel, hash and timestamp
+	extraCoinAge = 32      // Fixed number of extra-data bytes reserved for the stake
 )
 
 // errors
@@ -60,6 +65,10 @@ var (
 	errCantFindKernel = errors.New("no kernel found")
 
 	errWrongKernel = errors.New("kernel check failed")
+
+	errWrongStake = errors.New("stake check failed")
+
+	errWaitTransactions = errors.New("waiting for transactions")
 )
 
 type PoS struct {
@@ -152,12 +161,8 @@ func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header)
 // Prepare initializes the consensus fields of a block header according to the
 // rules of a particular engine. The changes are executed inline.
 func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) error {
-	signer, err := ecrecover(header, engine.signatures)
-	if err != nil {
-		return err
-	}
-	header.Coinbase = signer
-	header.Nonce = types.BlockNonce{}
+	// header.Coinbase = signer
+	// header.Nonce = types.BlockNonce{}
 
 	header.Difficulty = computeDifficulty(chain, header.Number.Uint64())
 
@@ -165,8 +170,13 @@ func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) er
 		header.Time = big.NewInt(time.Now().Unix())
 	}
 
+	if len(header.Extra) < extraDefault+extraSeal+extraKernel+extraCoinAge {
+		header.Extra = append(header.Extra, bytes.Repeat([]byte{0x00}, extraDefault+extraSeal+extraKernel+extraCoinAge-len(header.Extra))...)
+	}
+	header.Extra = header.Extra[:extraDefault+extraSeal+extraKernel+extraCoinAge]
+
 	coinAge := engine.coinAge(chain)
-	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel:], coinAge.bytes())
+	copy(header.Extra[len(header.Extra)-extraCoinAge:], coinAge.bytes())
 	return nil
 }
 
@@ -197,6 +207,11 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 		return nil, errUnknownBlock
 	}
 
+	// don't try to seal empty blocks
+	if len(block.Transactions()) == 0 {
+		return nil, errWaitTransactions
+	}
+
 	// Coin age at this point
 	age := engine.coinAge(chain).Age
 	// block coin age minimum 1 coin-day
@@ -205,7 +220,7 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	}
 
 	// Try to find kernel
-	hash, timestamp, err := engine.computeKernel(new(big.Int).SetUint64(age), block.Header())
+	hash, timestamp, err := engine.computeKernel(chain, new(big.Int).SetUint64(age), block.Header())
 	if err != nil {
 		return nil, err
 	}
@@ -215,8 +230,8 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	hashedTimestamp := make([]byte, 32)
 	h.Read(hashedTimestamp)
 
-	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel:], hash.Bytes())
-	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel/2:], hashedTimestamp)
+	copy(header.Extra[len(header.Extra)-extraCoinAge-extraKernel:], hash.Bytes())
+	copy(header.Extra[len(header.Extra)-extraCoinAge-extraKernel/2:], hashedTimestamp)
 
 	engine.lock.RLock()
 	signer, signerFn := engine.signer, engine.signerFn
@@ -226,7 +241,7 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	if err != nil {
 		return nil, err
 	}
-	copy(header.Extra[len(header.Extra)-extraSeal:], signature)
+	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel-extraCoinAge:], signature)
 
 	return block, nil
 }
@@ -254,7 +269,7 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 	}
 
 	// signature check
-	if len(header.Extra) < extraSeal+extraKernel {
+	if len(header.Extra) < extraSeal+extraKernel+extraCoinAge {
 		return errInvalidSignature
 	}
 
