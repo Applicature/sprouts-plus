@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/sha3"
+	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 	lru "github.com/hashicorp/golang-lru"
 	ldberrors "github.com/syndtr/goleveldb/leveldb/errors"
@@ -93,6 +94,10 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 		return &coinAge{0, 0}
 	}
 
+	if err == ldberrors.ErrNotFound {
+		lastCoinAge = &coinAge{0, 0}
+	}
+
 	now := time.Now()
 
 	accumulateCoinAge := func(fromTime, toTime, number uint64) {
@@ -120,13 +125,15 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 			uint64(now.AddDate(0, 0, -30).Unix()),
 			chain.CurrentHeader().Number.Uint64())
 
+		lastCoinAge.Time = uint64(time.Now().Unix())
+
 		lastCoinAge.saveCoinAge(engine.db, engine.signer)
 	}
 
 	return lastCoinAge
 }
 
-func (engine *PoS) extractStake(header *types.Header) (*coinAge, error) {
+func extractStake(header *types.Header) (*coinAge, error) {
 	stakeBytes := header.Extra[len(header.Extra)-extraCoinAge:]
 	return parseStake(stakeBytes)
 }
@@ -141,18 +148,16 @@ func (engine *PoS) isItMe(address common.Address) bool {
 	return true
 }
 
-func (engine *PoS) computeKernel(chain consensus.ChainReader, stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
+func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
 	hash = new(big.Int)
 	timestamp = new(big.Int).SetInt64(0)
 	err = errCantFindKernel
 
-	if header.Number.Uint64() < 1 {
+	if header.Number.Uint64() < 1 || prevBlock == nil {
 		return
 	}
 
 	till := uint64(60)
-
-	prevBlock := chain.GetHeaderByNumber(header.Number.Uint64() - 1)
 
 	for t := uint64(0); t < till; t++ {
 		timeWeight := header.Time.Uint64() - t - prevBlock.Time.Uint64()
@@ -182,13 +187,19 @@ func (engine *PoS) computeKernel(chain consensus.ChainReader, stake *big.Int, he
 	return
 }
 
-func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.Header) error {
-	stake, err := engine.extractStake(header)
+func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header) error {
+	if header.Number.Uint64() == 0 {
+		// should never get here
+		return errUnknownBlock
+	}
+
+	stake, err := extractStake(header)
 	if err != nil {
 		return err
 	}
+
 	hash, timestamp, err := engine.computeKernel(
-		chain,
+		prevBlock,
 		new(big.Int).SetUint64(stake.Age),
 		header)
 	if err != nil {
@@ -210,7 +221,7 @@ func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.He
 		}
 	}
 	for i := extraKernel / 2; i < extraKernel; i++ {
-		if kernel[i] != hashedTimestamp[i] {
+		if kernel[i] != hashedTimestamp[i-extraKernel/2] {
 			return errWrongKernel
 		}
 	}
@@ -220,10 +231,10 @@ func (engine *PoS) checkKernelHash(chain consensus.ChainReader, header *types.He
 // 0.84 = netto reward
 // 0.08 = charity (to a Sprouts+ address C)
 // 0.08 = r&d (to a Sprouts+ address D)
-func (engine *PoS) accumulateRewards(chain consensus.ChainReader, header *types.Header, state *state.StateDB, txs []*types.Transaction,
+func accumulateRewards(config *params.SproutsConfig, header *types.Header, state *state.StateDB, txs []*types.Transaction,
 	receipts []*types.Receipt) {
-	// first transfer complete reward to miner
-	reward := new(big.Int).Set(engine.estimateBlockReward(header))
+	// first estimate complete reward
+	reward := new(big.Int).Set(estimateBlockReward(header))
 
 	// now form rewards to charity and r&d, which take 16% combined
 	bruttoReward := new(big.Int).Set(reward)
@@ -236,14 +247,14 @@ func (engine *PoS) accumulateRewards(chain consensus.ChainReader, header *types.
 
 	// add rewards to balances
 	state.AddBalance(header.Coinbase, nettoReward)
-	state.AddBalance(engine.config.RewardsAccount, bruttoReward)
+	state.AddBalance(config.RewardsAccount, bruttoReward)
 }
 
 // total reward for the block
 // 8% annual reward split in 365 daily rewards
-func (engine *PoS) estimateBlockReward(header *types.Header) *big.Int {
+func estimateBlockReward(header *types.Header) *big.Int {
 	// TODO need to check error here?
-	stake, _ := engine.extractStake(header)
+	stake, _ := extractStake(header)
 	rewardCoinYear := uint64(centValue * 8)
 	return new(big.Int).SetUint64(stake.Age * 33 / (365*33 + 8) * rewardCoinYear)
 }
