@@ -1,6 +1,7 @@
 package sprouts
 
 import (
+	"bytes"
 	"math/big"
 	"testing"
 	"time"
@@ -33,11 +34,16 @@ func (r *testerChainReader) GetHeaderByNumber(number uint64) *types.Header {
 	panic("not supported")
 }
 
-func TestComputeKernel(t *testing.T) {
-	// Kernel computations rely on time, so to ensure repeatability of tests
-	// time must remain fixed.
-	startDate := time.Date(2017, 12, 12, 13, 0, 0, 0, time.UTC)
+// Kernel and difficulty computations rely on time, so to ensure repeatability of tests
+// time must remain fixed.
+var (
+	startDate     = time.Date(2017, 12, 12, 13, 0, 0, 0, time.UTC)
+	rewardsKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
+	rewardsAddr   = crypto.PubkeyToAddress(rewardsKey.PublicKey)
+	sproutsConfig = params.SproutsConfig{RewardsAccount: rewardsAddr}
+)
 
+func TestComputeKernel(t *testing.T) {
 	genesis := &core.Genesis{
 		Timestamp: uint64(startDate.Unix()),
 		ExtraData: make([]byte, extraDefault+extraSeal+extraKernel+extraCoinAge),
@@ -77,26 +83,35 @@ func TestComputeKernel(t *testing.T) {
 	}
 }
 
-func TestGeneration(t *testing.T) {
-
+// shortut for generation key data structures
+func initBlockchainStructures() (*ethdb.MemDatabase, *core.Genesis, *PoS) {
 	db, _ := ethdb.NewMemDatabase()
 
 	var (
-		rewardsKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		rewardsAddr   = crypto.PubkeyToAddress(rewardsKey.PublicKey)
-		sproutsConfig = params.SproutsConfig{RewardsAccount: rewardsAddr}
-		engine        = New(&sproutsConfig, db)
+		engine = New(&sproutsConfig, db)
 
 		genesis = &core.Genesis{
 			Config:     params.TestSproutsChainConfig,
-			Timestamp:  uint64(startDate.Unix()),
-			Difficulty: big.NewInt(1),
+			Timestamp:  10, //uint64(startDate.Unix()),
+			Difficulty: big0,
 			ExtraData:  make([]byte, extraDefault+extraSeal+extraKernel+extraCoinAge),
 			Alloc:      core.GenesisAlloc{rewardsAddr: {Balance: big.NewInt(10)}},
 		}
-		genesisBlock = genesis.MustCommit(db)
+	)
 
-		// for tx
+	return db, genesis, engine
+}
+
+func TestGeneration(t *testing.T) {
+	db, genesis, engine := initBlockchainStructures()
+	genesisBlock := genesis.MustCommit(db)
+	blockchain, err := core.NewBlockChain(db, genesis.Config, engine, vm.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// for tx
+	var (
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
 		// this code generates a log
@@ -104,17 +119,12 @@ func TestGeneration(t *testing.T) {
 		signer = types.NewEIP155Signer(genesis.Config.ChainId)
 	)
 
-	blockchain, err := core.NewBlockChain(db, genesis.Config, engine, vm.Config{})
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	blocks, _ :=
-		GenerateChain(&sproutsConfig, params.TestChainConfig, genesisBlock, db, 1, func(i int, b *BlockGen) {
+		GenerateChain(&sproutsConfig, params.TestSproutsChainConfig, genesisBlock, db, 1000, func(i int, b *BlockGen) {
 			// i starts from zero in GenerateChain so make sure that difficulty is non-zero
 			b.SetDifficulty(big.NewInt(int64(i + 1)))
 
-			// b.SetCoinbase(rewardsAddr)
+			b.SetCoinbase(rewardsAddr)
 
 			// get parent block
 			parent := b.PrevBlock(-1)
@@ -129,13 +139,13 @@ func TestGeneration(t *testing.T) {
 
 			coinAge := &coinAge{0, uint64(time.Now().Unix())}
 
-			extra := make([]byte, extraDefault+extraSeal+extraKernel+extraCoinAge)
+			extra := bytes.Repeat([]byte{0x00}, extraDefault+extraSeal+extraKernel+extraCoinAge)
 			copy(extra[len(extra)-extraCoinAge-extraKernel:], hash.Bytes())
 			copy(extra[len(extra)-extraCoinAge-extraKernel/2:], hashedTimestamp)
 			copy(extra[len(extra)-extraCoinAge:], coinAge.bytes())
 			b.SetExtra(extra)
 
-			if i == 1 {
+			if i%2 == 1 {
 				tx, err := types.SignTx(types.NewContractCreation(b.TxNonce(addr1), new(big.Int), big.NewInt(1000000), new(big.Int), code), signer, key1)
 				if err != nil {
 					t.Fatalf("failed to create tx: %v", err)
@@ -143,13 +153,75 @@ func TestGeneration(t *testing.T) {
 				b.AddTx(tx)
 			}
 		})
-	// Here VerifyHeaders and Finalize are being called internally
-	if i, err := blockchain.InsertChain(blocks); err != nil {
-		t.Fatalf("failed to insert original chain[%d]: %v", i, err)
+
+	// Insert blocks one by one to ensure that chain is complete enough for all checks to execute
+	for i := range blocks {
+		// Here VerifyHeaders and Finalize are being called internally
+		if _, err := blockchain.InsertChain(blocks[i : i+1]); err != nil {
+			t.Fatalf("failed to insert original chain[%d]: %v", i, err)
+		}
 	}
 	defer blockchain.Stop()
 }
 
-// Difficulty computations rely on time, so to ensure repeatability of tests
-// time must remain fixed.
-var startDate = time.Date(2017, 12, 12, 13, 0, 0, 0, time.UTC)
+func TestComputeDifficulty(t *testing.T) {
+	db, genesis, engine := initBlockchainStructures()
+	genesisBlock := genesis.MustCommit(db)
+	blockchain, err := core.NewBlockChain(db, genesis.Config, engine, vm.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// there is no reason to check further blocks as the time difference between blocks
+	// during GenerateChain is const
+	n := 4
+	blocks, _ :=
+		GenerateChain(&sproutsConfig, params.TestSproutsChainConfig, genesisBlock, db, n, func(i int, b *BlockGen) {
+			// i starts from zero in GenerateChain so make sure that difficulty is non-zero
+			b.SetDifficulty(common.Big1)
+
+			b.SetCoinbase(rewardsAddr)
+
+			// get parent block
+			parent := b.PrevBlock(-1)
+			hash, timestamp, err := engine.computeKernel(parent.Header(), big.NewInt(100), b.Header())
+			if err != nil {
+				t.Fatal(err)
+			}
+			h := sha3.NewShake256()
+			h.Write(timestamp.Bytes())
+			hashedTimestamp := make([]byte, 32)
+			h.Read(hashedTimestamp)
+
+			coinAge := &coinAge{0, uint64(time.Now().Unix())}
+
+			extra := bytes.Repeat([]byte{0x00}, extraDefault+extraSeal+extraKernel+extraCoinAge)
+			copy(extra[len(extra)-extraCoinAge-extraKernel:], hash.Bytes())
+			copy(extra[len(extra)-extraCoinAge-extraKernel/2:], hashedTimestamp)
+			copy(extra[len(extra)-extraCoinAge:], coinAge.bytes())
+			b.SetExtra(extra)
+		})
+
+	// Insert blocks one by one to ensure that chain is complete enough for all checks to execute
+	for i := range blocks {
+		// Here VerifyHeaders and Finalize are being called internally
+		if _, err := blockchain.InsertChain(blocks[i : i+1]); err != nil {
+			t.Fatalf("failed to insert original chain[%d]: %v", i, err)
+		}
+	}
+	defer blockchain.Stop()
+
+	expectedDiff := []*big.Int{
+		big.NewInt(100000),
+		big.NewInt(100000),
+		big.NewInt(998050),
+		big.NewInt(998050),
+	}
+
+	for i := 1; i <= n; i++ {
+		diff := computeDifficulty(blockchain, uint64(i))
+		if diff.Cmp(expectedDiff[i-1]) != 0 {
+			t.Fatalf("Incorrect difficulty, expected %d, got %d\n", expectedDiff[i-1].Uint64(), diff.Uint64())
+		}
+	}
+}

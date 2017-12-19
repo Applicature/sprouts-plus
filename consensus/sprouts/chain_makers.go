@@ -227,6 +227,7 @@ func makeHeader(config *params.ChainConfig, parent *types.Block, state *state.St
 	return &types.Header{
 		Root:       state.IntermediateRoot(config.IsEIP158(big.NewInt(int64(parent.Number().Uint64() + 1)))),
 		ParentHash: parent.Hash(),
+		UncleHash:  types.CalcUncleHash(nil),
 		Coinbase:   parent.Coinbase(),
 		Difficulty: big.NewInt(1),
 		GasLimit:   core.CalcGasLimit(parent),

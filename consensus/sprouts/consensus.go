@@ -290,11 +290,9 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		return errInvalidTimestamp
 	}
 
-	if err := engine.checkKernelHash(chain.GetHeaderByNumber(header.Number.Uint64()-1), header); err != nil {
+	if err := engine.checkKernelHash(chain.GetHeaderByNumber(number-1), header); err != nil {
 		return err
 	}
-
-	// TODO check difficulty
 
 	if err := misc.VerifyForkHashes(chain.Config(), header, false); err != nil {
 		return err

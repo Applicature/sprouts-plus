@@ -28,9 +28,9 @@ var (
 )
 
 func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
-	if number == 0 {
-		// should never get here
-		return big.NewInt(0)
+	// return 100000 for the first three blocks
+	if number < 3 {
+		return big.NewInt(100000)
 	}
 
 	diff := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Difficulty)
@@ -39,17 +39,11 @@ func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
 	targetSpacing := uint64(10 * 60)
 	nInt := uint64((7 * 24 * 60 * 60) / targetSpacing)
 
-	if number < 2 {
-		diff.Mul(diff, new(big.Int).SetUint64((nInt-1)*targetSpacing))
-		diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
-		return diff
-	}
-
 	prevBlockTime := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Time)
 	timeDelta := prevBlockTime.Sub(prevBlockTime, chain.GetHeaderByNumber(number-2).Time).Uint64()
-
-	diff.Mul(diff, new(big.Int).SetUint64((nInt-1)*targetSpacing+2*timeDelta))
+	diff.Mul(diff, new(big.Int).SetUint64(((nInt-1)*targetSpacing+2*timeDelta)*1000000))
 	diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
+
 	return diff
 }
 
@@ -90,11 +84,11 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 
 func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	lastCoinAge, err := loadCoinAge(engine.db, engine.signer)
-	if err != nil && err != ldberrors.ErrNotFound {
+	if err != nil && err.Error() != "not found" {
 		return &coinAge{0, 0}
 	}
 
-	if err == ldberrors.ErrNotFound {
+	if err == ldberrors.ErrNotFound || lastCoinAge == nil {
 		lastCoinAge = &coinAge{0, 0}
 	}
 
@@ -119,14 +113,13 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	}
 
 	// In case coin age is not saved in db or it is time to recalculate coin age
-	if err == ldberrors.ErrNotFound || lastCoinAge == nil || uint64(now.Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
+	if err.Error() != "not found" || lastCoinAge == nil || uint64(now.Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
 		// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
 		accumulateCoinAge(uint64(now.AddDate(-1, 0, 0).Unix()),
 			uint64(now.AddDate(0, 0, -30).Unix()),
 			chain.CurrentHeader().Number.Uint64())
 
 		lastCoinAge.Time = uint64(time.Now().Unix())
-
 		lastCoinAge.saveCoinAge(engine.db, engine.signer)
 	}
 
@@ -162,6 +155,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 	for t := uint64(0); t < till; t++ {
 		timeWeight := header.Time.Uint64() - t - prevBlock.Time.Uint64()
 		target := new(big.Int).Set(header.Difficulty)
+		// target.Div(target, big.NewInt(100000))
 		target.Mul(target, stake)
 		target.Mul(target, new(big.Int).SetUint64(timeWeight))
 		target.Div(target, new(big.Int).SetUint64(coinValue))
@@ -215,7 +209,13 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 
 	// compare kernel and timestamp
 	kernel := header.Extra[len(header.Extra)-extraCoinAge-extraKernel:]
-	for i := 0; i < extraKernel/2; i++ {
+
+	// sometimes hash can take 31
+	till := extraKernel / 2
+	if len(hashAsBytes) < till {
+		till = len(hashAsBytes)
+	}
+	for i := 0; i < till; i++ {
 		if kernel[i] != hashAsBytes[i] {
 			return errWrongKernel
 		}
@@ -303,7 +303,7 @@ func ecrecover(header *types.Header, sigcache *lru.ARCCache) (common.Address, er
 	if len(header.Extra) < extraSeal {
 		return common.Address{}, errMissingSignature
 	}
-	signature := header.Extra[len(header.Extra)-extraSeal:]
+	signature := header.Extra[len(header.Extra)-extraSeal-extraKernel-extraCoinAge:]
 
 	// Recover the public key and the Ethereum address
 	pubkey, err := crypto.Ecrecover(sigHash(header).Bytes(), signature)
