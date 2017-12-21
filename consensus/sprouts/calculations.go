@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/sha3"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 	lru "github.com/hashicorp/golang-lru"
@@ -45,6 +46,19 @@ func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
 	diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
 
 	return diff
+}
+
+// stakeOfBlock checks if this block was mined by current signer and if so,
+// returns the stake
+func (engine *PoS) stakeOfBlock(block *types.Block) (*coinAge, bool) {
+	if !engine.isItMe(block.Coinbase()) {
+		return nil, false
+	}
+	stake, err := extractStake(block.Header())
+	if err != nil {
+		return nil, false
+	}
+	return stake, true
 }
 
 func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
@@ -82,6 +96,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 	return bAge
 }
 
+// only called by the sealer
 func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	lastCoinAge, err := loadCoinAge(engine.db, engine.signer)
 	if err != nil && err.Error() != "not found" {
@@ -95,12 +110,26 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	now := time.Now()
 
 	accumulateCoinAge := func(fromTime, toTime, number uint64) {
+		threeDaysAgo := uint64(now.AddDate(0, 0, 3).Unix())
+
 		for {
+			if number == 0 {
+				return
+			}
+
 			header := chain.GetHeaderByNumber(number)
 			if header == nil {
 				return
 			}
 			t := new(big.Int).Set(header.Time).Uint64()
+
+			if t > threeDaysAgo {
+				if stake, isMyStake := engine.stakeOfBlock(chain.GetBlock(header.Hash(), number)); isMyStake {
+					// can't use the staked amount yet
+					lastCoinAge.Age -= stake.Age
+				}
+			}
+
 			if t > fromTime && t < toTime {
 				diffTime := toTime - t
 				lastCoinAge.Age += engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime)).Uint64()
@@ -113,11 +142,11 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	}
 
 	// In case coin age is not saved in db or it is time to recalculate coin age
-	if err.Error() != "not found" || lastCoinAge == nil || uint64(now.Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
+	if (err != nil && err.Error() != "not found") || uint64(now.Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
 		// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
 		accumulateCoinAge(uint64(now.AddDate(-1, 0, 0).Unix()),
 			uint64(now.AddDate(0, 0, -30).Unix()),
-			chain.CurrentHeader().Number.Uint64())
+			chain.CurrentHeader().Number.Uint64()-1)
 
 		lastCoinAge.Time = uint64(time.Now().Unix())
 		lastCoinAge.saveCoinAge(engine.db, engine.signer)
@@ -129,6 +158,10 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 func extractStake(header *types.Header) (*coinAge, error) {
 	stakeBytes := header.Extra[len(header.Extra)-extraCoinAge:]
 	return parseStake(stakeBytes)
+}
+
+func extractKernel(header *types.Header) []byte {
+	return header.Extra[len(header.Extra)-extraCoinAge-extraKernel:]
 }
 
 // TODO is there an shortcut for this in Ethereum?
@@ -150,6 +183,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 		return
 	}
 
+	log.New("consensus", nil)
 	till := uint64(60)
 
 	for t := uint64(0); t < till; t++ {
@@ -169,7 +203,10 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 		h2 := sha256.New()
 		h2.Write(h1.Sum(nil))
 
-		if new(big.Int).SetUint64(uint64(binary.LittleEndian.Uint32(h2.Sum(nil)))).Cmp(target) == -1 {
+		computedHash := new(big.Int).SetUint64(uint64(binary.LittleEndian.Uint32(h2.Sum(nil))))
+		log.Debug("Attempt to find kernel", "hash", computedHash, "target", target)
+
+		if computedHash.Cmp(target) == -1 {
 			// kernel found
 			err = nil
 			hash.SetBytes(h2.Sum(nil))
@@ -181,15 +218,10 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 	return
 }
 
-func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header) error {
+func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header, stake *coinAge) error {
 	if header.Number.Uint64() == 0 {
 		// should never get here
 		return errUnknownBlock
-	}
-
-	stake, err := extractStake(header)
-	if err != nil {
-		return err
 	}
 
 	hash, timestamp, err := engine.computeKernel(
@@ -208,7 +240,7 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 	hashAsBytes := hash.Bytes()
 
 	// compare kernel and timestamp
-	kernel := header.Extra[len(header.Extra)-extraCoinAge-extraKernel:]
+	kernel := extractKernel(header)
 
 	// sometimes hash can take 31
 	till := extraKernel / 2

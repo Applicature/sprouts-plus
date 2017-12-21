@@ -70,6 +70,8 @@ var (
 	errWrongStake = errors.New("stake check failed")
 
 	errWaitTransactions = errors.New("waiting for transactions")
+
+	errDuplicateStake = errors.New("received duplicate stake")
 )
 
 type PoS struct {
@@ -154,9 +156,22 @@ func (engine *PoS) VerifyUncles(chain consensus.ChainReader, block *types.Block)
 // VerifySeal checks whether the crypto seal on a header is valid according to
 // the consensus rules of the given engine.
 func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header) error {
-	// what else is needed here, after VerifyHeaders?
+	stake, err := extractStake(header)
+	if err != nil {
+		return err
+	}
 
-	return engine.checkKernelHash(chain.GetHeaderByNumber(header.Number.Uint64()-1), header)
+	// check for stake duplicates
+	stakeMap, err := engine.getMappedStakes()
+	if err != nil {
+		return nil
+	}
+	if ok := stakeMap.isDuplicate(stake, extractKernel(header)); ok {
+		return errDuplicateStake
+	}
+
+	// check kernel itself
+	return engine.checkKernelHash(chain.GetHeaderByNumber(header.Number.Uint64()-1), header, stake)
 }
 
 // Prepare initializes the consensus fields of a block header according to the
@@ -215,7 +230,8 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	}
 
 	// Coin age at this point
-	age := engine.coinAge(chain).Age
+	ca := engine.coinAge(chain)
+	age := ca.Age
 	// block coin age minimum 1 coin-day
 	if age == 0 {
 		age = 1
@@ -244,6 +260,9 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 		return nil, err
 	}
 	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel-extraCoinAge:], signature)
+
+	// update stored stakes
+	engine.addStake(header, ca)
 
 	return block, nil
 }
@@ -290,7 +309,12 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		return errInvalidTimestamp
 	}
 
-	if err := engine.checkKernelHash(chain.GetHeaderByNumber(number-1), header); err != nil {
+	stake, err := extractStake(header)
+	if err != nil {
+		return err
+	}
+
+	if err := engine.checkKernelHash(chain.GetHeaderByNumber(number-1), header, stake); err != nil {
 		return err
 	}
 

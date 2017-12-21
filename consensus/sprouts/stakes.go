@@ -69,6 +69,7 @@ func (c *coinAge) saveCoinAge(db ethdb.Database, hash common.Address) error {
 	if err != nil {
 		return err
 	}
+	common.BytesToHash(blob)
 	return db.Put(append([]byte("coinage"), hash[:]...), blob)
 }
 
@@ -86,28 +87,100 @@ func reduceCoinAge(state *state.StateDB, db ethdb.Database, header *types.Header
 }
 
 type stake struct {
-	Timestamp uint64 `json:"timestamp"`
-	Kernel    uint64 `json:"kernel"`
-	Stake     uint64 `json:"stake"`
+	Number    uint64      `json:"number"`
+	Hash      common.Hash `json:"hash"`
+	Timestamp uint64      `json:"timestamp"`
+	Kernel    []byte      `json:"kernel"`
+	Stake     uint64      `json:"stake"`
 }
 
-type stakeMap map[common.Hash]stake
+type mappedStakes map[common.Hash]stake
 
-func (s stakeMap) validStake(header *types.Header, t *big.Int, kernel *big.Int) bool {
-	hash := header.Hash()
-	stake, ok := s[hash]
-	if ok && stake.Timestamp == t.Uint64() && stake.Kernel == kernel.Uint64() {
+func (engine *PoS) getMappedStakes() (*mappedStakes, error) {
+	// TODO implement caching as required
+	return loadmappedStakes(engine.db)
+}
+
+func (engine *PoS) saveMappedStakes(sm *mappedStakes) error {
+	return sm.store(engine.db)
+}
+
+func (engine *PoS) addStake(header *types.Header, ca *coinAge) {
+	stakeMapP, ok := engine.getMappedStakes()
+	if ok != nil {
+		return
+	}
+	stakeMap := *stakeMapP
+
+	stakeMap[header.Hash()] = stake{
+		Number:    header.Number.Uint64(),
+		Hash:      header.Hash(),
+		Timestamp: header.Time.Uint64(),
+		Kernel:    make([]byte, extraKernel),
+		Stake:     ca.Age,
+	}
+	copy(stakeMap[header.Hash()].Kernel, header.Extra[len(header.Extra)-extraCoinAge-extraKernel:])
+
+	go engine.saveMappedStakes(stakeMapP)
+}
+
+func (stakeMap mappedStakes) isDuplicate(stake *coinAge, kernel []byte) bool {
+	eqArr := func(k1, k2 []byte) bool {
+		if len(k1) != len(k2) {
+			return false
+		}
+		for i := range k1 {
+			if k1[i] != k2[i] {
+				return false
+			}
+		}
 		return true
+	}
+	for _, s := range stakeMap {
+		if stake.Age == s.Stake && stake.Time == s.Timestamp && eqArr(kernel, s.Kernel) {
+			return true
+		}
 	}
 	return false
 }
 
-func (s stakeMap) store(db ethdb.Database) error {
-	// blob, err := json.Marshal(s)
-	// if err != nil {
-	// 	return err
-	// }
-	// common.BytesToHash(b)
-	// return db.Put(append([]byte("clique-"), s.Hash[:]...), blob)
-	return nil
+// func (s mappedStakes) validStake(header *types.Header, t *big.Int, kernel *big.Int) bool {
+// 	hash := header.Hash()
+// 	stake, ok := s[hash]
+// 	if ok && stake.Timestamp == t.Uint64() {
+// 		return true
+// 	}
+// 	return false
+// }
+
+func loadmappedStakes(db ethdb.Database) (*mappedStakes, error) {
+	blob, err := db.Get([]byte("mappedStakes"))
+	if err != nil {
+		return nil, err
+	}
+	smArr := make([]stake, 0)
+	if err := json.Unmarshal(blob, smArr); err != nil {
+		return nil, err
+	}
+
+	var stakeMap mappedStakes
+	stakeMap = make(map[common.Hash]stake)
+
+	for _, s := range smArr {
+		stakeMap[s.Hash] = s
+	}
+	return &stakeMap, nil
+}
+
+func (stakeMap mappedStakes) store(db ethdb.Database) error {
+	smArr := make([]stake, 0)
+	for _, s := range stakeMap {
+		smArr = append(smArr, s)
+	}
+	blob, err := json.Marshal(smArr)
+	if err != nil {
+		return err
+	}
+	common.BytesToHash(blob)
+	return db.Put([]byte("mappedStakes"), blob)
 }
