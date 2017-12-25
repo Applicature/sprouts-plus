@@ -30,7 +30,6 @@ var (
 	coinAgePeriod      *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 30 * 12) // how far down the chain to accumulate transaction values
 	coinAgeRecalculate *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 3)       // how often to recalculate coin age in db; 3 days (equals to staking time)
 	blockPeriod        uint64   = 10                                             // min period between blocks
-	minFee             int      = 1
 
 	// Genesis block should start with 0 stakeModifier
 	stakeModifier *big.Int = new(big.Int).SetUint64(0)
@@ -59,15 +58,9 @@ var (
 	// the previous block's timestamp + the minimum block period.
 	errInvalidTimestamp = errors.New("invalid timestamp")
 
-	errNotEnoughBalance = errors.New("not enough balance")
-
-	errZeroTransactions = errors.New("zero sum transactions")
-
 	errCantFindKernel = errors.New("no kernel found")
 
 	errWrongKernel = errors.New("kernel check failed")
-
-	errWrongStake = errors.New("stake check failed")
 
 	errWaitTransactions = errors.New("waiting for transactions")
 
@@ -170,6 +163,9 @@ func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header)
 		return errDuplicateStake
 	}
 
+	// update stored stakes
+	engine.addStake(header, stake)
+
 	// check kernel itself
 	return engine.checkKernelHash(chain.GetHeaderByNumber(header.Number.Uint64()-1), header, stake)
 }
@@ -224,8 +220,8 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 		return nil, errUnknownBlock
 	}
 
-	// don't try to seal empty blocks too fast
-	if len(block.Transactions()) == 0 && blockPeriod == 0 {
+	// don't try to seal empty blocks
+	if len(block.Transactions()) == 0 {
 		return nil, errWaitTransactions
 	}
 
@@ -260,9 +256,6 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 		return nil, err
 	}
 	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel-extraCoinAge:], signature)
-
-	// update stored stakes
-	engine.addStake(header, ca)
 
 	return block, nil
 }

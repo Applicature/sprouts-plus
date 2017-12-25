@@ -98,7 +98,7 @@ type mappedStakes map[common.Hash]stake
 
 func (engine *PoS) getMappedStakes() (*mappedStakes, error) {
 	// TODO implement caching as required
-	return loadmappedStakes(engine.db)
+	return loadMappedStakes(engine.db)
 }
 
 func (engine *PoS) saveMappedStakes(sm *mappedStakes) error {
@@ -125,35 +125,15 @@ func (engine *PoS) addStake(header *types.Header, ca *coinAge) {
 }
 
 func (stakeMap mappedStakes) isDuplicate(stake *coinAge, kernel []byte) bool {
-	eqArr := func(k1, k2 []byte) bool {
-		if len(k1) != len(k2) {
-			return false
-		}
-		for i := range k1 {
-			if k1[i] != k2[i] {
-				return false
-			}
-		}
-		return true
-	}
 	for _, s := range stakeMap {
-		if stake.Age == s.Stake && stake.Time == s.Timestamp && eqArr(kernel, s.Kernel) {
+		if stake.Age == s.Stake && stake.Time == s.Timestamp && bytes.Equal(kernel, s.Kernel) {
 			return true
 		}
 	}
 	return false
 }
 
-// func (s mappedStakes) validStake(header *types.Header, t *big.Int, kernel *big.Int) bool {
-// 	hash := header.Hash()
-// 	stake, ok := s[hash]
-// 	if ok && stake.Timestamp == t.Uint64() {
-// 		return true
-// 	}
-// 	return false
-// }
-
-func loadmappedStakes(db ethdb.Database) (*mappedStakes, error) {
+func loadMappedStakes(db ethdb.Database) (*mappedStakes, error) {
 	blob, err := db.Get([]byte("mappedStakes"))
 	if err != nil {
 		return nil, err

@@ -1,6 +1,7 @@
 package sprouts
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
 	"errors"
@@ -92,7 +93,6 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 	// coin-days:
 	bAge.Mul(bAge, new(big.Int).SetUint64(centValue))
 	bAge.Div(bAge, new(big.Int).SetUint64(coinValue/(24*60*60)))
-
 	return bAge
 }
 
@@ -102,7 +102,6 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	if err != nil && err.Error() != "not found" {
 		return &coinAge{0, 0}
 	}
-
 	if err == ldberrors.ErrNotFound || lastCoinAge == nil {
 		lastCoinAge = &coinAge{0, 0}
 	}
@@ -122,7 +121,6 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 				return
 			}
 			t := new(big.Int).Set(header.Time).Uint64()
-
 			if t > threeDaysAgo {
 				if stake, isMyStake := engine.stakeOfBlock(chain.GetBlock(header.Hash(), number)); isMyStake {
 					// can't use the staked amount yet
@@ -132,7 +130,8 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 
 			if t > fromTime && t < toTime {
 				diffTime := toTime - t
-				lastCoinAge.Age += engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime)).Uint64()
+				ba := engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime))
+				lastCoinAge.Age += ba.Uint64()
 			}
 			if t < fromTime {
 				return
@@ -166,12 +165,7 @@ func extractKernel(header *types.Header) []byte {
 
 // TODO is there an shortcut for this in Ethereum?
 func (engine *PoS) isItMe(address common.Address) bool {
-	for i := range address {
-		if address[i] != engine.signer[i] {
-			return false
-		}
-	}
-	return true
+	return bytes.Equal(address[:], engine.signer[:])
 }
 
 func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
@@ -204,7 +198,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 		h2.Write(h1.Sum(nil))
 
 		computedHash := new(big.Int).SetUint64(uint64(binary.LittleEndian.Uint32(h2.Sum(nil))))
-		log.Debug("Attempt to find kernel", "hash", computedHash, "target", target)
+		log.Warn("Attempt to find kernel", "hash", computedHash, "target", target)
 
 		if computedHash.Cmp(target) == -1 {
 			// kernel found
