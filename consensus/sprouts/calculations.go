@@ -141,9 +141,9 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	}
 
 	// In case coin age is not saved in db or it is time to recalculate coin age
-	if (err != nil && err.Error() != "not found") || uint64(now.Unix())-lastCoinAge.Time > coinAgeRecalculate.Uint64() {
+	if (err != nil && err.Error() != "not found") || uint64(now.Unix())-lastCoinAge.Time > engine.config.CoinAgePeriod.Uint64() {
 		// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
-		accumulateCoinAge(uint64(now.AddDate(-1, 0, 0).Unix()),
+		accumulateCoinAge(engine.config.CoinAgeLifetime.Uint64(),
 			uint64(now.AddDate(0, 0, -30).Unix()),
 			chain.CurrentHeader().Number.Uint64()-1)
 

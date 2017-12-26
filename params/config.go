@@ -77,6 +77,27 @@ var (
 		},
 	}
 
+	// SproutsChainConfig contains the chain parameters to run a node on the Sprouts+ test network.
+	SproutsChainConfig = &ChainConfig{
+		ChainId:        big.NewInt(8),
+		HomesteadBlock: big.NewInt(0),
+		DAOForkBlock:   nil,
+		DAOForkSupport: false,
+		EIP150Block:    nil,
+		EIP155Block:    big.NewInt(0),
+		EIP158Block:    big.NewInt(0),
+		ByzantiumBlock: big.NewInt(0),
+
+		Sprouts: &SproutsConfig{
+		// RewardsAccount: common.Address{},
+		// DistributionAccount: common.Address{},
+		//
+		// CoinAgeLifetime: big.NewInt(0),
+		// CoinAgePeriod: big.NewInt(0),
+		// BlockPeriod: 10,
+		},
+	}
+
 	// AllEthashProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Ethash consensus.
 	//
@@ -92,7 +113,7 @@ var (
 	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
 	TestChainConfig        = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), new(EthashConfig), nil, nil}
-	TestSproutsChainConfig = &ChainConfig{big.NewInt(8), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, new(SproutsConfig)}
+	TestSproutsChainConfig = &ChainConfig{big.NewInt(88), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, new(SproutsConfig)}
 
 	TestRules = TestChainConfig.Rules(new(big.Int))
 )
@@ -146,9 +167,12 @@ func (c *CliqueConfig) String() string {
 
 // SproutsConfig is the consensus engine configs for proof-of-stake based sealing.
 type SproutsConfig struct {
-	RewardsAccount common.Address
-	// CharityAccount common.Address
-	// RDAccount      common.Address
+	RewardsAccount      common.Address `json:"rewardsAcc"`
+	DistributionAccount common.Address `json:"distributionAcc"`
+
+	CoinAgeLifetime *big.Int `json:"coinageLifetime"` // how far down the chain to accumulate transaction values
+	CoinAgePeriod   *big.Int `json:"coinagePeriod"`   // how often to recalculate coin age in db; 3 days (equals to staking time)
+	BlockPeriod     uint64   `json:"blockPeriod"`     // min period between blocks
 }
 
 func (c *SproutsConfig) String() string {

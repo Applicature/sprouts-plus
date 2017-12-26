@@ -41,7 +41,12 @@ var (
 	startDate     = time.Date(2017, 12, 12, 13, 0, 0, 0, time.UTC)
 	rewardsKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 	rewardsAddr   = crypto.PubkeyToAddress(rewardsKey.PublicKey)
-	sproutsConfig = params.SproutsConfig{RewardsAccount: rewardsAddr}
+	sproutsConfig = params.SproutsConfig{
+		RewardsAccount:  rewardsAddr,
+		CoinAgeLifetime: big.NewInt(60 * 60 * 24 * 30 * 12),
+		CoinAgePeriod:   big.NewInt(60 * 60 * 24 * 3),
+		BlockPeriod:     10,
+	}
 
 	testKey, _ = crypto.HexToECDSA("49a7b37aa6f6645917e7b807e9d1c00d4fa71f18343b0d4122a4d2df64dd6fee")
 	testAddr   = crypto.PubkeyToAddress(testKey.PublicKey)
@@ -235,6 +240,7 @@ func TestComputeDifficulty(t *testing.T) {
 func TestCoinAge(t *testing.T) {
 	db, genesis, engine := initBlockchainStructures()
 
+	// It must be more than a month for coin age to grow
 	genesis.Timestamp = uint64(time.Now().AddDate(0, -2, 0).Unix())
 	signer := types.NewEIP155Signer(genesis.Config.ChainId)
 	genesis.Alloc[testAddr] = core.GenesisAccount{Balance: big.NewInt(1000000)}

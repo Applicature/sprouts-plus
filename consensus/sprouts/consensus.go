@@ -27,10 +27,6 @@ const (
 )
 
 var (
-	coinAgePeriod      *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 30 * 12) // how far down the chain to accumulate transaction values
-	coinAgeRecalculate *big.Int = new(big.Int).SetUint64(60 * 60 * 24 * 3)       // how often to recalculate coin age in db; 3 days (equals to staking time)
-	blockPeriod        uint64   = 10                                             // min period between blocks
-
 	// Genesis block should start with 0 stakeModifier
 	stakeModifier *big.Int = new(big.Int).SetUint64(0)
 
@@ -298,7 +294,7 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		return consensus.ErrUnknownAncestor
 	}
 
-	if parent.Time.Uint64()+blockPeriod > header.Time.Uint64() {
+	if parent.Time.Uint64()+engine.config.BlockPeriod > header.Time.Uint64() {
 		return errInvalidTimestamp
 	}
 
