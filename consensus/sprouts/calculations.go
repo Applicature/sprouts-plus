@@ -87,6 +87,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
+				caFromTx.Mul(caFromTx, big.NewInt(100)) // experiment
 				caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
 
 				// this transaction should be added to block age
@@ -259,16 +260,11 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 	if len(hashAsBytes) < till {
 		till = len(hashAsBytes)
 	}
-	for i := 0; i < till; i++ {
-		if kernel[i] != hashAsBytes[i] {
-			return errWrongKernel
-		}
+
+	if !bytes.Equal(kernel[:till], hashAsBytes) || !bytes.Equal(kernel[extraKernel/2:extraKernel], hashedTimestamp) {
+		return errWrongKernel
 	}
-	for i := extraKernel / 2; i < extraKernel; i++ {
-		if kernel[i] != hashedTimestamp[i-extraKernel/2] {
-			return errWrongKernel
-		}
-	}
+
 	return nil
 }
 
