@@ -29,6 +29,15 @@ var (
 	big100 = big.NewInt(100)
 )
 
+const preAllocCoefficient = 10000
+
+var stakeMaxAge uint64 // stake age of full weight
+
+func init() {
+	d, _ := time.ParseDuration("2160h") // 90 days
+	stakeMaxAge = uint64(d)
+}
+
 func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
 	// return 100000 for the first three blocks
 	if number < 3 {
@@ -163,11 +172,27 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 		accumulateCoinAge(engine.config.CoinAgeLifetime.Uint64(),
 			chain.CurrentHeader().Number.Uint64()-1)
 
+		lastCoinAge.Age += engine.getPreAllocCoinAge()
+
 		lastCoinAge.Time = uint64(time.Now().Unix())
 		lastCoinAge.saveCoinAge(engine.db, engine.signer)
 	}
 
 	return lastCoinAge
+}
+
+func (engine *PoS) getPreAllocCoinAge() uint64 {
+	genesis := engine.getGenesis()
+	// count pre-allocated funds only for half a year
+	if genesis.Timestamp < uint64(time.Now().AddDate(0, -6, 0).Unix()) {
+		return 0
+	}
+	for address, genesisAccount := range genesis.Alloc {
+		if engine.isItMe(address) {
+			return genesisAccount.Balance.Uint64() * preAllocCoefficient
+		}
+	}
+	return 0
 }
 
 func extractStake(header *types.Header) (*coinAge, error) {
@@ -201,6 +226,9 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 
 	for t := uint64(0); t < till; t++ {
 		timeWeight := header.Time.Uint64() - t - prevBlock.Time.Uint64()
+		if timeWeight > stakeMaxAge {
+			timeWeight = stakeMaxAge
+		}
 		target := new(big.Int).Set(header.Difficulty)
 		// target.Div(target, big.NewInt(100000))
 		target.Mul(target, stake)
@@ -210,6 +238,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 
 		rawHash := append(stakeModifier.Bytes(), prevBlock.Time.Bytes()...)
 		rawHash = append(rawHash, []byte(strconv.FormatUint(uint64(binary.Size(*header)), 10))...)
+		// rawHash = append(rawHash, []byte(strconv.FormatUint(prevBlock.Time.Uint64(), 10))...)
 		rawHash = append(rawHash, []byte(strconv.FormatUint(header.Time.Uint64()-t, 10))...)
 		h1 := sha256.New()
 		h1.Write(rawHash)

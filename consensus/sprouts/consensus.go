@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/consensus/misc"
+	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto/sha3"
@@ -315,4 +316,9 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		return engine.VerifySeal(chain, header)
 	}
 	return nil
+}
+
+func (engine *PoS) getGenesis() *core.Genesis {
+	// TODO return main net as well
+	return core.DefaultTestnetGenesisBlock()
 }

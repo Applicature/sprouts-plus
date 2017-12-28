@@ -74,9 +74,8 @@ func TestComputeKernel(t *testing.T) {
 		err       error
 	}{
 		{new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), errCantFindKernel},
-		{new(big.Int).SetUint64(1), new(big.Int).SetUint64(36), nil},
-		{new(big.Int).SetUint64(100), new(big.Int).SetUint64(6), nil},
-		{new(big.Int).SetUint64(8), new(big.Int).SetUint64(6), nil},
+		{new(big.Int).SetUint64(10000), new(big.Int).SetUint64(7), nil},
+		{new(big.Int).SetUint64(1000000), new(big.Int).SetUint64(6), nil},
 	}
 
 	engine := PoS{}
@@ -140,7 +139,8 @@ func TestGeneration(t *testing.T) {
 
 			// get parent block
 			parent := b.PrevBlock(-1)
-			hash, timestamp, err := engine.computeKernel(parent.Header(), big.NewInt(100), b.Header())
+			// put large stake here to ensure that kernel is found
+			hash, timestamp, err := engine.computeKernel(parent.Header(), big.NewInt(1000000), b.Header())
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -196,7 +196,7 @@ func TestComputeDifficulty(t *testing.T) {
 
 			// get parent block
 			parent := b.PrevBlock(-1)
-			hash, timestamp, err := engine.computeKernel(parent.Header(), big.NewInt(100), b.Header())
+			hash, timestamp, err := engine.computeKernel(parent.Header(), big.NewInt(1000000), b.Header())
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -255,13 +255,13 @@ func TestCoinAge(t *testing.T) {
 	n := 4
 	blocks, _ :=
 		GenerateChain(&sproutsConfig, params.TestSproutsChainConfig, genesisBlock, db, n, func(i int, b *BlockGen) {
-			b.SetDifficulty(common.Big1)
+			b.SetDifficulty(big.NewInt(1))
 
 			b.SetCoinbase(rewardsAddr)
 
 			// get parent block
 			parent := b.PrevBlock(-1)
-			hash, timestamp, err := engine.computeKernel(parent.Header(), big.NewInt(100), b.Header())
+			hash, timestamp, err := engine.computeKernel(parent.Header(), big.NewInt(1000000), b.Header())
 			if err != nil {
 				t.Fatal(err)
 			}

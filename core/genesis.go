@@ -342,6 +342,22 @@ func DefaultRinkebyGenesisBlock() *Genesis {
 	}
 }
 
+func DefaultSproutsGenesisBlock() *Genesis {
+	// TODO define
+	return &Genesis{}
+}
+
+func DefaultSproutsTestnetGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.SproutsChainConfig,
+		Timestamp:  1514520146,
+		ExtraData:  []byte{},
+		GasLimit:   4700000,
+		Difficulty: big.NewInt(1),
+		Alloc:      decodePrealloc(sproutsTestAllocData),
+	}
+}
+
 // DeveloperGenesisBlock returns the 'geth --dev' genesis block. Note, this must
 // be seeded with the
 func DeveloperGenesisBlock(period uint64, faucet common.Address) *Genesis {
