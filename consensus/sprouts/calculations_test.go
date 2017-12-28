@@ -42,10 +42,11 @@ var (
 	rewardsKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 	rewardsAddr   = crypto.PubkeyToAddress(rewardsKey.PublicKey)
 	sproutsConfig = params.SproutsConfig{
-		RewardsAccount:  rewardsAddr,
-		CoinAgeLifetime: big.NewInt(60 * 60 * 24 * 30 * 12),
-		CoinAgePeriod:   big.NewInt(60 * 60 * 24 * 3),
-		BlockPeriod:     10,
+		RewardsAccount:      rewardsAddr,
+		CoinAgeLifetime:     big.NewInt(60 * 60 * 24 * 30 * 12),
+		CoinAgePeriod:       big.NewInt(60 * 60 * 24 * 3),
+		CoinAgeFermentation: big.NewInt(60 * 60 * 24 * 30),
+		BlockPeriod:         10,
 	}
 
 	testKey, _ = crypto.HexToECDSA("49a7b37aa6f6645917e7b807e9d1c00d4fa71f18343b0d4122a4d2df64dd6fee")

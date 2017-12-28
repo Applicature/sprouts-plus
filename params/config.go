@@ -89,12 +89,13 @@ var (
 		ByzantiumBlock: big.NewInt(0),
 
 		Sprouts: &SproutsConfig{
-		// RewardsAccount: common.Address{},
-		// DistributionAccount: common.Address{},
-		//
-		// CoinAgeLifetime: big.NewInt(0),
-		// CoinAgePeriod: big.NewInt(0),
-		// BlockPeriod: 10,
+			RewardsAccount:      common.Address{},
+			DistributionAccount: common.Address{},
+
+			CoinAgeLifetime:     big.NewInt(60 * 60 * 24 * 30 * 12),
+			CoinAgePeriod:       big.NewInt(60 * 60 * 24 * 3),
+			CoinAgeFermentation: big.NewInt(60 * 60 * 24 * 30),
+			BlockPeriod:         10,
 		},
 	}
 
@@ -170,9 +171,10 @@ type SproutsConfig struct {
 	RewardsAccount      common.Address `json:"rewardsAcc"`
 	DistributionAccount common.Address `json:"distributionAcc"`
 
-	CoinAgeLifetime *big.Int `json:"coinageLifetime"` // how far down the chain to accumulate transaction values
-	CoinAgePeriod   *big.Int `json:"coinagePeriod"`   // how often to recalculate coin age in db; 3 days (equals to staking time)
-	BlockPeriod     uint64   `json:"blockPeriod"`     // min period between blocks
+	CoinAgeLifetime     *big.Int `json:"coinageLifetime"`     // how far down the chain to accumulate transaction values
+	CoinAgePeriod       *big.Int `json:"coinagePeriod"`       // how often to recalculate coin age in db; 3 days (equals to staking time)
+	CoinAgeFermentation *big.Int `json:"coinageFermentation"` // how long coins must be held to result in positive coin age
+	BlockPeriod         uint64   `json:"blockPeriod"`         // min period between blocks
 }
 
 func (c *SproutsConfig) String() string {

@@ -69,18 +69,34 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 	// coin-seconds:
 	transactions := block.Transactions()
 	for _, transaction := range transactions {
-		if fromAddress, fromErr := From(transaction); fromErr == nil && engine.isItMe(fromAddress) {
-			// coin age of transaction
-			caFromTx.Set(transaction.Value())
-			caFromTx.Mul(caFromTx, timeDiff)
-			caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
+		if fromAddress, fromErr := From(transaction); fromErr == nil {
+			// we count regular transaction to us only when they are old enough
+			if engine.isItMe(fromAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
+				// coin age of transaction
+				caFromTx.Set(transaction.Value())
+				caFromTx.Mul(caFromTx, timeDiff)
+				caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
 
-			// this transaction should be taken from block age
-			bAge.Sub(bAge, caFromTx)
-			continue
+				// this transaction should be taken from block age
+				bAge.Sub(bAge, caFromTx)
+				continue
+			}
+
+			// transactions from DistributionAccount should always be counted
+			if equalAddresses(fromAddress, engine.config.DistributionAccount) {
+				// coin age of transaction
+				caFromTx.Set(transaction.Value())
+				caFromTx.Mul(caFromTx, timeDiff)
+				caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
+
+				// this transaction should be added to block age
+				bAge.Add(bAge, caFromTx)
+				continue
+			}
 		}
 		toAddress := transaction.To()
-		if toAddress != nil && engine.isItMe(*toAddress) {
+
+		if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
 			caFromTx.Set(transaction.Value())
 			caFromTx.Mul(caFromTx, timeDiff)
 			caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
@@ -108,8 +124,8 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 
 	now := time.Now()
 
-	accumulateCoinAge := func(fromTime, toTime, number uint64) {
-		threeDaysAgo := uint64(now.AddDate(0, 0, 3).Unix())
+	accumulateCoinAge := func(fromTime, number uint64) {
+		threeDaysAgo := uint64(now.AddDate(0, 0, -3).Unix())
 
 		for {
 			if number == 0 {
@@ -128,14 +144,14 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 				}
 			}
 
-			if t > fromTime && t < toTime {
-				diffTime := toTime - t
-				ba := engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime))
-				lastCoinAge.Age += ba.Uint64()
-			}
 			if t < fromTime {
 				return
 			}
+
+			diffTime := uint64(now.Unix()) - t
+			ba := engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime))
+			lastCoinAge.Age += ba.Uint64()
+
 			number -= 1
 		}
 	}
@@ -144,7 +160,6 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	if (err != nil && err.Error() != "not found") || uint64(now.Unix())-lastCoinAge.Time > engine.config.CoinAgePeriod.Uint64() {
 		// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
 		accumulateCoinAge(engine.config.CoinAgeLifetime.Uint64(),
-			uint64(now.AddDate(0, 0, -30).Unix()),
 			chain.CurrentHeader().Number.Uint64()-1)
 
 		lastCoinAge.Time = uint64(time.Now().Unix())
@@ -163,9 +178,12 @@ func extractKernel(header *types.Header) []byte {
 	return header.Extra[len(header.Extra)-extraCoinAge-extraKernel:]
 }
 
-// TODO is there an shortcut for this in Ethereum?
 func (engine *PoS) isItMe(address common.Address) bool {
-	return bytes.Equal(address[:], engine.signer[:])
+	return equalAddresses(address, engine.signer)
+}
+
+func equalAddresses(a, b common.Address) bool {
+	return bytes.Equal(a.Bytes(), b.Bytes())
 }
 
 func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {

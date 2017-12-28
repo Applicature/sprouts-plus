@@ -105,9 +105,10 @@ func (w *wizard) makeGenesis() {
 			RewardsAccount:      common.Address{},
 			DistributionAccount: common.Address{},
 
-			CoinAgeLifetime: big.NewInt(60 * 60 * 24 * 30 * 12),
-			CoinAgePeriod:   big.NewInt(60 * 60 * 24 * 3),
-			BlockPeriod:     10,
+			CoinAgeLifetime:     big.NewInt(60 * 60 * 24 * 30 * 12),
+			CoinAgePeriod:       big.NewInt(60 * 60 * 24 * 3),
+			CoinAgeFermentation: big.NewInt(60 * 60 * 24 * 30),
+			BlockPeriod:         10,
 		}
 
 		fmt.Println()
