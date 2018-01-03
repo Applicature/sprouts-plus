@@ -111,6 +111,12 @@ func (w *wizard) makeGenesis() {
 			BlockPeriod:         10,
 		}
 
+		// PoS doesn't participate in any forks at the moment
+		genesis.Config.ByzantiumBlock = big.NewInt(0)
+		genesis.Config.EIP158Block = big.NewInt(0)
+		genesis.Config.EIP155Block = big.NewInt(0)
+		genesis.Config.EIP150Block = big.NewInt(0)
+
 		fmt.Println()
 		fmt.Println("Who is a rewards account?")
 

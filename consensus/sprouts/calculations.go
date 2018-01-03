@@ -29,7 +29,7 @@ var (
 	big100 = big.NewInt(100)
 )
 
-const preAllocCoefficient = 10000
+const preAllocCoefficient = 10000000
 
 var stakeMaxAge uint64 // stake age of full weight
 
@@ -41,7 +41,7 @@ func init() {
 func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
 	// return 100000 for the first three blocks
 	if number < 3 {
-		return big.NewInt(100000)
+		return big.NewInt(10)
 	}
 
 	diff := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Difficulty)
@@ -52,7 +52,7 @@ func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
 
 	prevBlockTime := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Time)
 	timeDelta := prevBlockTime.Sub(prevBlockTime, chain.GetHeaderByNumber(number-2).Time).Uint64()
-	diff.Mul(diff, new(big.Int).SetUint64(((nInt-1)*targetSpacing+2*timeDelta)*1000000))
+	diff.Mul(diff, new(big.Int).SetUint64(((nInt-1)*targetSpacing + 2*timeDelta)))
 	diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
 
 	return diff
@@ -125,7 +125,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 // only called by the sealer
 func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	lastCoinAge, err := loadCoinAge(engine.db, engine.signer)
-	if err != nil && err.Error() != "not found" {
+	if err != nil && err != ldberrors.ErrNotFound {
 		return &coinAge{0, 0}
 	}
 	if err == ldberrors.ErrNotFound || lastCoinAge == nil {
@@ -139,6 +139,15 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 
 		for {
 			if number == 0 {
+				// add premined value
+				header := chain.GetHeaderByNumber(number)
+				stateDB, err := state.New(header.Root, state.NewDatabase(engine.db))
+				if err == nil {
+					ba := big.NewInt(0).Set(stateDB.GetBalance(engine.signer))
+					ba.Mul(ba, big.NewInt(preAllocCoefficient))
+					ba.Div(ba, new(big.Int).SetUint64(coinValue/(24*60*60)))
+					lastCoinAge.Age += ba.Uint64()
+				}
 				return
 			}
 
@@ -166,29 +175,30 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 		}
 	}
 
-	// In case coin age is not saved in db or it is time to recalculate coin age
-	if (err != nil && err.Error() != "not found") || uint64(now.Unix())-lastCoinAge.Time > engine.config.CoinAgePeriod.Uint64() {
-		// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
-		accumulateCoinAge(engine.config.CoinAgeLifetime.Uint64(),
-			chain.CurrentHeader().Number.Uint64()-1)
-
-		lastCoinAge.Age += engine.getPreAllocCoinAge()
-
-		lastCoinAge.Time = uint64(time.Now().Unix())
-		lastCoinAge.saveCoinAge(engine.db, engine.signer)
+	// if (err != nil && err.Error() != "not found") || uint64(now.Unix())-lastCoinAge.Time > engine.config.CoinAgePeriod.Uint64() {
+	// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
+	currentN := chain.CurrentHeader().Number.Uint64()
+	if currentN > 0 {
+		currentN--
 	}
+	accumulateCoinAge(uint64(now.Unix())-engine.config.CoinAgeLifetime.Uint64(),
+		currentN)
+	// lastCoinAge.Age += engine.getPremineCoinAge()
+	lastCoinAge.Time = uint64(time.Now().Unix())
+	lastCoinAge.saveCoinAge(engine.db, engine.signer)
+	// }
 
 	return lastCoinAge
 }
 
-func (engine *PoS) getPreAllocCoinAge() uint64 {
+func (engine *PoS) getPremineCoinAge() uint64 {
 	genesis := engine.getGenesis()
 	// count pre-allocated funds only for half a year
 	if genesis.Timestamp < uint64(time.Now().AddDate(0, -6, 0).Unix()) {
 		return 0
 	}
 	for address, genesisAccount := range genesis.Alloc {
-		if engine.isItMe(address) {
+		if len(address) > 0 && engine.isItMe(address) {
 			return genesisAccount.Balance.Uint64() * preAllocCoefficient
 		}
 	}

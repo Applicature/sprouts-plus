@@ -254,7 +254,7 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	}
 	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel-extraCoinAge:], signature)
 
-	return block, nil
+	return block.WithSeal(header), nil
 }
 
 // APIs returns the RPC APIs this consensus engine provides.
@@ -320,5 +320,5 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 
 func (engine *PoS) getGenesis() *core.Genesis {
 	// TODO return main net as well
-	return core.DefaultTestnetGenesisBlock()
+	return core.DefaultSproutsTestnetGenesisBlock()
 }
