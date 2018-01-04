@@ -29,9 +29,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/event"
+	"github.com/applicature/sprouts.next/log"
 )
 
 const (

@@ -23,17 +23,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/light"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/eth/downloader"
+	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts.next/light"
+	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts.next/trie"
 )
 
 func expectResponse(r p2p.MsgReader, msgcode, reqID, bv uint64, data interface{}) error {

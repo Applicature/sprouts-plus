@@ -20,11 +20,11 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts.next/consensus"
+	"github.com/applicature/sprouts.next/core/state"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/params"
 )
 
 // BlockValidator is responsible for validating block headers, uncles and

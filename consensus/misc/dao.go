@@ -21,9 +21,9 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts.next/core/state"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/params"
 )
 
 var (

@@ -29,9 +29,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/log"
 	"golang.org/x/crypto/ssh/terminal"
 )
 

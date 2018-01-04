@@ -24,12 +24,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/common/hexutil"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts.next/rpc"
 )
 
 const (

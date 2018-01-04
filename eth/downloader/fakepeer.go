@@ -19,10 +19,10 @@ package downloader
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/ethdb"
 )
 
 // FakePeer is a mock downloader peer that operates on a local database instance

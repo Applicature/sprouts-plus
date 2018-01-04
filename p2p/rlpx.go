@@ -35,12 +35,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/ethereum/go-ethereum/crypto/secp256k1"
-	"github.com/ethereum/go-ethereum/crypto/sha3"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/crypto/ecies"
+	"github.com/applicature/sprouts.next/crypto/secp256k1"
+	"github.com/applicature/sprouts.next/crypto/sha3"
+	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts.next/rlp"
 	"github.com/golang/snappy"
 )
 

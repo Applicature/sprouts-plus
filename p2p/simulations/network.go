@@ -23,11 +23,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/simulations/adapters"
+	"github.com/applicature/sprouts.next/event"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts.next/p2p/simulations/adapters"
 )
 
 // NetworkConfig defines configuration options for starting a Network

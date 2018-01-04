@@ -27,12 +27,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/applicature/sprouts.next/event"
+	"github.com/applicature/sprouts.next/node"
+	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts.next/p2p/simulations/adapters"
+	"github.com/applicature/sprouts.next/rpc"
 )
 
 // testService implements the node.Service interface and provides protocols

@@ -26,9 +26,9 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/swarm/storage"
 )
 
 const maxParallelFiles = 5

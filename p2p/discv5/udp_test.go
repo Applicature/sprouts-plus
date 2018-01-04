@@ -27,9 +27,9 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/rlp"
 )
 
 func init() {

@@ -22,8 +22,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	swarm "github.com/ethereum/go-ethereum/swarm/api/client"
+	"github.com/applicature/sprouts.next/cmd/utils"
+	swarm "github.com/applicature/sprouts.next/swarm/api/client"
 	"gopkg.in/urfave/cli.v1"
 )
 

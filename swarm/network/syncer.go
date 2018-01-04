@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/swarm/storage"
 )
 
 // syncer parameters (global, not peer specific) default values

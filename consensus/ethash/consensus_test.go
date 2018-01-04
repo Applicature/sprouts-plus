@@ -23,9 +23,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/params"
 )
 
 type diffTest struct {

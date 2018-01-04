@@ -21,11 +21,11 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/bn256"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/crypto/bn256"
+	"github.com/applicature/sprouts.next/params"
 	"golang.org/x/crypto/ripemd160"
 )
 

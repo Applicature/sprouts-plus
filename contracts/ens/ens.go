@@ -22,11 +22,11 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/contracts/ens/contract"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/applicature/sprouts.next/accounts/abi/bind"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/contracts/ens/contract"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/crypto"
 )
 
 var (

@@ -25,7 +25,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts.next/log"
 )
 
 // makeWizard creates and returns a new puppeth wizard.

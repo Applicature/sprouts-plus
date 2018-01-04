@@ -58,7 +58,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/internal/build"
+	"github.com/applicature/sprouts.next/internal/build"
 )
 
 var (

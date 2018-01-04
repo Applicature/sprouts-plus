@@ -30,9 +30,9 @@ import (
 
 	check "gopkg.in/check.v1"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/ethdb"
 )
 
 // Tests that updating a state trie does not leak any database writes prior to

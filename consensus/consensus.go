@@ -18,11 +18,11 @@
 package consensus
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core/state"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/rpc"
 )
 
 // ChainReader defines a small collection of methods needed to access the local

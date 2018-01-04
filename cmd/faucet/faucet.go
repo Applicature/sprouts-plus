@@ -41,23 +41,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/ethstats"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/discv5"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts.next/accounts"
+	"github.com/applicature/sprouts.next/accounts/keystore"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/eth"
+	"github.com/applicature/sprouts.next/eth/downloader"
+	"github.com/applicature/sprouts.next/ethclient"
+	"github.com/applicature/sprouts.next/ethstats"
+	"github.com/applicature/sprouts.next/les"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/node"
+	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts.next/p2p/discv5"
+	"github.com/applicature/sprouts.next/p2p/nat"
+	"github.com/applicature/sprouts.next/params"
 	"golang.org/x/net/websocket"
 )
 
@@ -443,7 +443,7 @@ func (f *faucet) apiHandler(conn *websocket.Conn) {
 		case strings.HasPrefix(msg.URL, "https://www.facebook.com/"):
 			username, avatar, address, err = authFacebook(msg.URL)
 		default:
-			err = errors.New("Something funky happened, please open an issue at https://github.com/ethereum/go-ethereum/issues")
+			err = errors.New("Something funky happened, please open an issue at https://github.com/applicature/sprouts.next/issues")
 		}
 		if err != nil {
 			if err = sendError(conn, err); err != nil {

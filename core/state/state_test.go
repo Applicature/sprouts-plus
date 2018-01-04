@@ -21,9 +21,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/ethdb"
 	checker "gopkg.in/check.v1"
 )
 

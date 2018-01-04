@@ -21,9 +21,9 @@ import (
 	"io"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts.next/core/vm"
 )
 
 type JSONLogger struct {

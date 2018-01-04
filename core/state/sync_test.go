@@ -21,10 +21,10 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts.next/trie"
 )
 
 // testAccount is the data associated with an account used by the state tests.

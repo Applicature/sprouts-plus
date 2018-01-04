@@ -27,12 +27,12 @@ import (
 	"time"
 
 	"github.com/docker/docker/pkg/reexec"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/internal/cmdtest"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/ethereum/go-ethereum/swarm"
+	"github.com/applicature/sprouts.next/accounts/keystore"
+	"github.com/applicature/sprouts.next/internal/cmdtest"
+	"github.com/applicature/sprouts.next/node"
+	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts.next/swarm"
 )
 
 func init() {

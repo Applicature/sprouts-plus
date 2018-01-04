@@ -19,7 +19,7 @@ package ethapi
 import (
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/applicature/sprouts.next/common"
 )
 
 type AddrLocker struct {

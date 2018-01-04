@@ -19,10 +19,10 @@ package les
 import (
 	"context"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/light"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts.next/light"
+	"github.com/applicature/sprouts.next/log"
 )
 
 // LesOdr implements light.OdrBackend

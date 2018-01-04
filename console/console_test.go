@@ -26,11 +26,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/internal/jsre"
-	"github.com/ethereum/go-ethereum/node"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/eth"
+	"github.com/applicature/sprouts.next/internal/jsre"
+	"github.com/applicature/sprouts.next/node"
 )
 
 const (

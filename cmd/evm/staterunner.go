@@ -23,10 +23,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/tests"
+	"github.com/applicature/sprouts.next/core/state"
+	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/tests"
 
 	cli "gopkg.in/urfave/cli.v1"
 )

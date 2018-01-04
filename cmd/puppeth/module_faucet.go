@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts.next/log"
 )
 
 // faucetDockerfile is the Dockerfile required to build an faucet container to
@@ -38,9 +38,9 @@ ENV GOPATH /go
 
 RUN \
   apk add --update git go make gcc musl-dev ca-certificates linux-headers                             && \
-	mkdir -p $GOPATH/src/github.com/ethereum                                                            && \
-	(cd $GOPATH/src/github.com/ethereum && git clone --depth=1 https://github.com/ethereum/go-ethereum) && \
-  go build -v github.com/ethereum/go-ethereum/cmd/faucet                                              && \
+	mkdir -p $GOPATH/src/github.com/applicature                                                            && \
+	(cd $GOPATH/src/github.com/applicature && git clone --depth=1 https://github.com/applicature/sprouts.next) && \
+  go build -v github.com/applicature/sprouts.next/cmd/faucet                                              && \
   apk del git go make gcc musl-dev linux-headers                                                      && \
   rm -rf $GOPATH && rm -rf /var/cache/apk/*
 

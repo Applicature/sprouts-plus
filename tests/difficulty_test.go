@@ -22,8 +22,8 @@ import (
 
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/params"
 )
 
 var (

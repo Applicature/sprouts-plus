@@ -26,11 +26,11 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/bitutil"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/sha3"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/common/bitutil"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/crypto/sha3"
+	"github.com/applicature/sprouts.next/log"
 )
 
 const (

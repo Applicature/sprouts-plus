@@ -25,12 +25,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/common/hexutil"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts.next/event"
+	"github.com/applicature/sprouts.next/rpc"
 )
 
 var (

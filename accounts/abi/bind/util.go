@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/log"
 )
 
 // WaitMined waits for tx to be mined on the blockchain.

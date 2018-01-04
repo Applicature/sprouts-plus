@@ -23,13 +23,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/discv5"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/p2p/netutil"
+	"github.com/applicature/sprouts.next/cmd/utils"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts.next/p2p/discv5"
+	"github.com/applicature/sprouts.next/p2p/nat"
+	"github.com/applicature/sprouts.next/p2p/netutil"
 )
 
 func main() {

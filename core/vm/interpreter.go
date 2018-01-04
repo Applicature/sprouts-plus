@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/params"
 )
 
 // Config are the configuration options for the Interpreter

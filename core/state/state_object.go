@@ -22,10 +22,10 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts.next/trie"
 )
 
 var emptyCodeHash = crypto.Keccak256(nil)

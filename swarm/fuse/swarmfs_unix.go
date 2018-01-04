@@ -29,9 +29,9 @@ import (
 
 	"bazil.org/fuse"
 	"bazil.org/fuse/fs"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/swarm/api"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/swarm/api"
 )
 
 var (

@@ -23,10 +23,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/applicature/sprouts.next/accounts"
+	"github.com/applicature/sprouts.next/accounts/keystore"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/crypto"
 )
 
 const (

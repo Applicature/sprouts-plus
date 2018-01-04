@@ -21,11 +21,11 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/rlp"
 )
 
 var deduplicateData = []byte("dbUpgrade_20170714deduplicateData")

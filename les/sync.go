@@ -20,9 +20,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/light"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/eth/downloader"
+	"github.com/applicature/sprouts.next/light"
 )
 
 const (

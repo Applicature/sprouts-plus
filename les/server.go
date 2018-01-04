@@ -24,17 +24,17 @@ import (
 	"math"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/les/flowcontrol"
-	"github.com/ethereum/go-ethereum/light"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discv5"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts.next/core"
+	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts.next/eth"
+	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts.next/les/flowcontrol"
+	"github.com/applicature/sprouts.next/light"
+	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts.next/p2p/discv5"
+	"github.com/applicature/sprouts.next/rlp"
 )
 
 type LesServer struct {

@@ -21,11 +21,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/ethereum/go-ethereum/contracts/chequebook"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/swarm/network/kademlia"
-	"github.com/ethereum/go-ethereum/swarm/services/swap"
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	"github.com/applicature/sprouts.next/contracts/chequebook"
+	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts.next/swarm/network/kademlia"
+	"github.com/applicature/sprouts.next/swarm/services/swap"
+	"github.com/applicature/sprouts.next/swarm/storage"
 )
 
 /*

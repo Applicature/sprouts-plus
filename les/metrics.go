@@ -17,8 +17,8 @@
 package les
 
 import (
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/p2p"
+	"github.com/applicature/sprouts.next/metrics"
+	"github.com/applicature/sprouts.next/p2p"
 )
 
 var (
