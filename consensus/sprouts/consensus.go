@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/params"
 	"github.com/applicature/sprouts.next/accounts"
 	"github.com/applicature/sprouts.next/common"
 	"github.com/applicature/sprouts.next/consensus"
@@ -17,6 +16,7 @@ import (
 	"github.com/applicature/sprouts.next/core/types"
 	"github.com/applicature/sprouts.next/crypto/sha3"
 	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts.next/params"
 	"github.com/applicature/sprouts.next/rpc"
 	lru "github.com/hashicorp/golang-lru"
 )
@@ -34,9 +34,9 @@ var (
 	// Header's extra data field is supposed to be structured in the following way:
 	// 32 bytes reserved + 65 for signature + 64 for kernel + 32 for stake
 	extraDefault = 32      // reserved bytes
-	extraSeal    = 65      // Fixed number of extra-data bytes reserved for signer seal
 	extraKernel  = 32 + 32 // Fixed number of extra-data bytes reserved for kernel, hash and timestamp
 	extraCoinAge = 32      // Fixed number of extra-data bytes reserved for the stake
+	extraSeal    = 65      // Fixed number of extra-data bytes reserved for signer seal
 )
 
 // errors
@@ -62,6 +62,8 @@ var (
 	errWaitTransactions = errors.New("waiting for transactions")
 
 	errDuplicateStake = errors.New("received duplicate stake")
+
+	errInvalidStake = errors.New("stake has invalid encoding")
 )
 
 type PoS struct {
@@ -77,8 +79,9 @@ type PoS struct {
 // signers set to the ones provided by the user.
 func New(config *params.SproutsConfig, db ethdb.Database) *PoS {
 	signatures, _ := lru.NewARC(inMemorySignatures)
+	conf := *config
 	return &PoS{
-		config:        config,
+		config:        &conf,
 		db:            db,
 		signatures:    signatures,
 		stakeModifier: new(big.Int).SetInt64(0),
@@ -146,6 +149,11 @@ func (engine *PoS) VerifyUncles(chain consensus.ChainReader, block *types.Block)
 // VerifySeal checks whether the crypto seal on a header is valid according to
 // the consensus rules of the given engine.
 func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header) error {
+	// Verifying the genesis block is not supported
+	number := header.Number.Uint64()
+	if number == 0 {
+		return errUnknownBlock
+	}
 	stake, err := extractStake(header)
 	if err != nil {
 		return err
@@ -163,14 +171,13 @@ func (engine *PoS) VerifySeal(chain consensus.ChainReader, header *types.Header)
 	// update stored stakes
 	engine.addStake(header, stake)
 
-	// check kernel itself
-	return engine.checkKernelHash(chain.GetHeaderByNumber(header.Number.Uint64()-1), header, stake)
+	return nil
 }
 
 // Prepare initializes the consensus fields of a block header according to the
 // rules of a particular engine. The changes are executed inline.
 func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) error {
-	// header.Coinbase = engine.signer
+	header.Coinbase.Set(engine.signer)
 	header.Nonce = types.BlockNonce{}
 
 	header.Difficulty = computeDifficulty(chain, header.Number.Uint64())
@@ -179,13 +186,28 @@ func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) er
 		header.Time = big.NewInt(time.Now().Unix())
 	}
 
+	header.MixDigest = common.Hash{}
+
 	if len(header.Extra) < extraDefault+extraSeal+extraKernel+extraCoinAge {
 		header.Extra = append(header.Extra, bytes.Repeat([]byte{0x00}, extraDefault+extraSeal+extraKernel+extraCoinAge-len(header.Extra))...)
 	}
 	header.Extra = header.Extra[:extraDefault+extraSeal+extraKernel+extraCoinAge]
 
+	number := header.Number.Uint64()
+
+	// Ensure the timestamp has the correct delay
+	parent := chain.GetHeader(header.ParentHash, number-1)
+	if parent == nil {
+		return consensus.ErrUnknownAncestor
+	}
+	header.Time = new(big.Int).Add(parent.Time, new(big.Int).SetUint64(engine.config.BlockPeriod))
+	if header.Time.Int64() < time.Now().Unix() {
+		header.Time = big.NewInt(time.Now().Unix())
+	}
+
 	coinAge := engine.coinAge(chain)
-	copy(header.Extra[len(header.Extra)-extraCoinAge:], coinAge.bytes())
+	copy(header.Extra[len(header.Extra)-extraSeal-extraCoinAge:], coinAge.bytes())
+
 	return nil
 }
 
@@ -198,10 +220,11 @@ func (engine *PoS) Finalize(chain consensus.ChainReader, header *types.Header, s
 	// no uncles
 	header.UncleHash = types.CalcUncleHash(nil)
 
-	accumulateRewards(engine.config, header, state, txs, receipts)
-	reduceCoinAge(state, engine.db, header, nil)
+	accumulateRewards(engine.config, header, state)
 
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
+
+	reduceCoinAge(state, engine.db, header, nil)
 
 	return types.NewBlock(header, txs, nil, receipts), nil
 }
@@ -222,9 +245,10 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 		return nil, errWaitTransactions
 	}
 
-	// Coin age at this point
-	ca := engine.coinAge(chain)
-	age := ca.Age
+	// As Seal method is alwayd called after Prepare, extractStake here
+	// can be guaranteed to work here
+	stake, _ := extractStake(header)
+	age := stake.Age
 	// block coin age minimum 1 coin-day
 	if age == 0 {
 		age = 1
@@ -241,8 +265,8 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	hashedTimestamp := make([]byte, 32)
 	h.Read(hashedTimestamp)
 
-	copy(header.Extra[len(header.Extra)-extraCoinAge-extraKernel:], hash.Bytes())
-	copy(header.Extra[len(header.Extra)-extraCoinAge-extraKernel/2:], hashedTimestamp)
+	copy(header.Extra[len(header.Extra)-extraSeal-extraCoinAge-extraKernel:len(header.Extra)-extraSeal-extraCoinAge-extraKernel/2], hash.Bytes())
+	copy(header.Extra[len(header.Extra)-extraSeal-extraCoinAge-extraKernel/2:len(header.Extra)-extraSeal-extraCoinAge], hashedTimestamp)
 
 	engine.lock.RLock()
 	signer, signerFn := engine.signer, engine.signerFn
@@ -252,8 +276,7 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	if err != nil {
 		return nil, err
 	}
-	copy(header.Extra[len(header.Extra)-extraSeal-extraKernel-extraCoinAge:], signature)
-
+	copy(header.Extra[len(header.Extra)-extraSeal:], signature)
 	return block.WithSeal(header), nil
 }
 
@@ -289,6 +312,10 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		return errInvalidSignature
 	}
 
+	if err := misc.VerifyForkHashes(chain.Config(), header, false); err != nil {
+		return err
+	}
+
 	// check parents
 	parent := chain.GetHeader(header.ParentHash, number-1)
 	if parent == nil || parent.Number.Uint64() != number-1 || parent.Hash() != header.ParentHash {
@@ -305,10 +332,6 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 	}
 
 	if err := engine.checkKernelHash(chain.GetHeaderByNumber(number-1), header, stake); err != nil {
-		return err
-	}
-
-	if err := misc.VerifyForkHashes(chain.Config(), header, false); err != nil {
 		return err
 	}
 

@@ -136,8 +136,6 @@ func (w *wizard) makeGenesis() {
 		}
 
 		genesis.ExtraData = make([]byte, 32+65+64+32)
-		// seal genesis with rewards account
-		copy(genesis.ExtraData[32:], genesis.Config.Sprouts.RewardsAccount[:])
 	default:
 		log.Crit("Invalid consensus engine choice", "choice", choice)
 	}

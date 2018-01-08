@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/applicature/sprouts.next/params"
 	"github.com/applicature/sprouts.next/common"
 	"github.com/applicature/sprouts.next/consensus"
 	"github.com/applicature/sprouts.next/core/state"
@@ -17,9 +16,9 @@ import (
 	"github.com/applicature/sprouts.next/crypto"
 	"github.com/applicature/sprouts.next/crypto/sha3"
 	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts.next/params"
 	"github.com/applicature/sprouts.next/rlp"
 	lru "github.com/hashicorp/golang-lru"
-	ldberrors "github.com/syndtr/goleveldb/leveldb/errors"
 )
 
 var (
@@ -29,9 +28,10 @@ var (
 	big100 = big.NewInt(100)
 )
 
-const preAllocCoefficient = 10000000
-
-var stakeMaxAge uint64 // stake age of full weight
+var (
+	stakeMaxAge         uint64 // stake age of full weight
+	preAllocCoefficient = new(big.Int).Lsh(big.NewInt(1), 256-200)
+)
 
 func init() {
 	d, _ := time.ParseDuration("2160h") // 90 days
@@ -124,19 +124,12 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 
 // only called by the sealer
 func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
-	lastCoinAge, err := loadCoinAge(engine.db, engine.signer)
-	if err != nil && err != ldberrors.ErrNotFound {
-		return &coinAge{0, 0}
-	}
-	if err == ldberrors.ErrNotFound || lastCoinAge == nil {
-		lastCoinAge = &coinAge{0, 0}
-	}
+	lastCoinAge := &coinAge{0, 0}
 
 	now := time.Now()
 
 	accumulateCoinAge := func(fromTime, number uint64) {
 		threeDaysAgo := uint64(now.AddDate(0, 0, -3).Unix())
-
 		for {
 			if number == 0 {
 				// add premined value
@@ -144,7 +137,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 				stateDB, err := state.New(header.Root, state.NewDatabase(engine.db))
 				if err == nil {
 					ba := big.NewInt(0).Set(stateDB.GetBalance(engine.signer))
-					ba.Mul(ba, big.NewInt(preAllocCoefficient))
+					ba.Mul(ba, preAllocCoefficient)
 					ba.Div(ba, new(big.Int).SetUint64(coinValue/(24*60*60)))
 					lastCoinAge.Age += ba.Uint64()
 				}
@@ -171,47 +164,43 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 			ba := engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime))
 			lastCoinAge.Age += ba.Uint64()
 
-			number -= 1
+			number--
 		}
 	}
 
-	// if (err != nil && err.Error() != "not found") || uint64(now.Unix())-lastCoinAge.Time > engine.config.CoinAgePeriod.Uint64() {
-	// Let only transactions within a year and no younger than a month ago be valid for coin age computations.
 	currentN := chain.CurrentHeader().Number.Uint64()
 	if currentN > 0 {
 		currentN--
 	}
-	accumulateCoinAge(uint64(now.Unix())-engine.config.CoinAgeLifetime.Uint64(),
-		currentN)
-	// lastCoinAge.Age += engine.getPremineCoinAge()
+	accumulateCoinAge(uint64(now.Unix())-engine.config.CoinAgeLifetime.Uint64(), currentN)
 	lastCoinAge.Time = uint64(time.Now().Unix())
 	lastCoinAge.saveCoinAge(engine.db, engine.signer)
-	// }
 
 	return lastCoinAge
 }
 
-func (engine *PoS) getPremineCoinAge() uint64 {
+// not used at the moment
+func (engine *PoS) getPremineCoinAge() *big.Int {
 	genesis := engine.getGenesis()
 	// count pre-allocated funds only for half a year
 	if genesis.Timestamp < uint64(time.Now().AddDate(0, -6, 0).Unix()) {
-		return 0
+		return big0
 	}
 	for address, genesisAccount := range genesis.Alloc {
 		if len(address) > 0 && engine.isItMe(address) {
-			return genesisAccount.Balance.Uint64() * preAllocCoefficient
+			return genesisAccount.Balance.Mul(genesisAccount.Balance, preAllocCoefficient)
 		}
 	}
-	return 0
+	return big0
 }
 
 func extractStake(header *types.Header) (*coinAge, error) {
-	stakeBytes := header.Extra[len(header.Extra)-extraCoinAge:]
+	stakeBytes := header.Extra[len(header.Extra)-extraSeal-extraCoinAge : len(header.Extra)-extraSeal]
 	return parseStake(stakeBytes)
 }
 
 func extractKernel(header *types.Header) []byte {
-	return header.Extra[len(header.Extra)-extraCoinAge-extraKernel:]
+	return header.Extra[len(header.Extra)-extraSeal-extraCoinAge-extraKernel : len(header.Extra)-extraSeal-extraCoinAge]
 }
 
 func (engine *PoS) isItMe(address common.Address) bool {
@@ -231,11 +220,10 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 		return
 	}
 
-	log.New("consensus", nil)
-	till := uint64(60)
-
-	for t := uint64(0); t < till; t++ {
-		timeWeight := header.Time.Uint64() - t - prevBlock.Time.Uint64()
+	// increase gradually target until kernel is found
+	for t := 60; t >= 0; t-- {
+		step := uint64(t)
+		timeWeight := header.Time.Uint64() - step - prevBlock.Time.Uint64()
 		if timeWeight > stakeMaxAge {
 			timeWeight = stakeMaxAge
 		}
@@ -249,20 +237,20 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 		rawHash := append(stakeModifier.Bytes(), prevBlock.Time.Bytes()...)
 		rawHash = append(rawHash, []byte(strconv.FormatUint(uint64(binary.Size(*header)), 10))...)
 		// rawHash = append(rawHash, []byte(strconv.FormatUint(prevBlock.Time.Uint64(), 10))...)
-		rawHash = append(rawHash, []byte(strconv.FormatUint(header.Time.Uint64()-t, 10))...)
+		rawHash = append(rawHash, []byte(strconv.FormatUint(header.Time.Uint64()-step, 10))...)
 		h1 := sha256.New()
 		h1.Write(rawHash)
 		h2 := sha256.New()
 		h2.Write(h1.Sum(nil))
 
 		computedHash := new(big.Int).SetUint64(uint64(binary.LittleEndian.Uint32(h2.Sum(nil))))
-		log.Warn("Attempt to find kernel", "hash", computedHash, "target", target)
+		log.Info("Attempt to find kernel", "hash", computedHash, "target", target, "diff", header.Difficulty, "stake", stake, "timeWeight", timeWeight)
 
 		if computedHash.Cmp(target) == -1 {
 			// kernel found
 			err = nil
 			hash.SetBytes(h2.Sum(nil))
-			timestamp.SetUint64(t)
+			timestamp.SetUint64(step)
 			return
 		}
 	}
@@ -310,8 +298,7 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 // 0.84 = netto reward
 // 0.08 = charity (to a Sprouts+ address C)
 // 0.08 = r&d (to a Sprouts+ address D)
-func accumulateRewards(config *params.SproutsConfig, header *types.Header, state *state.StateDB, txs []*types.Transaction,
-	receipts []*types.Receipt) {
+func accumulateRewards(config *params.SproutsConfig, header *types.Header, state *state.StateDB) {
 	// first estimate complete reward
 	reward := new(big.Int).Set(estimateBlockReward(header))
 
@@ -332,10 +319,15 @@ func accumulateRewards(config *params.SproutsConfig, header *types.Header, state
 // total reward for the block
 // 8% annual reward split in 365 daily rewards
 func estimateBlockReward(header *types.Header) *big.Int {
-	// TODO need to check error here?
-	stake, _ := extractStake(header)
-	rewardCoinYear := uint64(centValue * 8)
-	return new(big.Int).SetUint64(stake.Age * 33 / (365*33 + 8) * rewardCoinYear)
+	return big.NewInt(100)
+	// TODO correct formula
+	// stake, err := extractStake(header)
+	// if err != nil {
+	// 	log.Warn(err.Error())
+	// 	return nil
+	// }
+	// rewardCoinYear := uint64(centValue * 8)
+	// return new(big.Int).SetUint64(stake.Age * 33 / (365*33 + 8) * rewardCoinYear)
 }
 
 // borrowing two PoA (clique) methods for signing blocks:
@@ -379,10 +371,10 @@ func ecrecover(header *types.Header, sigcache *lru.ARCCache) (common.Address, er
 		return address.(common.Address), nil
 	}
 	// Retrieve the signature from the header extra-data
-	if len(header.Extra) < extraSeal {
+	if len(header.Extra) < extraDefault+extraKernel+extraCoinAge+extraSeal {
 		return common.Address{}, errMissingSignature
 	}
-	signature := header.Extra[len(header.Extra)-extraSeal-extraKernel-extraCoinAge:]
+	signature := header.Extra[len(header.Extra)-extraSeal:]
 
 	// Recover the public key and the Ethereum address
 	pubkey, err := crypto.Ecrecover(sigHash(header).Bytes(), signature)

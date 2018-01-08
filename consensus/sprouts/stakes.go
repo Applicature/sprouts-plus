@@ -18,31 +18,36 @@ type coinAge struct {
 }
 
 func (c *coinAge) bytes() []byte {
-	b := new(big.Int).SetUint64(c.Age).Bytes()
-	if len(b) < 20 {
-		b = append(b, bytes.Repeat([]byte{0x00}, 20-len(b))...)
+	encodedAge := new(big.Int).SetUint64(c.Age).Bytes()
+
+	encodedLength := big.NewInt(int64(len(encodedAge))).Bytes()
+
+	encoded := append(encodedLength, encodedAge...)
+	if len(encoded) < 20 {
+		encoded = append(encoded, bytes.Repeat([]byte{0x00}, 20-len(encoded))...)
 	}
 
-	b = append(b, bytes.Repeat([]byte{0x00}, 32-20)...)
-	copy(b[20:], new(big.Int).SetUint64(c.Time).Bytes())
-	return b
+	encoded = append(encoded, bytes.Repeat([]byte{0x00}, 32-20)...)
+	copy(encoded[20:], new(big.Int).SetUint64(c.Time).Bytes())
+
+	return encoded
 }
 
 func parseStake(stakeBytes []byte) (*coinAge, error) {
 	if len(stakeBytes) != extraCoinAge {
-		return nil, errWrongKernel
+		return nil, errInvalidStake
 	}
 
 	ca := new(coinAge)
-	i := 0
-	for ; i < len(stakeBytes); i++ {
-		if stakeBytes[i] == 0 || i == 20 {
-			break
-		}
-	}
-	ca.Age = new(big.Int).SetBytes(stakeBytes[:i]).Uint64()
 
-	for i = 20; i < len(stakeBytes); i++ {
+	ageLength := new(big.Int).SetBytes(stakeBytes[:1]).Uint64()
+
+	// We can safely assume that len(ageLength) == 1
+	// Length can be up to 20 bytes, and that number can be encoded in one byte.
+	ca.Age = new(big.Int).SetBytes(stakeBytes[1 : 1+ageLength]).Uint64()
+
+	i := 20
+	for ; i < len(stakeBytes); i++ {
 		if stakeBytes[i] == 0 {
 			break
 		}
