@@ -58,7 +58,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/applicature/sprouts.next/internal/build"
+	"github.com/applicature/sprouts-plus/internal/build"
 )
 
 var (

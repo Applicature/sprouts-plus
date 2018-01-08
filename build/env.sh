@@ -11,10 +11,10 @@ fi
 workspace="$PWD/build/_workspace"
 root="$PWD"
 ethdir="$workspace/src/github.com/applicature"
-if [ ! -L "$ethdir/sprouts.next" ]; then
+if [ ! -L "$ethdir/sprouts-plus" ]; then
     mkdir -p "$ethdir"
     cd "$ethdir"
-    ln -s ../../../../../. sprouts.next
+    ln -s ../../../../../. sprouts-plus
     cd "$root"
 fi
 
@@ -23,8 +23,8 @@ GOPATH="$workspace"
 export GOPATH
 
 # Run the command inside the workspace.
-cd "$ethdir/sprouts.next"
-PWD="$ethdir/sprouts.next"
+cd "$ethdir/sprouts-plus"
+PWD="$ethdir/sprouts-plus"
 
 # Launch the arguments with the configured environment.
 exec "$@"
