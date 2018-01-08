@@ -24,9 +24,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 func testApi(t *testing.T, f func(*Api)) {

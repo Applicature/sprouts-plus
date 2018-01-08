@@ -26,12 +26,12 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/internal/debug"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/internal/debug"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 const (

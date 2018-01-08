@@ -29,9 +29,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 const (

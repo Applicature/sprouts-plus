@@ -20,8 +20,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/ethdb"
 )
 
 // makeTestTrie create a sample test trie to test node-wise reconstruction.

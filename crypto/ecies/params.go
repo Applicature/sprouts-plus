@@ -42,7 +42,7 @@ import (
 	"fmt"
 	"hash"
 
-	ethcrypto "github.com/applicature/sprouts.next/crypto"
+	ethcrypto "github.com/applicature/sprouts-plus/crypto"
 )
 
 var (

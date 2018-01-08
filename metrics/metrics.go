@@ -23,7 +23,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rcrowley/go-metrics/exp"
 )

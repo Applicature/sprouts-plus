@@ -30,10 +30,10 @@ import (
 	"testing/quick"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 func init() {

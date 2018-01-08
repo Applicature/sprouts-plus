@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts-plus/common/math"
 )
 
 func TestBlockNumberJSONUnmarshal(t *testing.T) {

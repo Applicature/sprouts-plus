@@ -21,7 +21,7 @@ package geth
 import (
 	"errors"
 
-	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts-plus/p2p"
 )
 
 // NodeInfo represents pi short summary of the information known about the host.

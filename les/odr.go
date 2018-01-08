@@ -19,10 +19,10 @@ package les
 import (
 	"context"
 
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/light"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/light"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // LesOdr implements light.OdrBackend

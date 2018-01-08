@@ -25,11 +25,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // Type determines the kind of filter and is used to put the filter in to

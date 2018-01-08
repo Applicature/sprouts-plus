@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 // syncer parameters (global, not peer specific) default values

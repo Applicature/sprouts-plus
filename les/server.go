@@ -24,17 +24,17 @@ import (
 	"math"
 	"sync"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/eth"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/les/flowcontrol"
-	"github.com/applicature/sprouts.next/light"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discv5"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/les/flowcontrol"
+	"github.com/applicature/sprouts-plus/light"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discv5"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 type LesServer struct {

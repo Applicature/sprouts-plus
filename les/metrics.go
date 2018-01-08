@@ -17,8 +17,8 @@
 package les
 
 import (
-	"github.com/applicature/sprouts.next/metrics"
-	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts-plus/metrics"
+	"github.com/applicature/sprouts-plus/p2p"
 )
 
 var (

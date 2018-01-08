@@ -19,7 +19,7 @@ package state
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 type journalEntry interface {

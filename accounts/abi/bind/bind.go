@@ -28,7 +28,7 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/applicature/sprouts.next/accounts/abi"
+	"github.com/applicature/sprouts-plus/accounts/abi"
 	"golang.org/x/tools/imports"
 )
 

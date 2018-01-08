@@ -20,10 +20,10 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/applicature/sprouts.next/consensus/ethash"
-	"github.com/applicature/sprouts.next/core/vm"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/consensus/ethash"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // Tests that DAO-fork enabled clients can properly filter out fork-commencing

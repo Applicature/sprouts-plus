@@ -21,7 +21,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common/hexutil"
+	"github.com/applicature/sprouts-plus/common/hexutil"
 )
 
 // Tests that data bitset encoding and decoding works and is bijective.

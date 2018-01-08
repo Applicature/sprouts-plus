@@ -22,9 +22,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
 	"github.com/karalabe/hid"
 )
 

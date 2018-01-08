@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 /*
@@ -29,8 +29,8 @@ see https://github.com/ethereum/go-ethereum/issues/2040
 Usage:
 
 import (
- "github.com/applicature/sprouts.next/common/httpclient"
- "github.com/applicature/sprouts.next/swarm/api/http"
+ "github.com/applicature/sprouts-plus/common/httpclient"
+ "github.com/applicature/sprouts-plus/swarm/api/http"
 )
 client := httpclient.New()
 // for (private) swarm proxy running locally

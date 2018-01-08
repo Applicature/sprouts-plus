@@ -23,9 +23,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // A Nonce is a 64-bit hash which proves (combined with the mix-hash) that

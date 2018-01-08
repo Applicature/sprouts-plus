@@ -19,8 +19,8 @@ package trie
 import (
 	"fmt"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 var secureKeyPrefix = []byte("secure-key-")

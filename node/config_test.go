@@ -24,8 +24,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/p2p"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/p2p"
 )
 
 // Tests that datadirs can be successfully created, be them manually configured

@@ -21,7 +21,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts-plus/core/vm"
 )
 
 // Iterator for disassembled EVM instructions

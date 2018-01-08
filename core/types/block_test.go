@@ -23,8 +23,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // from bcValidBlockTest.json, "SimpleTx"

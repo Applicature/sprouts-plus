@@ -22,10 +22,10 @@ import (
 	"context"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/ethdb"
 )
 
 // NoOdr is the default context passed to an ODR capable function when the ODR

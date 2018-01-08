@@ -24,9 +24,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 var (

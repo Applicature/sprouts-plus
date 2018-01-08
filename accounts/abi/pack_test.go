@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 func TestPack(t *testing.T) {

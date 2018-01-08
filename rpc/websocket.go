@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 	"golang.org/x/net/websocket"
 	"gopkg.in/fatih/set.v0"
 )

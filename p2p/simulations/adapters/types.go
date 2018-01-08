@@ -25,11 +25,11 @@ import (
 	"os"
 
 	"github.com/docker/docker/pkg/reexec"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // Node represents a node in a simulation network which is created by a

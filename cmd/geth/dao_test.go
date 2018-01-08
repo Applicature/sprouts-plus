@@ -23,10 +23,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // Genesis block for nodes which don't care about the DAO fork (i.e. not configured)

@@ -24,8 +24,8 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/netutil"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/netutil"
 )
 
 func init() {

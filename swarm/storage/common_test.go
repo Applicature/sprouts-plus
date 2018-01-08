@@ -24,7 +24,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 type brokenLimitedReader struct {

@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 var testAddrHex = "970e8128ab834e8eac17ab8e3812f010678cf791"

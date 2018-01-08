@@ -26,13 +26,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // testTxPoolConfig is a transaction pool configuration without stateful disk

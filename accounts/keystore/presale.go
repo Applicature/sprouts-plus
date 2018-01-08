@@ -25,8 +25,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/crypto"
 	"github.com/pborman/uuid"
 	"golang.org/x/crypto/pbkdf2"
 )

@@ -20,8 +20,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 func TestEventId(t *testing.T) {

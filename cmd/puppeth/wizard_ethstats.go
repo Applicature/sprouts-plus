@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // deployEthstats queries the user for various input on deploying an ethstats

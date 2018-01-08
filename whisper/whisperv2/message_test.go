@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // Tests whether a message can be wrapped without any identity or encryption.

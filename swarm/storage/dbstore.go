@@ -32,8 +32,8 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/rlp"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
 )

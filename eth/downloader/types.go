@@ -19,7 +19,7 @@ package downloader
 import (
 	"fmt"
 
-	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts-plus/core/types"
 )
 
 // peerDropFn is a callback type for dropping a peer detected as malicious.

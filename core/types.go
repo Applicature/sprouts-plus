@@ -19,9 +19,9 @@ package core
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/core/vm"
 )
 
 // Validator is an interface which defines the standard for block validation. It

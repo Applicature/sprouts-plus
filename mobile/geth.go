@@ -24,17 +24,17 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/eth"
-	"github.com/applicature/sprouts.next/eth/downloader"
-	"github.com/applicature/sprouts.next/ethclient"
-	"github.com/applicature/sprouts.next/ethstats"
-	"github.com/applicature/sprouts.next/les"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/nat"
-	"github.com/applicature/sprouts.next/params"
-	whisper "github.com/applicature/sprouts.next/whisper/whisperv5"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/ethclient"
+	"github.com/applicature/sprouts-plus/ethstats"
+	"github.com/applicature/sprouts-plus/les"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/nat"
+	"github.com/applicature/sprouts-plus/params"
+	whisper "github.com/applicature/sprouts-plus/whisper/whisperv5"
 )
 
 // NodeConfig represents the collection of configuration values to fine tune the Geth

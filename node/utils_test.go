@@ -22,8 +22,8 @@ package node
 import (
 	"reflect"
 
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // NoopService is a trivial implementation of the Service interface.

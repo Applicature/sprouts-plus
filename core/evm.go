@@ -19,10 +19,10 @@ package core
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/consensus"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/core/vm"
 )
 
 // ChainContext supports retrieving headers and consensus parameters from the

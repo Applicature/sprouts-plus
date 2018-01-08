@@ -23,8 +23,8 @@ import (
 	"math/rand"
 	"reflect"
 
-	"github.com/applicature/sprouts.next/common/hexutil"
-	"github.com/applicature/sprouts.next/crypto/sha3"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/crypto/sha3"
 )
 
 const (

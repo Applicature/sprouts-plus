@@ -25,12 +25,12 @@ import (
 	mrand "math/rand"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/consensus"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/params"
 	"github.com/hashicorp/golang-lru"
 )
 

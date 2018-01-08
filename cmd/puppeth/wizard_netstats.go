@@ -22,8 +22,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/log"
 	"github.com/olekukonko/tablewriter"
 )
 

@@ -24,12 +24,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/applicature/sprouts.next"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/hexutil"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/rlp"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/rlp"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // Client defines typed wrappers for the Ethereum RPC API.

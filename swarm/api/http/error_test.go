@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/applicature/sprouts.next/swarm/testutil"
+	"github.com/applicature/sprouts-plus/swarm/testutil"
 )
 
 func TestError(t *testing.T) {

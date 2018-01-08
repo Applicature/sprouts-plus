@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // SampleService is a trivial network service that can be attached to a node for

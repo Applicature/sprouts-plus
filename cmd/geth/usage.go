@@ -22,8 +22,8 @@ import (
 	"io"
 	"sort"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
-	"github.com/applicature/sprouts.next/internal/debug"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/internal/debug"
 	"gopkg.in/urfave/cli.v1"
 	"strings"
 )

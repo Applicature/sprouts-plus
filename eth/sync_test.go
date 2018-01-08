@@ -21,9 +21,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/eth/downloader"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
 )
 
 // Tests that fast sync gets disabled as soon as a real block is successfully

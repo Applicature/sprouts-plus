@@ -17,7 +17,7 @@
 package fuse
 
 import (
-	"github.com/applicature/sprouts.next/swarm/api"
+	"github.com/applicature/sprouts-plus/swarm/api"
 	"sync"
 	"time"
 )

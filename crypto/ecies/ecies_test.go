@@ -40,7 +40,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 var dumpEnc bool

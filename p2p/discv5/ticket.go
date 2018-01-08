@@ -25,9 +25,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/mclock"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/mclock"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 const (

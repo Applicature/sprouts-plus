@@ -25,13 +25,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/metrics"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/metrics"
+	"github.com/applicature/sprouts-plus/params"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 )
 

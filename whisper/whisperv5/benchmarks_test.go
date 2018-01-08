@@ -19,7 +19,7 @@ package whisperv5
 import (
 	"testing"
 
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 func BenchmarkDeriveKeyMaterial(b *testing.B) {

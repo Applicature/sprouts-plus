@@ -26,11 +26,11 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/math"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/ecies"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/ecies"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // Envelope represents a clear-text data packet to transmit through the Whisper

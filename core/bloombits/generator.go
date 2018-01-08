@@ -19,7 +19,7 @@ package bloombits
 import (
 	"errors"
 
-	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts-plus/core/types"
 )
 
 // errSectionOutOfBounds is returned if the user tried to add more bloom filters

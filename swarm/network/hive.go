@@ -22,12 +22,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/netutil"
-	"github.com/applicature/sprouts.next/swarm/network/kademlia"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/netutil"
+	"github.com/applicature/sprouts-plus/swarm/network/kademlia"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 // Hive is the logistic manager of the swarm

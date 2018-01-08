@@ -19,8 +19,8 @@ package state
 import (
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/ethdb"
 )
 
 var addr = common.BytesToAddress([]byte("test"))

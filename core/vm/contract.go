@@ -19,7 +19,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // ContractRef is a reference to the contract's backing object

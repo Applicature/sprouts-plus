@@ -21,7 +21,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 func initDbStore(t *testing.T) *DbStore {

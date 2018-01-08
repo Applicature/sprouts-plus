@@ -21,8 +21,8 @@ import (
 
 	"sync/atomic"
 
-	"github.com/applicature/sprouts.next/consensus"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 type CpuAgent struct {

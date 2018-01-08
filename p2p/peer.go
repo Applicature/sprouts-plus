@@ -24,11 +24,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/common/mclock"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common/mclock"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 const (

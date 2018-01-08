@@ -29,7 +29,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 var (

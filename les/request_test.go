@@ -21,12 +21,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/eth"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/light"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/light"
 )
 
 var testBankSecureTrieKey = secAddr(testBankAddress)

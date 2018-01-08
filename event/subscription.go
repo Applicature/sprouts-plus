@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/common/mclock"
+	"github.com/applicature/sprouts-plus/common/mclock"
 )
 
 // Subscription represents a stream of events. The carrier of the events is typically a

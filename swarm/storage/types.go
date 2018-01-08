@@ -24,9 +24,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/applicature/sprouts.next/bmt"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto/sha3"
+	"github.com/applicature/sprouts-plus/bmt"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto/sha3"
 )
 
 type Hasher func() hash.Hash

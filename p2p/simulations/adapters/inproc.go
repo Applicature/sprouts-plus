@@ -23,11 +23,11 @@ import (
 	"net"
 	"sync"
 
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // SimAdapter is a NodeAdapter which creates in-memory simulation nodes and

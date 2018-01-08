@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 func (Address) Generate(rand *rand.Rand, size int) reflect.Value {

@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/hexutil"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
 )
 
 func (l Log) MarshalJSON() ([]byte, error) {

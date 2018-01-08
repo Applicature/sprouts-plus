@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/hexutil"
-	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/common/math"
 )
 
 func (s StructLog) MarshalJSON() ([]byte, error) {

@@ -28,11 +28,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/simulations/adapters"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/simulations/adapters"
+	"github.com/applicature/sprouts-plus/rpc"
 	"github.com/julienschmidt/httprouter"
 	"golang.org/x/net/websocket"
 )

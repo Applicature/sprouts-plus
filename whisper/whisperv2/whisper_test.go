@@ -20,8 +20,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
 )
 
 func startTestCluster(n int) []*Whisper {

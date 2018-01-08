@@ -29,9 +29,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
 	"github.com/pborman/uuid"
 )
 

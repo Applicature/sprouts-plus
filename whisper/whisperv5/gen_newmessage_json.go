@@ -5,7 +5,7 @@ package whisperv5
 import (
 	"encoding/json"
 
-	"github.com/applicature/sprouts.next/common/hexutil"
+	"github.com/applicature/sprouts-plus/common/hexutil"
 )
 
 var _ = (*newMessageOverride)(nil)

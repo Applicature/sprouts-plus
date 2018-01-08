@@ -34,8 +34,8 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 type allocItem struct{ Addr, Balance *big.Int }

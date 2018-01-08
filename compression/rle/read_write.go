@@ -21,7 +21,7 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 const (

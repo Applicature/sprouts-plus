@@ -25,14 +25,14 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/accounts/keystore"
-	"github.com/applicature/sprouts.next/accounts/usbwallet"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/accounts/usbwallet"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
 )
 
 const (

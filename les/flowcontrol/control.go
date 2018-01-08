@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/common/mclock"
+	"github.com/applicature/sprouts-plus/common/mclock"
 )
 
 const fcTimeConst = time.Millisecond

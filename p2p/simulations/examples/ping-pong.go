@@ -25,13 +25,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/simulations"
-	"github.com/applicature/sprouts.next/p2p/simulations/adapters"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/simulations"
+	"github.com/applicature/sprouts-plus/p2p/simulations/adapters"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 var adapterType = flag.String("adapter", "sim", `node adapter to use (one of "sim", "exec" or "docker")`)

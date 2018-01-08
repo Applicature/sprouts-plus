@@ -22,12 +22,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts/abi/bind"
-	"github.com/applicature/sprouts.next/accounts/abi/bind/backends"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind/backends"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 var testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")

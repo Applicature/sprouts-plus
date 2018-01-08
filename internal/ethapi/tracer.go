@@ -23,9 +23,9 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/hexutil"
-	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/core/vm"
 	"github.com/robertkrimen/otto"
 )
 

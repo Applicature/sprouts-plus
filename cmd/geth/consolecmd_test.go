@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 const (

@@ -25,9 +25,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/rpc"
 	"github.com/gizak/termui"
 	"gopkg.in/urfave/cli.v1"
 )

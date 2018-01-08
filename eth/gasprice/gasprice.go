@@ -22,10 +22,10 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/internal/ethapi"
-	"github.com/applicature/sprouts.next/params"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/internal/ethapi"
+	"github.com/applicature/sprouts-plus/params"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 var maxPrice = big.NewInt(500 * params.Shannon)

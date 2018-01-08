@@ -23,9 +23,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts/usbwallet"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/accounts/usbwallet"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/rpc"
 	"github.com/robertkrimen/otto"
 )
 

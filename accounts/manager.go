@@ -21,7 +21,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/applicature/sprouts.next/event"
+	"github.com/applicature/sprouts-plus/event"
 )
 
 // Manager is an overarching account manager that can communicate with various

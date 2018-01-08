@@ -24,9 +24,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	whisper "github.com/applicature/sprouts.next/whisper/whisperv5"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	whisper "github.com/applicature/sprouts-plus/whisper/whisperv5"
 )
 
 const powRequirement = 0.00001

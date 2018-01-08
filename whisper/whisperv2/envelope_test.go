@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/ecies"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/ecies"
 )
 
 func TestEnvelopeOpen(t *testing.T) {

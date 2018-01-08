@@ -22,8 +22,8 @@ import (
 	"errors"
 	"math/big"
 
-	ethereum "github.com/applicature/sprouts.next"
-	"github.com/applicature/sprouts.next/common"
+	ethereum "github.com/applicature/sprouts-plus"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // Subscription represents an event subscription where events are

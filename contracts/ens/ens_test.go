@@ -20,10 +20,10 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/applicature/sprouts.next/accounts/abi/bind"
-	"github.com/applicature/sprouts.next/accounts/abi/bind/backends"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind/backends"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 var (

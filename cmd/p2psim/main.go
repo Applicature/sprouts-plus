@@ -29,12 +29,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/simulations"
-	"github.com/applicature/sprouts.next/p2p/simulations/adapters"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/simulations"
+	"github.com/applicature/sprouts-plus/p2p/simulations/adapters"
+	"github.com/applicature/sprouts-plus/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 

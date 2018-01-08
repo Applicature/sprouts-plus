@@ -20,11 +20,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/trie"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/trie"
 )
 
 func NewState(ctx context.Context, head *types.Header, odr OdrBackend) *state.StateDB {

@@ -27,9 +27,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // Msg defines the structure of a p2p message.

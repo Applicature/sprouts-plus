@@ -27,16 +27,16 @@ import (
 
 	goruntime "runtime"
 
-	"github.com/applicature/sprouts.next/cmd/evm/internal/compiler"
-	"github.com/applicature/sprouts.next/cmd/utils"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/vm"
-	"github.com/applicature/sprouts.next/core/vm/runtime"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/cmd/evm/internal/compiler"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/core/vm/runtime"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/params"
 	cli "gopkg.in/urfave/cli.v1"
 )
 

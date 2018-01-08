@@ -26,11 +26,11 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/secp256k1"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/secp256k1"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // Constants to match up protocol versions and messages

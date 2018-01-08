@@ -26,11 +26,11 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/bitutil"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/sha3"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/bitutil"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/sha3"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 const (

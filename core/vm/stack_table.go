@@ -19,7 +19,7 @@ package vm
 import (
 	"fmt"
 
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 func makeStackFunc(pop, push int) stackValidationFunc {

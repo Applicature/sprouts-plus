@@ -20,11 +20,11 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common/math"
-	"github.com/applicature/sprouts.next/consensus"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // BlockValidator is responsible for validating block headers, uncles and

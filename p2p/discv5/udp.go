@@ -24,12 +24,12 @@ import (
 	"net"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p/nat"
-	"github.com/applicature/sprouts.next/p2p/netutil"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p/nat"
+	"github.com/applicature/sprouts-plus/p2p/netutil"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 const Version = 4

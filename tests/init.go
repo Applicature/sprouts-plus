@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // This table defines supported forks and their chain config.

@@ -6,10 +6,10 @@ package contract
 import (
 	"strings"
 
-	"github.com/applicature/sprouts.next/accounts/abi"
-	"github.com/applicature/sprouts.next/accounts/abi/bind"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts-plus/accounts/abi"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
 )
 
 // ENSABI is the input ABI used to generate the binding from.

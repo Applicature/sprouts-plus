@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 func manifest(paths ...string) (manifestReader storage.LazySectionReader) {

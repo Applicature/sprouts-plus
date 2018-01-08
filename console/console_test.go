@@ -26,11 +26,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/eth"
-	"github.com/applicature/sprouts.next/internal/jsre"
-	"github.com/applicature/sprouts.next/node"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/internal/jsre"
+	"github.com/applicature/sprouts-plus/node"
 )
 
 const (

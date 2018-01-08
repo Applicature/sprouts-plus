@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/trie"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/trie"
 	lru "github.com/hashicorp/golang-lru"
 )
 

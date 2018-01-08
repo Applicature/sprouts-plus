@@ -21,8 +21,8 @@ package geth
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/ethclient"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/ethclient"
 )
 
 // EthereumClient provides access to the Ethereum APIs.

@@ -21,9 +21,9 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/applicature/sprouts.next"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts-plus"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
 )
 
 var (

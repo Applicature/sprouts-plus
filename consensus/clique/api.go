@@ -17,10 +17,10 @@
 package clique
 
 import (
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/consensus"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // API is a user facing RPC API to allow controlling the signer and voting

@@ -24,7 +24,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // RLPTest is the JSON structure of a single RLP test.

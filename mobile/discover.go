@@ -22,7 +22,7 @@ package geth
 import (
 	"errors"
 
-	"github.com/applicature/sprouts.next/p2p/discv5"
+	"github.com/applicature/sprouts-plus/p2p/discv5"
 )
 
 // Enode represents a host on the network.

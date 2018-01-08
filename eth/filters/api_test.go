@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 func TestUnmarshalJSONNewFilterArgs(t *testing.T) {

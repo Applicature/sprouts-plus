@@ -20,7 +20,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 func TestTransaction(t *testing.T) {

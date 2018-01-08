@@ -21,17 +21,17 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/consensus"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/eth/downloader"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // Backend wraps all methods required for mining.

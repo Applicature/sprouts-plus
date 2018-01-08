@@ -30,8 +30,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // Node represents a host on the network.

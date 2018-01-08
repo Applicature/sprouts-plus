@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 // Handler for storage/retrieval related protocol requests

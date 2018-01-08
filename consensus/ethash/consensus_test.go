@@ -23,9 +23,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common/math"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 type diffTest struct {

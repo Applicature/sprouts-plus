@@ -27,10 +27,10 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/ecies"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/ecies"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // Options specifies the exact way a message should be wrapped into an Envelope.

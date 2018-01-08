@@ -22,7 +22,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // A BigInt represents a signed multi-precision integer.

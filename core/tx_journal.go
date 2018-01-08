@@ -21,10 +21,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // errNoActiveJournal is returned if a transaction is attempted to be inserted

@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/swarm/api"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/swarm/api"
 )
 
 //templateMap holds a mapping of an HTTP error code to a template

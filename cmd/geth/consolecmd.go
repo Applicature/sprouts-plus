@@ -21,10 +21,10 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
-	"github.com/applicature/sprouts.next/console"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/console"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 

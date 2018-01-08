@@ -21,11 +21,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/applicature/sprouts.next/accounts/abi"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/vm"
-	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts-plus/accounts/abi"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/ethdb"
 )
 
 func TestDefaults(t *testing.T) {

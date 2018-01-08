@@ -24,8 +24,8 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common/math"
-	"github.com/applicature/sprouts.next/crypto/randentropy"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/crypto/randentropy"
 )
 
 const TestCount = 1000

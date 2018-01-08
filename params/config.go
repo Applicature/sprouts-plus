@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 var (
@@ -191,6 +191,8 @@ func (c *ChainConfig) String() string {
 		engine = c.Clique
 	case c.Sprouts != nil:
 		engine = c.Sprouts
+	case c.Foo != nil:
+		engine = c.Foo
 	default:
 		engine = "unknown"
 	}

@@ -19,7 +19,7 @@ package number
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 var tt256 = new(big.Int).Lsh(big.NewInt(1), 256)

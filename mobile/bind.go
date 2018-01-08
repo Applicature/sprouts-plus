@@ -22,10 +22,10 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/applicature/sprouts.next/accounts/abi"
-	"github.com/applicature/sprouts.next/accounts/abi/bind"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts-plus/accounts/abi"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
 )
 
 // Signer is an interaface defining the callback when a contract requires a

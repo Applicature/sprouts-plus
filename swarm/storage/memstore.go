@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 const (

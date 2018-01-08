@@ -7,8 +7,8 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/math"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/math"
 )
 
 var _ = (*stEnvMarshaling)(nil)

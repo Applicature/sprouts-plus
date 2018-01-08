@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
+	"github.com/applicature/sprouts-plus/cmd/utils"
 	"gopkg.in/urfave/cli.v1"
 )
 

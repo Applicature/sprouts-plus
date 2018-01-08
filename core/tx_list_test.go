@@ -21,8 +21,8 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // Tests that transactions can be added to strict lists and list contents and

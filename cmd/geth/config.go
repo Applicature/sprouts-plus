@@ -28,13 +28,13 @@ import (
 
 	cli "gopkg.in/urfave/cli.v1"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
-	"github.com/applicature/sprouts.next/contracts/release"
-	"github.com/applicature/sprouts.next/dashboard"
-	"github.com/applicature/sprouts.next/eth"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/params"
-	whisper "github.com/applicature/sprouts.next/whisper/whisperv5"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/contracts/release"
+	"github.com/applicature/sprouts-plus/dashboard"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/params"
+	whisper "github.com/applicature/sprouts-plus/whisper/whisperv5"
 	"github.com/naoina/toml"
 )
 

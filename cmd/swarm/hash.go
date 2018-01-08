@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 	"gopkg.in/urfave/cli.v1"
 )
 

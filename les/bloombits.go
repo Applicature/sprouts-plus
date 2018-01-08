@@ -19,8 +19,8 @@ package les
 import (
 	"time"
 
-	"github.com/applicature/sprouts.next/common/bitutil"
-	"github.com/applicature/sprouts.next/light"
+	"github.com/applicature/sprouts-plus/common/bitutil"
+	"github.com/applicature/sprouts-plus/light"
 )
 
 const (

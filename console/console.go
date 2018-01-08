@@ -27,9 +27,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/applicature/sprouts.next/internal/jsre"
-	"github.com/applicature/sprouts.next/internal/web3ext"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/internal/jsre"
+	"github.com/applicature/sprouts-plus/internal/web3ext"
+	"github.com/applicature/sprouts-plus/rpc"
 	"github.com/mattn/go-colorable"
 	"github.com/peterh/liner"
 	"github.com/robertkrimen/otto"

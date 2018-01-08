@@ -19,9 +19,9 @@ package state
 import (
 	"bytes"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/rlp"
-	"github.com/applicature/sprouts.next/trie"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/rlp"
+	"github.com/applicature/sprouts-plus/trie"
 )
 
 // NewStateSync create a new state trie download scheduler.

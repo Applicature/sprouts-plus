@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // precompiledTest defines the input/output pairs for precompiled contract tests.

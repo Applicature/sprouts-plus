@@ -29,9 +29,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/log"
 	"golang.org/x/crypto/ssh/terminal"
 )
 

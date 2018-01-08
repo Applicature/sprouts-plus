@@ -21,7 +21,7 @@ package p2p
 import (
 	"net"
 
-	"github.com/applicature/sprouts.next/metrics"
+	"github.com/applicature/sprouts-plus/metrics"
 )
 
 var (

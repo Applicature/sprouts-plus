@@ -19,7 +19,7 @@
 package downloader
 
 import (
-	"github.com/applicature/sprouts.next/metrics"
+	"github.com/applicature/sprouts-plus/metrics"
 )
 
 var (

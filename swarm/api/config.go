@@ -24,12 +24,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/contracts/ens"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/swarm/network"
-	"github.com/applicature/sprouts.next/swarm/services/swap"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/contracts/ens"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/swarm/network"
+	"github.com/applicature/sprouts-plus/swarm/services/swap"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 const (

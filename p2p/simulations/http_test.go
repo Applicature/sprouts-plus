@@ -27,12 +27,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/simulations/adapters"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/simulations/adapters"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // testService implements the node.Service interface and provides protocols

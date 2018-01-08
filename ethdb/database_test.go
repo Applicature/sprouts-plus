@@ -25,7 +25,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/applicature/sprouts.next/ethdb"
+	"github.com/applicature/sprouts-plus/ethdb"
 )
 
 func newTestLDB() (*ethdb.LDBDatabase, func()) {

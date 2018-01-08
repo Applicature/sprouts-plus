@@ -20,9 +20,9 @@ import (
 	"context"
 	"sync"
 
-	ethereum "github.com/applicature/sprouts.next"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/rpc"
+	ethereum "github.com/applicature/sprouts-plus"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // PublicDownloaderAPI provides an API which gives information about the current synchronisation status.

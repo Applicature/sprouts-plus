@@ -4,8 +4,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 func TestByteOp(t *testing.T) {

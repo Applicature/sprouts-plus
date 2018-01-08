@@ -22,11 +22,11 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/applicature/sprouts.next"
-	"github.com/applicature/sprouts.next/accounts/abi"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus"
+	"github.com/applicature/sprouts-plus/accounts/abi"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // SignerFn is a signer function callback when a contract requires a method to

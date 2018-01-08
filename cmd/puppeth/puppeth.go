@@ -22,7 +22,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

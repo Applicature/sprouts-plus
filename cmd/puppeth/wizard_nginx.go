@@ -19,7 +19,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // ensureVirtualHost checks whether a reverse-proxy is running on the specified

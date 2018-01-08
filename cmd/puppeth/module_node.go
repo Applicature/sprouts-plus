@@ -25,7 +25,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // nodeDockerfile is the Dockerfile required to run an Ethereum node.

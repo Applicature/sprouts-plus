@@ -22,7 +22,7 @@ package storage
 import (
 	"fmt"
 
-	"github.com/applicature/sprouts.next/compression/rle"
+	"github.com/applicature/sprouts-plus/compression/rle"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
 	"github.com/syndtr/goleveldb/leveldb/opt"

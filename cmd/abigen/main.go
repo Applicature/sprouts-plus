@@ -24,8 +24,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/applicature/sprouts.next/accounts/abi/bind"
-	"github.com/applicature/sprouts.next/common/compiler"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/common/compiler"
 )
 
 var (

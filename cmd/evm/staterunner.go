@@ -23,10 +23,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/vm"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/tests"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/tests"
 
 	cli "gopkg.in/urfave/cli.v1"
 )

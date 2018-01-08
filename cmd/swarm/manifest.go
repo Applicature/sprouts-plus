@@ -24,9 +24,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
-	"github.com/applicature/sprouts.next/swarm/api"
-	swarm "github.com/applicature/sprouts.next/swarm/api/client"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/swarm/api"
+	swarm "github.com/applicature/sprouts-plus/swarm/api/client"
 	"gopkg.in/urfave/cli.v1"
 )
 

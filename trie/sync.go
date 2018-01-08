@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 )
 

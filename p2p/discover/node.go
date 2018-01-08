@@ -30,9 +30,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/secp256k1"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/secp256k1"
 )
 
 const NodeIDBits = 512

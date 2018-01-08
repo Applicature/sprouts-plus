@@ -17,7 +17,7 @@
 package api
 
 import (
-	"github.com/applicature/sprouts.next/swarm/network"
+	"github.com/applicature/sprouts-plus/swarm/network"
 )
 
 type Control struct {

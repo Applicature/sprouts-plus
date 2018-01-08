@@ -41,23 +41,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/accounts/keystore"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/eth"
-	"github.com/applicature/sprouts.next/eth/downloader"
-	"github.com/applicature/sprouts.next/ethclient"
-	"github.com/applicature/sprouts.next/ethstats"
-	"github.com/applicature/sprouts.next/les"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/node"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/discv5"
-	"github.com/applicature/sprouts.next/p2p/nat"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/ethclient"
+	"github.com/applicature/sprouts-plus/ethstats"
+	"github.com/applicature/sprouts-plus/les"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/discv5"
+	"github.com/applicature/sprouts-plus/p2p/nat"
+	"github.com/applicature/sprouts-plus/params"
 	"golang.org/x/net/websocket"
 )
 
@@ -443,7 +443,7 @@ func (f *faucet) apiHandler(conn *websocket.Conn) {
 		case strings.HasPrefix(msg.URL, "https://www.facebook.com/"):
 			username, avatar, address, err = authFacebook(msg.URL)
 		default:
-			err = errors.New("Something funky happened, please open an issue at https://github.com/applicature/sprouts.next/issues")
+			err = errors.New("Something funky happened, please open an issue at https://github.com/applicature/sprouts-plus/issues")
 		}
 		if err != nil {
 			if err = sendError(conn, err); err != nil {

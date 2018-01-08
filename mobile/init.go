@@ -22,7 +22,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 func init() {

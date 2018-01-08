@@ -30,8 +30,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts/keystore"
-	"github.com/applicature/sprouts.next/core/types"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/core/types"
 )
 
 // Tests that the account management snippets work correctly.

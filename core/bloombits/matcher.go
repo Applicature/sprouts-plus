@@ -26,8 +26,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/applicature/sprouts.next/common/bitutil"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/common/bitutil"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // bloomIndexes represents the bit indexes inside the bloom filter that belong

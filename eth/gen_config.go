@@ -5,11 +5,11 @@ package eth
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/hexutil"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/eth/downloader"
-	"github.com/applicature/sprouts.next/eth/gasprice"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/eth/gasprice"
 )
 
 func (c Config) MarshalTOML() (interface{}, error) {

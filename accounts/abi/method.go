@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // Callable method given a `Name` and whether the method is a constant.

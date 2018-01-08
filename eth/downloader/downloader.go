@@ -27,13 +27,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	ethereum "github.com/applicature/sprouts.next"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/params"
+	ethereum "github.com/applicature/sprouts-plus"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/params"
 	"github.com/rcrowley/go-metrics"
 )
 

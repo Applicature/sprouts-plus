@@ -37,12 +37,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/applicature/sprouts.next/contracts/chequebook"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p"
-	bzzswap "github.com/applicature/sprouts.next/swarm/services/swap"
-	"github.com/applicature/sprouts.next/swarm/services/swap/swap"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/contracts/chequebook"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p"
+	bzzswap "github.com/applicature/sprouts-plus/swarm/services/swap"
+	"github.com/applicature/sprouts-plus/swarm/services/swap/swap"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 const (

@@ -20,9 +20,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/eth/downloader"
-	"github.com/applicature/sprouts.next/light"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/light"
 )
 
 const (

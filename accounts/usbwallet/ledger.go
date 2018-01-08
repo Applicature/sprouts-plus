@@ -28,12 +28,12 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/hexutil"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 // ledgerOpcode is an enumeration encoding the supported Ledger opcodes.

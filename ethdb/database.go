@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/metrics"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/metrics"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/errors"
 	"github.com/syndtr/goleveldb/leveldb/filter"

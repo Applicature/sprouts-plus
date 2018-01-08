@@ -19,7 +19,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts-plus/core/vm"
 )
 
 func TestVM(t *testing.T) {

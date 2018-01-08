@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/applicature/sprouts.next/core/asm"
+	"github.com/applicature/sprouts-plus/core/asm"
 )
 
 func Compile(fn string, src []byte, debug bool) (string, error) {

@@ -21,8 +21,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // Event is an event potentially triggered by the EVM's LOG mechanism. The Event

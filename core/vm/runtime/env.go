@@ -19,9 +19,9 @@ package runtime
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/vm"
 )
 
 func NewEnv(cfg *Config) *vm.EVM {

@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // manageServers displays a list of servers the user can disconnect from, and an

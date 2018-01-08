@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/applicature/sprouts.next/accounts/keystore"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // deployFaucet queries the user for various input on deploying a faucet, after

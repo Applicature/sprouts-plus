@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts/keystore"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // deployNode creates a new node configuration based on some user input.

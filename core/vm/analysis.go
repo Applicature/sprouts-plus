@@ -19,7 +19,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // destinations stores one map per contract (keyed by hash of code).

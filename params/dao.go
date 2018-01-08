@@ -19,7 +19,7 @@ package params
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // DAOForkBlockExtra is the block header extra-data field to set for the DAO fork

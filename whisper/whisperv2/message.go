@@ -26,10 +26,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/ecies"
-	"github.com/applicature/sprouts.next/log"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/ecies"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // Message represents an end-user data packet to transmit through the Whisper

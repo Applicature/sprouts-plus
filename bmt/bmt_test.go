@@ -28,7 +28,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/crypto/sha3"
+	"github.com/applicature/sprouts-plus/crypto/sha3"
 )
 
 const (

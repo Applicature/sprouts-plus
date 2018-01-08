@@ -7,8 +7,8 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/hexutil"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
 )
 
 func (t txdata) MarshalJSON() ([]byte, error) {

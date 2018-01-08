@@ -26,14 +26,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts/abi/bind"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/contracts/chequebook"
-	"github.com/applicature/sprouts.next/contracts/chequebook/contract"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/swarm/services/swap/swap"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/contracts/chequebook"
+	"github.com/applicature/sprouts-plus/contracts/chequebook/contract"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/swarm/services/swap/swap"
 )
 
 // SwAP       Swarm Accounting Protocol with

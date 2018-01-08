@@ -19,7 +19,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 const (

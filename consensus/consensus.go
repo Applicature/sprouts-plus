@@ -18,11 +18,11 @@
 package consensus
 
 import (
-	"github.com/applicature/sprouts.next/params"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // ChainReader defines a small collection of methods needed to access the local

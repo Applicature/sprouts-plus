@@ -23,8 +23,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/applicature/sprouts.next/common/math"
-	"github.com/applicature/sprouts.next/core/vm"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/core/vm"
 )
 
 // Compiler contains information about the parsed source

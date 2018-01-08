@@ -25,8 +25,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/applicature/sprouts.next/swarm/api"
-	"github.com/applicature/sprouts.next/swarm/testutil"
+	"github.com/applicature/sprouts-plus/swarm/api"
+	"github.com/applicature/sprouts-plus/swarm/testutil"
 )
 
 // TestClientUploadDownloadRaw test uploading and downloading raw data to swarm

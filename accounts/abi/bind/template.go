@@ -16,7 +16,7 @@
 
 package bind
 
-import "github.com/applicature/sprouts.next/accounts/abi"
+import "github.com/applicature/sprouts-plus/accounts/abi"
 
 // tmplData is the data structure required to fill the binding template.
 type tmplData struct {

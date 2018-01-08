@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/applicature/sprouts.next/accounts"
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/event"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/event"
 )
 
 var testSigData = make([]byte, 32)

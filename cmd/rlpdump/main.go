@@ -26,7 +26,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 var (

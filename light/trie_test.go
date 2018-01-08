@@ -23,13 +23,13 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/applicature/sprouts.next/consensus/ethash"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/state"
-	"github.com/applicature/sprouts.next/core/vm"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/params"
-	"github.com/applicature/sprouts.next/trie"
+	"github.com/applicature/sprouts-plus/consensus/ethash"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/params"
+	"github.com/applicature/sprouts-plus/trie"
 )
 
 func TestNodeIterator(t *testing.T) {

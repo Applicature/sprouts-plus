@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/applicature/sprouts.next/common/hexutil"
+	"github.com/applicature/sprouts-plus/common/hexutil"
 )
 
 type MyType [5]byte

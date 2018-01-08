@@ -24,8 +24,8 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/log/term"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/log/term"
 	colorable "github.com/mattn/go-colorable"
 	"gopkg.in/urfave/cli.v1"
 )

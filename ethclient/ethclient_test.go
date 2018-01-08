@@ -16,7 +16,7 @@
 
 package ethclient
 
-import "github.com/applicature/sprouts.next"
+import "github.com/applicature/sprouts-plus"
 
 // Verify that Client implements the ethereum interfaces.
 var (

@@ -54,7 +54,7 @@ func TestBloom(t *testing.T) {
 import (
 	"testing"
 
-	"github.com/applicature/sprouts.next/core/state"
+	"github.com/applicature/sprouts-plus/core/state"
 )
 
 func TestBloom9(t *testing.T) {

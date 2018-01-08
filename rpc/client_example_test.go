@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 // In this example, our client whishes to track the latest 'block number'

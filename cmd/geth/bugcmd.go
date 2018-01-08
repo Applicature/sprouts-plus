@@ -26,10 +26,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/applicature/sprouts.next/cmd/internal/browser"
-	"github.com/applicature/sprouts.next/params"
+	"github.com/applicature/sprouts-plus/cmd/internal/browser"
+	"github.com/applicature/sprouts-plus/params"
 
-	"github.com/applicature/sprouts.next/cmd/utils"
+	"github.com/applicature/sprouts-plus/cmd/utils"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
@@ -41,7 +41,7 @@ var bugCommand = cli.Command{
 	Category:  "MISCELLANEOUS COMMANDS",
 }
 
-const issueUrl = "https://github.com/applicature/sprouts.next/issues/new"
+const issueUrl = "https://github.com/applicature/sprouts-plus/issues/new"
 
 // reportBug reports a bug by opening a new URL to the go-ethereum GH issue
 // tracker and setting default values as the issue body.

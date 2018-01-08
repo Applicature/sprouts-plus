@@ -27,8 +27,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/applicature/sprouts.next/swarm/api"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/swarm/api"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 type fileInfo struct {

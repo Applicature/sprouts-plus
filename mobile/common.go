@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // Hash represents the 32 byte Keccak256 hash of arbitrary data.

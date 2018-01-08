@@ -20,13 +20,13 @@ import (
 	"context"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/core"
-	"github.com/applicature/sprouts.next/core/bloombits"
-	"github.com/applicature/sprouts.next/core/types"
-	"github.com/applicature/sprouts.next/ethdb"
-	"github.com/applicature/sprouts.next/event"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/bloombits"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/rpc"
 )
 
 type Backend interface {

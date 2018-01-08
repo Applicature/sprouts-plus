@@ -19,7 +19,7 @@ package event_test
 import (
 	"fmt"
 
-	"github.com/applicature/sprouts.next/event"
+	"github.com/applicature/sprouts-plus/event"
 )
 
 func ExampleFeed_acknowledgedEvents() {

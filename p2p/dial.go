@@ -24,9 +24,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/p2p/netutil"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/netutil"
 )
 
 const (

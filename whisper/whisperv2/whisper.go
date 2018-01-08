@@ -22,13 +22,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/crypto"
-	"github.com/applicature/sprouts.next/crypto/ecies"
-	"github.com/applicature/sprouts.next/event/filter"
-	"github.com/applicature/sprouts.next/log"
-	"github.com/applicature/sprouts.next/p2p"
-	"github.com/applicature/sprouts.next/rpc"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/crypto/ecies"
+	"github.com/applicature/sprouts-plus/event/filter"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/rpc"
 
 	"gopkg.in/fatih/set.v0"
 )

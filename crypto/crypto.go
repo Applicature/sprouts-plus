@@ -28,10 +28,10 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/applicature/sprouts.next/common"
-	"github.com/applicature/sprouts.next/common/math"
-	"github.com/applicature/sprouts.next/crypto/sha3"
-	"github.com/applicature/sprouts.next/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/crypto/sha3"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 var (

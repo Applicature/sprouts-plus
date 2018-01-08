@@ -22,7 +22,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/applicature/sprouts.next/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 // Interface represents a wrapped version of Go's interface{}, with the capacity

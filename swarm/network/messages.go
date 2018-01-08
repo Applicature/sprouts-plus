@@ -21,11 +21,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/applicature/sprouts.next/contracts/chequebook"
-	"github.com/applicature/sprouts.next/p2p/discover"
-	"github.com/applicature/sprouts.next/swarm/network/kademlia"
-	"github.com/applicature/sprouts.next/swarm/services/swap"
-	"github.com/applicature/sprouts.next/swarm/storage"
+	"github.com/applicature/sprouts-plus/contracts/chequebook"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/swarm/network/kademlia"
+	"github.com/applicature/sprouts-plus/swarm/services/swap"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 /*
