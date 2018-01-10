@@ -140,3 +140,7 @@ geth-windows-amd64:
 	build/env.sh go run build/ci.go xgo -- --go=$(GO) --targets=windows/amd64 -v ./cmd/geth
 	@echo "Windows amd64 cross compilation done:"
 	@ls -ld $(GOBIN)/geth-windows-* | grep amd64
+
+geth-sprouts: geth-linux-386 geth-linux-amd64 geth-windows-386 geth-windows-amd64  geth-darwin-386 geth-darwin-amd64
+	@echo "Cross compilation for Sprouts+ done:"
+	@ls -ld $(GOBIN)/geth-*
