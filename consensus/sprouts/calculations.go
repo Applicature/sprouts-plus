@@ -302,32 +302,32 @@ func accumulateRewards(config *params.SproutsConfig, header *types.Header, state
 	// first estimate complete reward
 	reward := new(big.Int).Set(estimateBlockReward(header))
 
-	// now form rewards to charity and r&d, which take 16% combined
+	// now form rewards to charity and r&d, which take 8% each
 	bruttoReward := new(big.Int).Set(reward)
+	bruttoReward.Mul(bruttoReward, big8)
 	bruttoReward.Div(bruttoReward, big100)
-	bruttoReward.Mul(bruttoReward, big16)
 
 	// minter's reward is the rest
 	nettoReward := new(big.Int).Set(reward)
 	nettoReward.Sub(nettoReward, bruttoReward)
+	nettoReward.Sub(nettoReward, bruttoReward)
 
 	// add rewards to balances
 	state.AddBalance(header.Coinbase, nettoReward)
-	state.AddBalance(config.RewardsAccount, bruttoReward)
+	state.AddBalance(config.RewardsCharityAccount, bruttoReward)
+	state.AddBalance(config.RewardsRDAccount, bruttoReward)
 }
 
 // total reward for the block
 // 8% annual reward split in 365 daily rewards
 func estimateBlockReward(header *types.Header) *big.Int {
-	return big.NewInt(100)
-	// TODO correct formula
-	// stake, err := extractStake(header)
-	// if err != nil {
-	// 	log.Warn(err.Error())
-	// 	return nil
-	// }
-	// rewardCoinYear := uint64(centValue * 8)
-	// return new(big.Int).SetUint64(stake.Age * 33 / (365*33 + 8) * rewardCoinYear)
+	stake, err := extractStake(header)
+	if err != nil {
+		log.Warn(err.Error())
+		return big0
+	}
+	rewardCoinYear := uint64(centValue * 0.0212)
+	return new(big.Int).SetUint64(stake.Age * 33 / (365*33 + 8) * rewardCoinYear)
 }
 
 // borrowing two PoA (clique) methods for signing blocks:

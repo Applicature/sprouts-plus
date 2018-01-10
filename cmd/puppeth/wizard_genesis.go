@@ -102,8 +102,9 @@ func (w *wizard) makeGenesis() {
 	case choice == "3":
 		genesis.Difficulty = big.NewInt(1)
 		genesis.Config.Sprouts = &params.SproutsConfig{
-			RewardsAccount:      common.Address{},
-			DistributionAccount: common.Address{},
+			RewardsCharityAccount: common.Address{},
+			RewardsRDAccount:      common.Address{},
+			DistributionAccount:   common.Address{},
 
 			CoinAgeLifetime:     big.NewInt(60 * 60 * 24 * 30 * 12),
 			CoinAgePeriod:       big.NewInt(60 * 60 * 24 * 3),
@@ -118,12 +119,21 @@ func (w *wizard) makeGenesis() {
 		genesis.Config.EIP150Block = big.NewInt(0)
 
 		fmt.Println()
-		fmt.Println("Who is a rewards account?")
+		fmt.Println("Who is a charity rewards account?")
 
 		if address := w.readAddress(); address != nil {
-			genesis.Config.Sprouts.RewardsAccount = *address
+			genesis.Config.Sprouts.RewardsCharityAccount = *address
 		} else {
-			log.Crit("Can't proceed without reward address")
+			log.Crit("Can't proceed without charity rewards address")
+		}
+
+		fmt.Println()
+		fmt.Println("Who is a R&D rewards account?")
+
+		if address := w.readAddress(); address != nil {
+			genesis.Config.Sprouts.RewardsRDAccount = *address
+		} else {
+			log.Crit("Can't proceed without R&D rewards address")
 		}
 
 		fmt.Println()

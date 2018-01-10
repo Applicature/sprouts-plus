@@ -89,8 +89,9 @@ var (
 		ByzantiumBlock: big.NewInt(0),
 
 		Sprouts: &SproutsConfig{
-			RewardsAccount:      common.Address{},
-			DistributionAccount: common.Address{},
+			RewardsCharityAccount: common.Address{},
+			RewardsRDAccount:      common.Address{},
+			DistributionAccount:   common.Address{},
 
 			CoinAgeLifetime:     big.NewInt(60 * 60 * 24 * 30 * 12),
 			CoinAgePeriod:       big.NewInt(60 * 60 * 24 * 3),
@@ -168,8 +169,9 @@ func (c *CliqueConfig) String() string {
 
 // SproutsConfig is the consensus engine configs for proof-of-stake based sealing.
 type SproutsConfig struct {
-	RewardsAccount      common.Address `json:"rewardsAcc"`
-	DistributionAccount common.Address `json:"distributionAcc"`
+	RewardsCharityAccount common.Address `json:"rewardsCharityAcc"`
+	RewardsRDAccount      common.Address `json:"rewardsRDAcc"`
+	DistributionAccount   common.Address `json:"distributionAcc"`
 
 	CoinAgeLifetime     *big.Int `json:"coinageLifetime"`     // how far down the chain to accumulate transaction values
 	CoinAgePeriod       *big.Int `json:"coinagePeriod"`       // how often to recalculate coin age in db; 3 days (equals to staking time)
