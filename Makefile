@@ -145,4 +145,5 @@ geth-sprouts: geth-linux-386 geth-windows-386 geth-darwin-386
 	# geth-linux-amd64 geth-windows-amd64 geth-darwin-amd64
 	@echo "Cross compilation for Sprouts+ done:"
 	@ls -ld $(GOBIN)/geth-*
-	@md5 $(GOBIN)/geth-* > $(GOBIN)/checksum.md5
+  # TODO make this portable
+	@md5sum $(GOBIN)/geth-* > $(GOBIN)/checksum.md5
