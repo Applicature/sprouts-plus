@@ -93,10 +93,10 @@ var (
 			RewardsRDAccount:      common.Address{},
 			DistributionAccount:   common.Address{},
 
-			CoinAgeLifetime:     big.NewInt(60 * 60 * 24 * 30 * 12),
-			CoinAgePeriod:       big.NewInt(60 * 60 * 24 * 3),
-			CoinAgeFermentation: big.NewInt(60 * 60 * 24 * 30),
-			BlockPeriod:         10,
+			CoinAgeLifetime:      big.NewInt(60 * 60 * 24 * 30 * 12),
+			CoinAgeHoldingPeriod: big.NewInt(60 * 60 * 24 * 3),
+			CoinAgeFermentation:  big.NewInt(60 * 60 * 24 * 30),
+			BlockPeriod:          10,
 		},
 	}
 
@@ -173,10 +173,10 @@ type SproutsConfig struct {
 	RewardsRDAccount      common.Address `json:"rewardsRDAcc"`
 	DistributionAccount   common.Address `json:"distributionAcc"`
 
-	CoinAgeLifetime     *big.Int `json:"coinageLifetime"`     // how far down the chain to accumulate transaction values
-	CoinAgePeriod       *big.Int `json:"coinagePeriod"`       // how often to recalculate coin age in db; 3 days (equals to staking time)
-	CoinAgeFermentation *big.Int `json:"coinageFermentation"` // how long coins must be held to result in positive coin age
-	BlockPeriod         uint64   `json:"blockPeriod"`         // min period between blocks
+	CoinAgeLifetime      *big.Int `json:"coinageLifetime"`     // how far down the chain to accumulate transaction values
+	CoinAgeHoldingPeriod *big.Int `json:"coinagePeriod"`       // staking time or for how long after a successful stake, staked amount can’t be used for another stake
+	CoinAgeFermentation  *big.Int `json:"coinageFermentation"` // how long coins must be held to result in positive coin age
+	BlockPeriod          uint64   `json:"blockPeriod"`         // min period between blocks
 }
 
 func (c *SproutsConfig) String() string {
