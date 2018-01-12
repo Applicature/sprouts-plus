@@ -141,6 +141,8 @@ geth-windows-amd64:
 	@echo "Windows amd64 cross compilation done:"
 	@ls -ld $(GOBIN)/geth-windows-* | grep amd64
 
-geth-sprouts: geth-linux-386 geth-linux-amd64 geth-windows-386 geth-windows-amd64  geth-darwin-386 geth-darwin-amd64
+geth-sprouts: geth-linux-386 geth-windows-386 geth-darwin-386
+	# geth-linux-amd64 geth-windows-amd64 geth-darwin-amd64
 	@echo "Cross compilation for Sprouts+ done:"
 	@ls -ld $(GOBIN)/geth-*
+	@md5 $(GOBIN)/geth-* > $(GOBIN)/checksum.md5
