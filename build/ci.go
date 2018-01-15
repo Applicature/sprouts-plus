@@ -34,6 +34,7 @@ Available commands are:
    xcode      [ -local ] [ -sign key-id ] [-deploy repo] [ -upload dest ]                      -- creates an iOS XCode framework
    xgo        [ -alltools ] [ options ]                                                        -- cross builds according to options
    purge      [ -store blobstore ] [ -days threshold ]                                         -- purges old archives from the blobstore
+	 mistconfig [ -url http://where/ ]																													 -- creates clientBinaries.json for Mist
 
 For all commands, -n prevents execution of external programs (dry run mode).
 
@@ -44,6 +45,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"go/parser"
@@ -127,10 +129,14 @@ var (
 var GOBIN, _ = filepath.Abs(filepath.Join("build", "bin"))
 
 func executablePath(name string) string {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == "windows" || strings.Contains(name, "windows") {
 		name += ".exe"
 	}
 	return filepath.Join(GOBIN, name)
+}
+
+func refineGethArchiveFiles(platform string) {
+	gethArchiveFiles[1] = executablePath("geth-" + platform)
 }
 
 func main() {
@@ -163,6 +169,8 @@ func main() {
 		doXgo(os.Args[2:])
 	case "purge":
 		doPurge(os.Args[2:])
+	case "mistconfig":
+		doMist(os.Args[2:])
 	default:
 		log.Fatal("unknown command ", os.Args[1])
 	}
@@ -359,13 +367,14 @@ func doArchive(cmdline []string) {
 		geth     = "geth-" + base + ext
 		alltools = "geth-alltools-" + base + ext
 	)
+	refineGethArchiveFiles(*arch)
 	maybeSkipArchive(env)
 	if err := build.WriteArchive(geth, gethArchiveFiles); err != nil {
 		log.Fatal(err)
 	}
-	if err := build.WriteArchive(alltools, allToolsArchiveFiles); err != nil {
-		log.Fatal(err)
-	}
+	// if err := build.WriteArchive(alltools, allToolsArchiveFiles); err != nil {
+	// 	log.Fatal(err)
+	// }
 	for _, archive := range []string{geth, alltools} {
 		if err := archiveUpload(archive, *upload, *signer); err != nil {
 			log.Fatal(err)
@@ -374,7 +383,14 @@ func doArchive(cmdline []string) {
 }
 
 func archiveBasename(arch string, env build.Environment) string {
-	platform := runtime.GOOS + "-" + arch
+	var platform string
+	// If full platform is passed as argument to archive,
+	// take it as is.
+	if strings.Contains(arch, "-") {
+		platform = arch
+	} else {
+		platform = runtime.GOOS + "-" + arch
+	}
 	if arch == "arm" {
 		platform += os.Getenv("GOARM")
 	}
@@ -438,10 +454,10 @@ func maybeSkipArchive(env build.Environment) {
 		log.Printf("skipping because this is a cron job")
 		os.Exit(0)
 	}
-	if env.Branch != "master" && !strings.HasPrefix(env.Tag, "v1.") {
-		log.Printf("skipping because branch %q, tag %q is not on the whitelist", env.Branch, env.Tag)
-		os.Exit(0)
-	}
+	// if env.Branch != "master" && !strings.HasPrefix(env.Tag, "v1.") {
+	// 	log.Printf("skipping because branch %q, tag %q is not on the whitelist", env.Branch, env.Tag)
+	// 	os.Exit(0)
+	// }
 }
 
 // Debian Packaging
@@ -1021,4 +1037,116 @@ func doPurge(cmdline []string) {
 	if err := build.AzureBlobstoreDelete(auth, blobs); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// Create clientBinaries.json taking into account .tar.gz and .zip archives in current directory.
+
+type gethArchiveMeta struct {
+	Download struct {
+		URL  string `json:"url"`
+		Type string `json:"type"`
+		MD5  string `json:"md5"`
+		Bin  string `json:"bin"`
+	} `json:"download"`
+	Bin      string `json:"bin"`
+	Commands struct {
+		Sanity struct {
+			Args   []string `json:"args"`
+			Output []string `json:"output"`
+		} `json:"sanity"`
+	} `json:"commands"`
+}
+
+// Keep swarm config out.
+// To think: should platforms be hardcoded?
+type mistConfig struct {
+	Clients struct {
+		Geth struct {
+			Version   string `json:"version"`
+			Platforms struct {
+				Linux struct {
+					X64  gethArchiveMeta `json:"x64"`
+					IA32 gethArchiveMeta `json:"ia32"`
+				} `json:"linux"`
+				Mac struct {
+					X64 gethArchiveMeta `json:"x64"`
+				} `json:"mac"`
+				Win struct {
+					X64  gethArchiveMeta `json:"x64"`
+					IA32 gethArchiveMeta `json:"ia32"`
+				} `json:"win"`
+			} `json:"platforms"`
+		} `json:"geth"`
+	} `json:"clients"`
+}
+
+func doMist(cmdline []string) {
+	var (
+		URL = flag.String("url", "", `Destination from where to download binaries`)
+	)
+	flag.CommandLine.Parse(cmdline)
+
+	files, err := ioutil.ReadDir("./")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var config mistConfig
+	config.Clients.Geth.Version = build.VERSION()
+
+	for _, file := range files {
+		fn := file.Name()
+		if strings.HasSuffix(fn, ".zip") || strings.HasSuffix(fn, ".tar.gz") {
+			archiveMeta, err := extractArchiveMeta(fn, *URL)
+			if err != nil {
+				log.Printf("Skipping file %s, reason: %s\n", fn, err.Error())
+				continue
+			}
+			archiveMeta.fillInCommands()
+			if strings.Contains(fn, "linux") {
+				if strings.Contains(fn, "amd64") {
+					config.Clients.Geth.Platforms.Linux.X64 = archiveMeta
+				} else if strings.Contains(fn, "386") {
+					config.Clients.Geth.Platforms.Linux.IA32 = archiveMeta
+				}
+			}
+			if strings.Contains(fn, "windows") {
+				if strings.Contains(fn, "amd64") {
+					config.Clients.Geth.Platforms.Win.X64 = archiveMeta
+				} else if strings.Contains(fn, "386") {
+					config.Clients.Geth.Platforms.Win.IA32 = archiveMeta
+				}
+			}
+			if strings.Contains(fn, "darwin") && strings.Contains(fn, "amd64") {
+				config.Clients.Geth.Platforms.Mac.X64 = archiveMeta
+			}
+		}
+	}
+
+	encoded, err := json.Marshal(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := ioutil.WriteFile("clientBinaries.json", encoded, os.ModePerm); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(config)
+}
+
+func extractArchiveMeta(fn, URL string) (meta gethArchiveMeta, err error) {
+	binaryNames, archiveType, md5, err := build.InvestigateArchive(fn)
+	if err != nil {
+		return
+	}
+	meta.Download.URL = URL + "/" + fn
+	meta.Download.Type = archiveType
+	meta.Download.MD5 = md5
+	meta.Download.Bin = binaryNames[1]
+	meta.Bin = binaryNames[0]
+	return
+}
+
+func (meta *gethArchiveMeta) fillInCommands() {
+	meta.Commands.Sanity.Args = []string{"version"}
+	meta.Commands.Sanity.Output = []string{"Geth", build.VERSION()}
 }
