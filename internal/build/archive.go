@@ -24,6 +24,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -282,6 +283,7 @@ func OpenArchive(filename string, file *os.File) (ArchiveReader, error) {
 
 // InvestigateArchive looks into an existing archive.
 func InvestigateArchive(filename string) (binaryNames [2]string, archiveType, md5String string, err error) {
+	log.Println("Investigating archive", filename)
 	file, err := os.Open(filename)
 	if err != nil {
 		return
@@ -305,7 +307,9 @@ func InvestigateArchive(filename string) (binaryNames [2]string, archiveType, md
 	}
 
 	archive.Close()
-	file.Seek(0, io.SeekStart)
+	if _, err = file.Seek(0, io.SeekStart); err != nil {
+		return
+	}
 	hash := md5.New()
 	if _, err = io.Copy(hash, file); err != nil {
 		return
