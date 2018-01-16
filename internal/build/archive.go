@@ -305,7 +305,7 @@ func InvestigateArchive(filename string) (binaryNames [2]string, archiveType, md
 	}
 
 	archive.Close()
-
+	file.Seek(0, io.SeekStart)
 	hash := md5.New()
 	if _, err = io.Copy(hash, file); err != nil {
 		return
