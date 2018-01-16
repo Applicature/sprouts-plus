@@ -1076,7 +1076,7 @@ type mistConfig struct {
 					IA32 gethArchiveMeta `json:"ia32"`
 				} `json:"win"`
 			} `json:"platforms"`
-		} `json:"geth"`
+		} `json:"Geth"`
 	} `json:"clients"`
 }
 
