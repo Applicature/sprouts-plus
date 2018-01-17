@@ -103,16 +103,17 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 				bAge.Add(bAge, caFromTx)
 				continue
 			}
-		}
-		toAddress := transaction.To()
+		} else {
+			toAddress := transaction.To()
 
-		if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
-			caFromTx.Set(transaction.Value())
-			caFromTx.Mul(caFromTx, timeDiff)
-			caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
+			if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
+				caFromTx.Set(transaction.Value())
+				caFromTx.Mul(caFromTx, timeDiff)
+				caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
 
-			// this transaction should be added to block age
-			bAge.Add(bAge, caFromTx)
+				// this transaction should be added to block age
+				bAge.Add(bAge, caFromTx)
+			}
 		}
 	}
 
@@ -129,7 +130,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	now := time.Now()
 
 	accumulateCoinAge := func(fromTime, number uint64) {
-		threeDaysAgo := uint64(now.AddDate(0, 0, -3).Unix())
+		holdingPeriod := uint64(now.Unix()) + engine.config.CoinAgeHoldingPeriod.Uint64()
 		for {
 			if number == 0 {
 				// add premined value
@@ -149,7 +150,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 				return
 			}
 			t := new(big.Int).Set(header.Time).Uint64()
-			if t > threeDaysAgo {
+			if t > holdingPeriod {
 				if stake, isMyStake := engine.stakeOfBlock(chain.GetBlock(header.Hash(), number)); isMyStake {
 					// can't use the staked amount yet
 					lastCoinAge.Age -= stake.Age
@@ -173,6 +174,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 		currentN--
 	}
 	accumulateCoinAge(uint64(now.Unix())-engine.config.CoinAgeLifetime.Uint64(), currentN)
+	lastCoinAge.Age += engine.getPremineCoinAge().Uint64()
 	lastCoinAge.Time = uint64(time.Now().Unix())
 	lastCoinAge.saveCoinAge(engine.db, engine.signer)
 

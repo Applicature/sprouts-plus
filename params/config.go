@@ -77,7 +77,7 @@ var (
 		},
 	}
 
-	// SproutsChainConfig contains the chain parameters to run a node on the Sprouts+ test network.
+	// SproutsChainConfig contains the chain parameters to run a node on the Sprouts+ main network.
 	SproutsChainConfig = &ChainConfig{
 		ChainId:        big.NewInt(8),
 		HomesteadBlock: big.NewInt(0),
@@ -94,9 +94,30 @@ var (
 			DistributionAccount:   common.Address{},
 
 			CoinAgeLifetime:      big.NewInt(60 * 60 * 24 * 30 * 12),
-			CoinAgeHoldingPeriod: big.NewInt(60 * 60 * 24 * 3),
-			CoinAgeFermentation:  big.NewInt(60 * 60 * 24 * 30),
+			CoinAgeHoldingPeriod: big.NewInt(60 * 60 * 24 * 1),
+			CoinAgeFermentation:  big.NewInt(60 * 60 * 24 * 7),
 			BlockPeriod:          10,
+		},
+	}
+
+	TestSproutsChainConfig = &ChainConfig{
+		ChainId:        big.NewInt(88),
+		HomesteadBlock: big.NewInt(0),
+		DAOForkBlock:   nil,
+		DAOForkSupport: false,
+		EIP150Block:    nil,
+		EIP155Block:    big.NewInt(0),
+		EIP158Block:    big.NewInt(0),
+		ByzantiumBlock: big.NewInt(0),
+
+		Sprouts: &SproutsConfig{
+			RewardsCharityAccount: common.HexToAddress("44aab7e615d0045989fd8fb06b79e7d4602d3da1"),
+			RewardsRDAccount:      common.HexToAddress("a3c40a1d50194c5b0febfa22acc95e13ba9fee1b"),
+			DistributionAccount:   common.HexToAddress("8a73a3174dc328b3e1a7291130897de65abca415"),
+			CoinAgeLifetime:       big.NewInt(60 * 60 * 24 * 30 * 12),
+			CoinAgeHoldingPeriod:  big.NewInt(60 * 60 * 24 * 1),
+			CoinAgeFermentation:   big.NewInt(60 * 60 * 24 * 7),
+			BlockPeriod:           10,
 		},
 	}
 
@@ -114,8 +135,7 @@ var (
 	// adding flags to the config to also have to set these fields.
 	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
-	TestChainConfig        = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), new(EthashConfig), nil, nil}
-	TestSproutsChainConfig = &ChainConfig{big.NewInt(88), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, new(SproutsConfig)}
+	TestChainConfig = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), new(EthashConfig), nil, nil}
 
 	TestRules = TestChainConfig.Rules(new(big.Int))
 )

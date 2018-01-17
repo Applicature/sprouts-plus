@@ -45,8 +45,8 @@ var (
 		RewardsCharityAccount: rewardsAddr,
 		RewardsRDAccount:      rewardsAddr,
 		CoinAgeLifetime:       big.NewInt(60 * 60 * 24 * 30 * 12),
-		CoinAgePeriod:         big.NewInt(60 * 60 * 24 * 3),
-		CoinAgeFermentation:   big.NewInt(60 * 60 * 24 * 30),
+		CoinAgeHoldingPeriod:  big.NewInt(60 * 60 * 24 * 1),
+		CoinAgeFermentation:   big.NewInt(60 * 60 * 24 * 7),
 		BlockPeriod:           10,
 	}
 
