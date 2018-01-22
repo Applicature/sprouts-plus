@@ -110,7 +110,7 @@ func (engine *PoS) Author(header *types.Header) (common.Address, error) {
 // given engine. Verifying the seal may be done optionally here, or explicitly
 // via the VerifySeal method.
 func (engine *PoS) VerifyHeader(chain consensus.ChainReader, header *types.Header, seal bool) error {
-	return engine.verifyHeader(chain, header, seal)
+	return engine.verifyHeader(chain, header, nil)
 }
 
 // VerifyHeaders is similar to VerifyHeader, but verifies a batch of headers
@@ -124,8 +124,7 @@ func (engine *PoS) VerifyHeaders(chain consensus.ChainReader, headers []*types.H
 
 	go func() {
 		for i, header := range headers {
-			// err := engine.VerifyHeader(chain, header, headers[:i])
-			err := engine.VerifyHeader(chain, header, seals[i])
+			err := engine.verifyHeader(chain, header, headers[:i])
 
 			select {
 			case <-abort:
@@ -285,7 +284,7 @@ func (engine *PoS) APIs(chain consensus.ChainReader) []rpc.API {
 	return nil
 }
 
-func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Header, seal bool) error {
+func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Header, parents []*types.Header) error {
 	// who is this?
 	if header.Number == nil {
 		return consensus.ErrInvalidNumber
@@ -317,7 +316,12 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 	}
 
 	// check parents
-	parent := chain.GetHeader(header.ParentHash, number-1)
+	var parent *types.Header
+	if len(parents) > 0 {
+		parent = parents[len(parents)-1]
+	} else {
+		parent = chain.GetHeader(header.ParentHash, number-1)
+	}
 	if parent == nil || parent.Number.Uint64() != number-1 || parent.Hash() != header.ParentHash {
 		return consensus.ErrUnknownAncestor
 	}
@@ -331,14 +335,11 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 		return err
 	}
 
-	if err := engine.checkKernelHash(chain.GetHeaderByNumber(number-1), header, stake); err != nil {
+	if err := engine.checkKernelHash(parent, header, stake); err != nil {
 		return err
 	}
 
-	if seal {
-		return engine.VerifySeal(chain, header)
-	}
-	return nil
+	return engine.VerifySeal(chain, header)
 }
 
 func (engine *PoS) getGenesis() *core.Genesis {
