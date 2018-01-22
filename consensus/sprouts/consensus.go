@@ -22,9 +22,8 @@ import (
 )
 
 const (
-	inMemorySignatures = 4096 // Number of recent block signatures to keep in memory
-	centValue          = 10000
-	coinValue          = 1000000
+	inMemorySignatures = 4096                // Number of recent block signatures to keep in memory
+	coinValue          = 1000000000000000000 // 1 coin is 10^18 of cents (weis) same as 1 ether
 )
 
 var (
@@ -206,7 +205,7 @@ func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) er
 	}
 
 	coinAge := engine.coinAge(chain)
-	copy(header.Extra[len(header.Extra)-extraSeal-extraCoinAge:], coinAge.bytes())
+	copy(header.Extra[len(header.Extra)-extraSeal-extraCoinAge:len(header.Extra)-extraSeal], coinAge.bytes())
 
 	return nil
 }
@@ -250,12 +249,12 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	stake, _ := extractStake(header)
 	age := stake.Age
 	// block coin age minimum 1 coin-day
-	if age == 0 {
-		age = 1
+	if age.Cmp(big0) == 0 {
+		age = big1
 	}
 
 	// Try to find kernel
-	hash, timestamp, err := engine.computeKernel(chain.GetHeaderByNumber(header.Number.Uint64()-1), new(big.Int).SetUint64(age), block.Header())
+	hash, timestamp, err := engine.computeKernel(chain.GetHeaderByNumber(header.Number.Uint64()-1), age, block.Header())
 	if err != nil {
 		return nil, err
 	}

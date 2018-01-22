@@ -13,12 +13,12 @@ import (
 )
 
 type coinAge struct {
-	Time uint64 `json:"time"`
-	Age  uint64 `json:"age"`
+	Time uint64   `json:"time"`
+	Age  *big.Int `json:"age"`
 }
 
 func (c *coinAge) bytes() []byte {
-	encodedAge := new(big.Int).SetUint64(c.Age).Bytes()
+	encodedAge := c.Age.Bytes()
 
 	encodedLength := big.NewInt(int64(len(encodedAge))).Bytes()
 
@@ -44,7 +44,7 @@ func parseStake(stakeBytes []byte) (*coinAge, error) {
 
 	// We can safely assume that len(ageLength) == 1
 	// Length can be up to 20 bytes, and that number can be encoded in one byte.
-	ca.Age = new(big.Int).SetBytes(stakeBytes[1 : 1+ageLength]).Uint64()
+	ca.Age = new(big.Int).SetBytes(stakeBytes[1 : 1+ageLength])
 
 	i := 20
 	for ; i < len(stakeBytes); i++ {
@@ -81,11 +81,11 @@ func (c *coinAge) saveCoinAge(db ethdb.Database, hash common.Address) error {
 func reduceCoinAge(state *state.StateDB, db ethdb.Database, header *types.Header, stake *big.Int) {
 	ca, err := loadCoinAge(db, header.Coinbase)
 	if err != nil || stake == nil {
-		ca = &coinAge{0, uint64(time.Now().Unix())}
+		ca = &coinAge{Age: new(big.Int).Set(big0), Time: uint64(time.Now().Unix())}
 	} else {
-		updatedAge := new(big.Int).SetUint64(ca.Age)
+		updatedAge := new(big.Int).Set(ca.Age)
 		updatedAge.Sub(updatedAge, stake)
-		ca.Age = updatedAge.Uint64()
+		ca.Age = updatedAge
 		ca.Time = uint64(time.Now().Unix())
 	}
 	ca.saveCoinAge(db, header.Coinbase)
@@ -96,7 +96,7 @@ type stake struct {
 	Hash      common.Hash `json:"hash"`
 	Timestamp uint64      `json:"timestamp"`
 	Kernel    []byte      `json:"kernel"`
-	Stake     uint64      `json:"stake"`
+	Stake     *big.Int    `json:"stake"`
 }
 
 type mappedStakes map[common.Hash]stake
@@ -122,7 +122,7 @@ func (engine *PoS) addStake(header *types.Header, ca *coinAge) {
 		Hash:      header.Hash(),
 		Timestamp: header.Time.Uint64(),
 		Kernel:    make([]byte, extraKernel),
-		Stake:     ca.Age,
+		Stake:     new(big.Int).Set(ca.Age),
 	}
 	copy(stakeMap[header.Hash()].Kernel, header.Extra[len(header.Extra)-extraCoinAge-extraKernel:])
 
