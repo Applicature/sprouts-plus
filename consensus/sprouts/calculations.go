@@ -162,7 +162,12 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 			}
 
 			diffTime := uint64(now.Unix()) - t
-			ba := engine.blockAge(chain.GetBlock(header.Hash(), number), new(big.Int).SetUint64(diffTime))
+			block := chain.GetBlock(header.Hash(), number)
+			if block == nil {
+				log.Warn("Couldn't get block", "number", number, "hash", header.Hash())
+				return
+			}
+			ba := engine.blockAge(block, new(big.Int).SetUint64(diffTime))
 			lastCoinAge.Age += ba.Uint64()
 
 			number--
