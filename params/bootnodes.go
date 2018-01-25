@@ -60,7 +60,7 @@ var DiscoveryV5Bootnodes = []string{
 }
 
 var SproutsTestnetBootnodes = []string{
-	"enode://f0507d8017cfda725591c7db078f83bd04882133ee34b9a99a23547960ebc97b08c5930bba39b6880bf65ba3229d9a1146f114105866da8aa71bcd9612a565ba@94.130.216.246:30305",
+	"enode://ab255b98fb31a921b8c972312942fb100dc81561251d63c5375f0558ce3a7d462f94d6e621ded41a5e18712e68a2dec83cefcc65b07235b7bf06c874168645ce@94.130.216.246:30306",
 }
 
 var SproutsBootnodes = []string{}
