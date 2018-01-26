@@ -1024,11 +1024,17 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 			cfg.NetworkId = 8
 		}
 		cfg.Genesis = core.DefaultSproutsGenesisBlock()
+
+		// run Sprouts+ networks in full sync only for now
+		cfg.SyncMode = downloader.FullSync
 	case ctx.GlobalBool(SproutsTestnetFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 88
 		}
 		cfg.Genesis = core.DefaultSproutsTestnetGenesisBlock()
+
+		// run Sprouts+ networks in full sync only for now
+		cfg.SyncMode = downloader.FullSync
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		// Create new developer account or reuse existing one
 		var (
