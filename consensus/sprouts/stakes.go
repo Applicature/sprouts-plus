@@ -19,7 +19,6 @@ type coinAge struct {
 
 func (c *coinAge) bytes() []byte {
 	encodedAge := c.Age.Bytes()
-
 	encodedLength := big.NewInt(int64(len(encodedAge))).Bytes()
 
 	encoded := append(encodedLength, encodedAge...)

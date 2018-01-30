@@ -116,8 +116,6 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 		}
 	}
 
-	// coin-days:
-	bAge.Div(bAge, new(big.Int).SetUint64(coinValue/(24*60*60)))
 	return bAge
 }
 
@@ -155,7 +153,6 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 				// add reward amount from the minted block to coin age
 				_, nettoReward := splitRewards(estimateBlockReward(header))
 				nettoReward.Mul(nettoReward, diffTime)
-				nettoReward.Div(nettoReward, new(big.Int).SetUint64(coinValue/(24*60*60)))
 				lastCoinAge.Age.Add(lastCoinAge.Age, nettoReward)
 			}
 
@@ -175,6 +172,9 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	// it still can use them for another stake. This ensures continuation of minting
 	// in any situation.
 	lastCoinAge.Age.Add(lastCoinAge.Age, engine.getPremineCoinAge())
+
+	// coin-days:
+	lastCoinAge.Age.Div(lastCoinAge.Age, new(big.Int).SetUint64(coinValue/(24*60*60)))
 
 	// stakeMaxAge would result in as fast kernel computation as possible,
 	// so there is no need to store meaningless information
@@ -197,7 +197,6 @@ func (engine *PoS) getPremineCoinAge() *big.Int {
 		if len(address) > 0 && engine.isItMe(address) {
 			premined := new(big.Int).Set(genesisAccount.Balance)
 			premined.Mul(premined, preAllocCoefficient)
-			premined.Div(premined, new(big.Int).SetUint64(coinValue/(24*60*60)))
 			return premined
 		}
 	}
@@ -238,7 +237,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 			timeWeight = stakeMaxTime
 		}
 		target := new(big.Int).Set(header.Difficulty)
-		target.Div(target, big.NewInt(100000))
+		// target.Div(target, big.NewInt(100000))
 		target.Mul(target, stake)
 		target.Mul(target, new(big.Int).SetUint64(timeWeight))
 		target.Div(target, new(big.Int).SetUint64(coinValue))
