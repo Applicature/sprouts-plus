@@ -37,7 +37,7 @@ var RinkebyV5Bootnodes = []string{}
 var DiscoveryV5Bootnodes = []string{}
 
 var SproutsTestnetBootnodes = []string{
-	"enode://8ce4c0158346ef4412965fb52ab0a6b960ca6e26ef7126f54f100a6f58eeae3a8103bd67342450db1440a070ead6c484fc660cf9cb75d328f8cee6ad421be6b2@94.130.216.246:30307",
+	"enode://4fe7d7076f4f35c11d4212cbd5f0d45a04ed3517504c30d52695bf86aa1e273b44e18aa7982638335013c99b0fcd97f58487c3c1aaa94f1ef277d87381309dd4@94.130.216.246:30308",
 }
 
 var SproutsBootnodes = []string{}
