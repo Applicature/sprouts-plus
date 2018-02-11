@@ -36,8 +36,8 @@ var RinkebyV5Bootnodes = []string{}
 // experimental RLPx v5 topic-discovery network.
 var DiscoveryV5Bootnodes = []string{}
 
-var SproutsTestnetBootnodes = []string{
+var AuxiliumTestnetBootnodes = []string{
 	"enode://4fe7d7076f4f35c11d4212cbd5f0d45a04ed3517504c30d52695bf86aa1e273b44e18aa7982638335013c99b0fcd97f58487c3c1aaa94f1ef277d87381309dd4@94.130.216.246:30308",
 }
 
-var SproutsBootnodes = []string{}
+var AuxiliumBootnodes = []string{}

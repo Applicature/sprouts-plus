@@ -77,8 +77,8 @@ var (
 		},
 	}
 
-	// SproutsChainConfig contains the chain parameters to run a node on the Sprouts+ main network.
-	SproutsChainConfig = &ChainConfig{
+	// AuxiliumChainConfig contains the chain parameters to run a node on the Auxilium main network.
+	AuxiliumChainConfig = &ChainConfig{
 		ChainId:        big.NewInt(8),
 		HomesteadBlock: big.NewInt(0),
 		DAOForkBlock:   nil,
@@ -88,7 +88,7 @@ var (
 		EIP158Block:    big.NewInt(0),
 		ByzantiumBlock: big.NewInt(0),
 
-		Sprouts: &SproutsConfig{
+		Aepos: &AeposConfig{
 			RewardsCharityAccount: common.Address{},
 			RewardsRDAccount:      common.Address{},
 			DistributionAccount:   common.Address{},
@@ -100,7 +100,7 @@ var (
 		},
 	}
 
-	TestSproutsChainConfig = &ChainConfig{
+	TestAuxiliumChainConfig = &ChainConfig{
 		ChainId:        big.NewInt(88),
 		HomesteadBlock: big.NewInt(0),
 		DAOForkBlock:   nil,
@@ -110,7 +110,7 @@ var (
 		EIP158Block:    big.NewInt(0),
 		ByzantiumBlock: big.NewInt(0),
 
-		Sprouts: &SproutsConfig{
+		Aepos: &AeposConfig{
 			RewardsCharityAccount: common.HexToAddress("44aab7e615d0045989fd8fb06b79e7d4602d3da1"),
 			RewardsRDAccount:      common.HexToAddress("a3c40a1d50194c5b0febfa22acc95e13ba9fee1b"),
 			DistributionAccount:   common.HexToAddress("8a73a3174dc328b3e1a7291130897de65abca415"),
@@ -163,9 +163,9 @@ type ChainConfig struct {
 	ByzantiumBlock *big.Int `json:"byzantiumBlock,omitempty"` // Byzantium switch block (nil = no fork, 0 = already on byzantium)
 
 	// Various consensus engines
-	Ethash  *EthashConfig  `json:"ethash,omitempty"`
-	Clique  *CliqueConfig  `json:"clique,omitempty"`
-	Sprouts *SproutsConfig `json:"sprouts,omitempty"`
+	Ethash *EthashConfig `json:"ethash,omitempty"`
+	Clique *CliqueConfig `json:"clique,omitempty"`
+	Aepos  *AeposConfig  `json:"aepos,omitempty"`
 }
 
 // EthashConfig is the consensus engine configs for proof-of-work based sealing.
@@ -187,8 +187,8 @@ func (c *CliqueConfig) String() string {
 	return "clique"
 }
 
-// SproutsConfig is the consensus engine configs for proof-of-stake based sealing.
-type SproutsConfig struct {
+// AeposConfig is the consensus engine configs for proof-of-stake based sealing.
+type AeposConfig struct {
 	RewardsCharityAccount common.Address `json:"rewardsCharityAcc"`
 	RewardsRDAccount      common.Address `json:"rewardsRDAcc"`
 	DistributionAccount   common.Address `json:"distributionAcc"`
@@ -199,8 +199,8 @@ type SproutsConfig struct {
 	BlockPeriod          uint64   `json:"blockPeriod"`         // min period between blocks
 }
 
-func (c *SproutsConfig) String() string {
-	return "sprouts"
+func (c *AeposConfig) String() string {
+	return "aepos"
 }
 
 // String implements the fmt.Stringer interface.
@@ -211,8 +211,8 @@ func (c *ChainConfig) String() string {
 		engine = c.Ethash
 	case c.Clique != nil:
 		engine = c.Clique
-	case c.Sprouts != nil:
-		engine = c.Sprouts
+	case c.Aepos != nil:
+		engine = c.Aepos
 	default:
 		engine = "unknown"
 	}

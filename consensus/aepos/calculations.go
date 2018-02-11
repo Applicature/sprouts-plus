@@ -1,4 +1,4 @@
-package sprouts
+package aepos
 
 import (
 	"bytes"
@@ -311,9 +311,9 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 }
 
 // 0.84 = netto reward
-// 0.08 = charity (to a Sprouts+ address C)
-// 0.08 = r&d (to a Sprouts+ address D)
-func accumulateRewards(config *params.SproutsConfig, header *types.Header, state *state.StateDB) {
+// 0.08 = charity (to a Auxilium address C)
+// 0.08 = r&d (to a Auxilium address D)
+func accumulateRewards(config *params.AeposConfig, header *types.Header, state *state.StateDB) {
 	// first estimate complete reward
 	reward := new(big.Int).Set(estimateBlockReward(header))
 

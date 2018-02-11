@@ -142,7 +142,7 @@ geth-windows-amd64:
 	@ls -ld $(GOBIN)/geth-windows-* | grep amd64
 
 geth-sprouts: geth-linux-386 geth-windows-386 geth-linux-amd64 geth-windows-amd64 geth-darwin-amd64
-	@echo "Cross compilation for Sprouts+ done:"
+	@echo "Cross compilation for Auxilium done:"
 	@ls -ld $(GOBIN)/geth-*
 	build/env.sh go run build/ci.go archive -arch windows-4.0-amd64
 	build/env.sh go run build/ci.go archive -arch windows-4.0-386

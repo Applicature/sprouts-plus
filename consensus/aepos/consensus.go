@@ -1,4 +1,4 @@
-package sprouts
+package aepos
 
 import (
 	"bytes"
@@ -66,7 +66,7 @@ var (
 )
 
 type PoS struct {
-	config        *params.SproutsConfig
+	config        *params.AeposConfig
 	db            ethdb.Database
 	signatures    *lru.ARCCache
 	signer        common.Address
@@ -76,7 +76,7 @@ type PoS struct {
 }
 
 // signers set to the ones provided by the user.
-func New(config *params.SproutsConfig, db ethdb.Database) *PoS {
+func New(config *params.AeposConfig, db ethdb.Database) *PoS {
 	signatures, _ := lru.NewARC(inMemorySignatures)
 	conf := *config
 	return &PoS{
@@ -343,5 +343,5 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 
 func (engine *PoS) getGenesis() *core.Genesis {
 	// TODO return main net as well
-	return core.DefaultSproutsTestnetGenesisBlock()
+	return core.DefaultAuxiliumTestnetGenesisBlock()
 }

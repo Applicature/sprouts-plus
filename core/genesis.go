@@ -342,19 +342,19 @@ func DefaultRinkebyGenesisBlock() *Genesis {
 	}
 }
 
-func DefaultSproutsGenesisBlock() *Genesis {
+func DefaultAuxiliumGenesisBlock() *Genesis {
 	// TODO define
 	return &Genesis{}
 }
 
-func DefaultSproutsTestnetGenesisBlock() *Genesis {
+func DefaultAuxiliumTestnetGenesisBlock() *Genesis {
 	return &Genesis{
-		Config:     params.TestSproutsChainConfig,
+		Config:     params.TestAuxiliumChainConfig,
 		Timestamp:  1514520146,
 		ExtraData:  hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
 		GasLimit:   4700000,
 		Difficulty: big.NewInt(1),
-		Alloc:      decodePrealloc(sproutsTestAllocData),
+		Alloc:      decodePrealloc(auxiliumTestAllocData),
 	}
 }
 

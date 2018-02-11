@@ -1,4 +1,4 @@
-package sprouts
+package aepos
 
 import (
 	"bytes"
@@ -41,7 +41,7 @@ var (
 	startDate     = time.Date(2017, 12, 12, 13, 0, 0, 0, time.UTC)
 	rewardsKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 	rewardsAddr   = crypto.PubkeyToAddress(rewardsKey.PublicKey)
-	sproutsConfig = params.SproutsConfig{
+	sproutsConfig = params.AeposConfig{
 		RewardsCharityAccount: rewardsAddr,
 		RewardsRDAccount:      rewardsAddr,
 		CoinAgeLifetime:       big.NewInt(60 * 60 * 24 * 30 * 12),
@@ -101,7 +101,7 @@ func initBlockchainStructures() (*ethdb.MemDatabase, *core.Genesis, *PoS) {
 		engine = New(&sproutsConfig, db)
 
 		genesis = &core.Genesis{
-			Config:     params.TestSproutsChainConfig,
+			Config:     params.TestAuxiliumChainConfig,
 			Timestamp:  uint64(startDate.Unix()),
 			Difficulty: big0,
 			ExtraData:  make([]byte, extraDefault+extraSeal+extraKernel+extraCoinAge),
@@ -132,7 +132,7 @@ func TestGeneration(t *testing.T) {
 	)
 
 	blocks, _ :=
-		GenerateChain(&sproutsConfig, params.TestSproutsChainConfig, genesisBlock, db, 1000, func(i int, b *BlockGen) {
+		GenerateChain(&sproutsConfig, params.TestAuxiliumChainConfig, genesisBlock, db, 1000, func(i int, b *BlockGen) {
 			// i starts from zero in GenerateChain so make sure that difficulty is non-zero
 			b.SetDifficulty(big.NewInt(int64(i + 1)))
 
@@ -189,7 +189,7 @@ func TestComputeDifficulty(t *testing.T) {
 	// during GenerateChain is const
 	n := 4
 	blocks, _ :=
-		GenerateChain(&sproutsConfig, params.TestSproutsChainConfig, genesisBlock, db, n, func(i int, b *BlockGen) {
+		GenerateChain(&sproutsConfig, params.TestAuxiliumChainConfig, genesisBlock, db, n, func(i int, b *BlockGen) {
 			// i starts from zero in GenerateChain so make sure that difficulty is non-zero
 			b.SetDifficulty(common.Big1)
 
@@ -255,7 +255,7 @@ func TestCoinAge(t *testing.T) {
 
 	n := 4
 	blocks, _ :=
-		GenerateChain(&sproutsConfig, params.TestSproutsChainConfig, genesisBlock, db, n, func(i int, b *BlockGen) {
+		GenerateChain(&sproutsConfig, params.TestAuxiliumChainConfig, genesisBlock, db, n, func(i int, b *BlockGen) {
 			b.SetDifficulty(big.NewInt(1))
 
 			b.SetCoinbase(rewardsAddr)

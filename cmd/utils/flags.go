@@ -138,13 +138,13 @@ var (
 		Name:  "rinkeby",
 		Usage: "Rinkeby network: pre-configured proof-of-authority test network",
 	}
-	SproutsTestnetFlag = cli.BoolFlag{
-		Name:  "sprouts.testnet",
-		Usage: "Sprouts test network: pre-configured proof-of-stake network",
+	AuxiliumTestnetFlag = cli.BoolFlag{
+		Name:  "auxilium.testnet",
+		Usage: "Auxilium test network: pre-configured proof-of-stake network",
 	}
-	SproutsFlag = cli.BoolFlag{
-		Name:  "sprouts",
-		Usage: "Sprouts network: pre-configured proof-of-stake network",
+	AuxiliumFlag = cli.BoolFlag{
+		Name:  "auxilium",
+		Usage: "Auxilium network: pre-configured proof-of-stake network",
 	}
 	DeveloperFlag = cli.BoolFlag{
 		Name:  "dev",
@@ -532,10 +532,10 @@ var (
 // the a subdirectory of the specified datadir will be used.
 func MakeDataDir(ctx *cli.Context) string {
 	if path := ctx.GlobalString(DataDirFlag.Name); path != "" {
-		if ctx.GlobalBool(SproutsTestnetFlag.Name) {
+		if ctx.GlobalBool(AuxiliumTestnetFlag.Name) {
 			return filepath.Join(path, "testnet")
 		}
-		if ctx.GlobalBool(SproutsFlag.Name) {
+		if ctx.GlobalBool(AuxiliumFlag.Name) {
 			return filepath.Join(path, "mainnet")
 		}
 		return path
@@ -592,10 +592,10 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.TestnetBootnodes
 	case ctx.GlobalBool(RinkebyFlag.Name):
 		urls = params.RinkebyBootnodes
-	case ctx.GlobalBool(SproutsTestnetFlag.Name):
-		urls = params.SproutsTestnetBootnodes
-	case ctx.GlobalBool(SproutsFlag.Name):
-		urls = params.SproutsBootnodes
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
+		urls = params.AuxiliumTestnetBootnodes
+	case ctx.GlobalBool(AuxiliumFlag.Name):
+		urls = params.AuxiliumBootnodes
 	}
 
 	cfg.BootstrapNodes = make([]*discover.Node, 0, len(urls))
@@ -863,9 +863,9 @@ func SetNodeConfig(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = ctx.GlobalString(DataDirFlag.Name)
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		cfg.DataDir = "" // unless explicitly requested, use memory databases
-	case ctx.GlobalBool(SproutsTestnetFlag.Name):
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "testnet")
-	case ctx.GlobalBool(SproutsFlag.Name):
+	case ctx.GlobalBool(AuxiliumFlag.Name):
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "mainnet")
 	}
 
@@ -968,7 +968,7 @@ func SetShhConfig(ctx *cli.Context, stack *node.Node, cfg *whisper.Config) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 	// Avoid conflicting network flags
-	checkExclusive(ctx, DeveloperFlag, TestnetFlag, RinkebyFlag, SproutsFlag, SproutsTestnetFlag)
+	checkExclusive(ctx, DeveloperFlag, TestnetFlag, RinkebyFlag, AuxiliumFlag, AuxiliumTestnetFlag)
 	checkExclusive(ctx, FastSyncFlag, LightModeFlag, SyncModeFlag)
 
 	ks := stack.AccountManager().Backends(keystore.KeyStoreType)[0].(*keystore.KeyStore)
@@ -1019,21 +1019,21 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 
 	// Override any default configs for hard coded networks.
 	switch {
-	case ctx.GlobalBool(SproutsFlag.Name):
+	case ctx.GlobalBool(AuxiliumFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 8
 		}
-		cfg.Genesis = core.DefaultSproutsGenesisBlock()
+		cfg.Genesis = core.DefaultAuxiliumGenesisBlock()
 
-		// run Sprouts+ networks in full sync only for now
+		// run Auxilium networks in full sync only for now
 		cfg.SyncMode = downloader.FullSync
-	case ctx.GlobalBool(SproutsTestnetFlag.Name):
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 88
 		}
-		cfg.Genesis = core.DefaultSproutsTestnetGenesisBlock()
+		cfg.Genesis = core.DefaultAuxiliumTestnetGenesisBlock()
 
-		// run Sprouts+ networks in full sync only for now
+		// run Auxilium networks in full sync only for now
 		cfg.SyncMode = downloader.FullSync
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		// Create new developer account or reuse existing one
@@ -1158,10 +1158,10 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultTestnetGenesisBlock()
 	case ctx.GlobalBool(RinkebyFlag.Name):
 		genesis = core.DefaultRinkebyGenesisBlock()
-	case ctx.GlobalBool(SproutsFlag.Name):
-		genesis = core.DefaultSproutsGenesisBlock()
-	case ctx.GlobalBool(SproutsTestnetFlag.Name):
-		genesis = core.DefaultSproutsTestnetGenesisBlock()
+	case ctx.GlobalBool(AuxiliumFlag.Name):
+		genesis = core.DefaultAuxiliumGenesisBlock()
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
+		genesis = core.DefaultAuxiliumTestnetGenesisBlock()
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		Fatalf("Developer chains are ephemeral")
 	}

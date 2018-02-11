@@ -52,7 +52,7 @@ func (w *wizard) makeGenesis() {
 	fmt.Println("Which consensus engine to use? (default = clique)")
 	fmt.Println(" 1. Ethash - proof-of-work")
 	fmt.Println(" 2. Clique - proof-of-authority")
-	fmt.Println(" 3. Sprouts+ - proof-of-stake")
+	fmt.Println(" 3. Aepos - proof-of-stake")
 
 	choice := w.read()
 	switch {
@@ -101,7 +101,7 @@ func (w *wizard) makeGenesis() {
 
 	case choice == "3":
 		genesis.Difficulty = big.NewInt(1)
-		genesis.Config.Sprouts = &params.SproutsConfig{
+		genesis.Config.Aepos = &params.AeposConfig{
 			RewardsCharityAccount: common.Address{},
 			RewardsRDAccount:      common.Address{},
 			DistributionAccount:   common.Address{},
@@ -122,7 +122,7 @@ func (w *wizard) makeGenesis() {
 		fmt.Println("Who is a charity rewards account?")
 
 		if address := w.readAddress(); address != nil {
-			genesis.Config.Sprouts.RewardsCharityAccount = *address
+			genesis.Config.Aepos.RewardsCharityAccount = *address
 		} else {
 			log.Crit("Can't proceed without charity rewards address")
 		}
@@ -131,7 +131,7 @@ func (w *wizard) makeGenesis() {
 		fmt.Println("Who is a R&D rewards account?")
 
 		if address := w.readAddress(); address != nil {
-			genesis.Config.Sprouts.RewardsRDAccount = *address
+			genesis.Config.Aepos.RewardsRDAccount = *address
 		} else {
 			log.Crit("Can't proceed without R&D rewards address")
 		}
@@ -140,7 +140,7 @@ func (w *wizard) makeGenesis() {
 		fmt.Println("Who is a distribution account?")
 
 		if address := w.readAddress(); address != nil {
-			genesis.Config.Sprouts.DistributionAccount = *address
+			genesis.Config.Aepos.DistributionAccount = *address
 		} else {
 			log.Crit("Can't proceed without distribution address")
 		}

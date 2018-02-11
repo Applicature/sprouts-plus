@@ -29,9 +29,9 @@ import (
 	"github.com/applicature/sprouts-plus/common"
 	"github.com/applicature/sprouts-plus/common/hexutil"
 	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/consensus/aepos"
 	"github.com/applicature/sprouts-plus/consensus/clique"
 	"github.com/applicature/sprouts-plus/consensus/ethash"
-	"github.com/applicature/sprouts-plus/consensus/sprouts"
 	"github.com/applicature/sprouts-plus/core"
 	"github.com/applicature/sprouts-plus/core/bloombits"
 	"github.com/applicature/sprouts-plus/core/types"
@@ -216,8 +216,8 @@ func CreateConsensusEngine(ctx *node.ServiceContext, config *Config, chainConfig
 		return clique.New(chainConfig.Clique, db)
 	}
 
-	if chainConfig.Sprouts != nil {
-		return sprouts.New(chainConfig.Sprouts, db)
+	if chainConfig.Aepos != nil {
+		return aepos.New(chainConfig.Aepos, db)
 	}
 
 	// Otherwise assume proof-of-work
@@ -339,13 +339,13 @@ func (s *Ethereum) StartMining(local bool) error {
 		}
 		clique.Authorize(eb, wallet.SignHash)
 	}
-	if sprouts, ok := s.engine.(*sprouts.PoS); ok {
+	if aepos, ok := s.engine.(*aepos.PoS); ok {
 		wallet, err := s.accountManager.Find(accounts.Account{Address: eb})
 		if wallet == nil || err != nil {
 			log.Error("Etherbase account unavailable locally", "err", err)
 			return fmt.Errorf("signer missing: %v", err)
 		}
-		sprouts.Authorize(eb, wallet.SignHash)
+		aepos.Authorize(eb, wallet.SignHash)
 	}
 	if local {
 		// If local (CPU) mining is started, we can disable the transaction rejection
