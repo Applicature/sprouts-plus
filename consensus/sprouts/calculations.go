@@ -73,7 +73,8 @@ func (engine *PoS) stakeOfBlock(block *types.Block) (*coinAge, bool) {
 	return stake, true
 }
 
-func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
+func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *big.Int) {
+	bValue := new(big.Int).Set(big0)
 	bAge := new(big.Int).Set(big0)
 	caFromTx := new(big.Int)
 
@@ -89,6 +90,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 
 				// this transaction should be taken from block age
 				bAge.Sub(bAge, caFromTx)
+				bValue.Sub(bValue, transaction.Value())
 				continue
 			}
 
@@ -101,6 +103,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
+				bValue.Add(bValue, transaction.Value())
 				continue
 			}
 		} else {
@@ -112,16 +115,17 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
+				bValue.Add(bValue, transaction.Value())
 			}
 		}
 	}
 
-	return bAge
+	return bValue, bAge
 }
 
 // only called by the sealer
 func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
-	lastCoinAge := &coinAge{0, new(big.Int).Set(big0)}
+	lastCoinAge := &coinAge{0, new(big.Int).Set(big0), new(big.Int).Set(big0)}
 
 	now := time.Now()
 
@@ -156,8 +160,9 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 				lastCoinAge.Age.Add(lastCoinAge.Age, nettoReward)
 			}
 
-			ba := engine.blockAge(chain.GetBlock(header.Hash(), number), diffTime)
-			lastCoinAge.Age.Add(lastCoinAge.Age, ba)
+			bValue, bAge := engine.blockAge(chain.GetBlock(header.Hash(), number), diffTime)
+			lastCoinAge.Age.Add(lastCoinAge.Age, bAge)
+			lastCoinAge.Value.Add(lastCoinAge.Value, bValue)
 
 			number--
 		}
@@ -168,6 +173,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 		currentN--
 	}
 	accumulateCoinAge(uint64(now.Unix())-engine.config.CoinAgeLifetime.Uint64(), currentN)
+
 	// Even if node has made a stake recently with premined coins,
 	// it still can use them for another stake. This ensures continuation of minting
 	// in any situation.
@@ -330,7 +336,7 @@ func estimateBlockReward(header *types.Header) *big.Int {
 	}
 	// 0.0212 from 1 coin
 	rewardCoinYear := uint64(21200000000000000)
-	r := stake.Age.Mul(stake.Age, new(big.Int).SetUint64(33))
+	r := stake.Value.Mul(stake.Value, new(big.Int).SetUint64(33))
 	r.Mul(r, new(big.Int).SetUint64(365*33+8))
 	return r.Mul(r, new(big.Int).SetUint64(rewardCoinYear))
 }

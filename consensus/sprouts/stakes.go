@@ -13,8 +13,9 @@ import (
 )
 
 type coinAge struct {
-	Time uint64   `json:"time"`
-	Age  *big.Int `json:"age"`
+	Time  uint64   `json:"time"`
+	Age   *big.Int `json:"age"`
+	Value *big.Int `json:"value"`
 }
 
 func (c *coinAge) bytes() []byte {
@@ -26,8 +27,17 @@ func (c *coinAge) bytes() []byte {
 		encoded = append(encoded, bytes.Repeat([]byte{0x00}, 20-len(encoded))...)
 	}
 
-	encoded = append(encoded, bytes.Repeat([]byte{0x00}, 32-20)...)
-	copy(encoded[20:], new(big.Int).SetUint64(c.Time).Bytes())
+	encodedValue := c.Value.Bytes()
+	encodedLength = big.NewInt(int64(len(encodedValue))).Bytes()
+
+	encoded = append(encoded, encodedLength...)
+	encoded = append(encoded, encodedValue...)
+	if len(encoded) < 40 {
+		encoded = append(encoded, bytes.Repeat([]byte{0x00}, 40-len(encoded))...)
+	}
+
+	encoded = append(encoded, bytes.Repeat([]byte{0x00}, 52-40)...)
+	copy(encoded[40:], new(big.Int).SetUint64(c.Time).Bytes())
 
 	return encoded
 }
@@ -45,13 +55,19 @@ func parseStake(stakeBytes []byte) (*coinAge, error) {
 	// Length can be up to 20 bytes, and that number can be encoded in one byte.
 	ca.Age = new(big.Int).SetBytes(stakeBytes[1 : 1+ageLength])
 
-	i := 20
+	// value is handled similarly to age
+	valueLength := new(big.Int).SetBytes(stakeBytes[20:21]).Uint64()
+
+	ca.Value = new(big.Int).SetBytes(stakeBytes[21 : 21+valueLength])
+
+	i := 40
 	for ; i < len(stakeBytes); i++ {
 		if stakeBytes[i] == 0 {
 			break
 		}
 	}
-	ca.Time = new(big.Int).SetBytes(stakeBytes[20:i]).Uint64()
+
+	ca.Time = new(big.Int).SetBytes(stakeBytes[40:i]).Uint64()
 	return ca, nil
 }
 

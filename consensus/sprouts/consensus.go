@@ -34,7 +34,7 @@ var (
 	// 32 bytes reserved + 65 for signature + 64 for kernel + 32 for stake
 	extraDefault = 32      // reserved bytes
 	extraKernel  = 32 + 32 // Fixed number of extra-data bytes reserved for kernel, hash and timestamp
-	extraCoinAge = 32      // Fixed number of extra-data bytes reserved for the stake
+	extraCoinAge = 52      // Fixed number of extra-data bytes reserved for the stake
 	extraSeal    = 65      // Fixed number of extra-data bytes reserved for signer seal
 )
 
