@@ -450,7 +450,7 @@ var (
 	ListenPortFlag = cli.IntFlag{
 		Name:  "port",
 		Usage: "Network listening port",
-		Value: 30303,
+		Value: 30308,
 	}
 	BootnodesFlag = cli.StringFlag{
 		Name:  "bootnodes",
@@ -607,12 +607,13 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		}
 		cfg.BootstrapNodes = append(cfg.BootstrapNodes, node)
 	}
+	fmt.Println("usual", cfg.BootstrapNodes)
 }
 
 // setBootstrapNodesV5 creates a list of bootstrap nodes from the command line
 // flags, reverting to pre-configured ones if none have been specified.
 func setBootstrapNodesV5(ctx *cli.Context, cfg *p2p.Config) {
-	urls := params.DiscoveryV5Bootnodes
+	urls := []string{} //params.DiscoveryV5Bootnodes
 	switch {
 	case ctx.GlobalIsSet(BootnodesFlag.Name) || ctx.GlobalIsSet(BootnodesV5Flag.Name):
 		if ctx.GlobalIsSet(BootnodesV5Flag.Name) {
@@ -635,6 +636,7 @@ func setBootstrapNodesV5(ctx *cli.Context, cfg *p2p.Config) {
 		}
 		cfg.BootstrapNodesV5 = append(cfg.BootstrapNodesV5, node)
 	}
+	fmt.Println("v5", cfg.BootstrapNodesV5)
 }
 
 // setListenAddress creates a TCP listening address string from set command
@@ -1022,11 +1024,17 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 			cfg.NetworkId = 8
 		}
 		cfg.Genesis = core.DefaultSproutsGenesisBlock()
+
+		// run Sprouts+ networks in full sync only for now
+		cfg.SyncMode = downloader.FullSync
 	case ctx.GlobalBool(SproutsTestnetFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 88
 		}
 		cfg.Genesis = core.DefaultSproutsTestnetGenesisBlock()
+
+		// run Sprouts+ networks in full sync only for now
+		cfg.SyncMode = downloader.FullSync
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		// Create new developer account or reuse existing one
 		var (

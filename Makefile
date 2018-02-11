@@ -149,4 +149,4 @@ geth-sprouts: geth-linux-386 geth-windows-386 geth-linux-amd64 geth-windows-amd6
 	build/env.sh go run build/ci.go archive -arch linux-amd64 -type tar
 	build/env.sh go run build/ci.go archive -arch linux-386 -type tar
 	build/env.sh go run build/ci.go archive -arch darwin-10.6-amd64 -type tar
-	build/env.sh go run build/ci.go mistconfig -url http://grow.sproutsplus.network
+	build/env.sh go run build/ci.go mistconfig -url http://grow.auxilium.global
