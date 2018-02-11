@@ -23,19 +23,21 @@ import (
 
 var (
 	big0   = big.NewInt(0)
+	big1   = big.NewInt(1)
 	big8   = big.NewInt(8)
 	big16  = big.NewInt(16)
 	big100 = big.NewInt(100)
 )
 
 var (
-	stakeMaxAge         uint64 // stake age of full weight
+	stakeMaxTime        uint64 // stake age of full weight
+	stakeMaxAge, _      = new(big.Int).SetString("999999999999999999999999999999999999999999999", 10)
 	preAllocCoefficient = new(big.Int).Lsh(big.NewInt(1), 256-200)
 )
 
 func init() {
 	d, _ := time.ParseDuration("2160h") // 90 days
-	stakeMaxAge = uint64(d)
+	stakeMaxTime = uint64(d)
 }
 
 func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
@@ -71,7 +73,8 @@ func (engine *PoS) stakeOfBlock(block *types.Block) (*coinAge, bool) {
 	return stake, true
 }
 
-func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
+func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *big.Int) {
+	bValue := new(big.Int).Set(big0)
 	bAge := new(big.Int).Set(big0)
 	caFromTx := new(big.Int)
 
@@ -84,10 +87,10 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
 
 				// this transaction should be taken from block age
 				bAge.Sub(bAge, caFromTx)
+				bValue.Sub(bValue, transaction.Value())
 				continue
 			}
 
@@ -97,10 +100,10 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
 				caFromTx.Mul(caFromTx, big.NewInt(100)) // experiment
-				caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
+				bValue.Add(bValue, transaction.Value())
 				continue
 			}
 		} else {
@@ -109,23 +112,20 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) *big.Int {
 			if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Div(caFromTx, new(big.Int).SetUint64(centValue))
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
+				bValue.Add(bValue, transaction.Value())
 			}
 		}
 	}
 
-	// coin-days:
-	bAge.Mul(bAge, new(big.Int).SetUint64(centValue))
-	bAge.Div(bAge, new(big.Int).SetUint64(coinValue/(24*60*60)))
-	return bAge
+	return bValue, bAge
 }
 
 // only called by the sealer
 func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
-	lastCoinAge := &coinAge{0, 0}
+	lastCoinAge := &coinAge{0, new(big.Int).Set(big0), new(big.Int).Set(big0)}
 
 	now := time.Now()
 
@@ -134,14 +134,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 		for {
 			if number == 0 {
 				// add premined value
-				header := chain.GetHeaderByNumber(number)
-				stateDB, err := state.New(header.Root, state.NewDatabase(engine.db))
-				if err == nil {
-					ba := big.NewInt(0).Set(stateDB.GetBalance(engine.signer))
-					ba.Mul(ba, preAllocCoefficient)
-					ba.Div(ba, new(big.Int).SetUint64(coinValue/(24*60*60)))
-					lastCoinAge.Age += ba.Uint64()
-				}
+				lastCoinAge.Age.Add(lastCoinAge.Age, engine.getPremineCoinAge())
 				return
 			}
 
@@ -149,26 +142,27 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 			if header == nil {
 				return
 			}
-			t := new(big.Int).Set(header.Time).Uint64()
-			if t > holdingPeriod {
-				if stake, isMyStake := engine.stakeOfBlock(chain.GetBlock(header.Hash(), number)); isMyStake {
-					// can't use the staked amount yet
-					lastCoinAge.Age -= stake.Age
-				}
-			}
 
+			t := new(big.Int).Set(header.Time).Uint64()
 			if t < fromTime {
 				return
 			}
+			diffTime := new(big.Int).SetUint64(uint64(now.Unix()) - t)
 
-			diffTime := uint64(now.Unix()) - t
-			block := chain.GetBlock(header.Hash(), number)
-			if block == nil {
-				log.Warn("Couldn't get block", "number", number, "hash", header.Hash())
-				return
+			if stake, isMyStake := engine.stakeOfBlock(chain.GetBlock(header.Hash(), number)); isMyStake {
+				if t > holdingPeriod {
+					// can't use the staked amount yet
+					lastCoinAge.Age.Sub(lastCoinAge.Age, stake.Age)
+				}
+				// add reward amount from the minted block to coin age
+				_, nettoReward := splitRewards(estimateBlockReward(header))
+				nettoReward.Mul(nettoReward, diffTime)
+				lastCoinAge.Age.Add(lastCoinAge.Age, nettoReward)
 			}
-			ba := engine.blockAge(block, new(big.Int).SetUint64(diffTime))
-			lastCoinAge.Age += ba.Uint64()
+
+			bValue, bAge := engine.blockAge(chain.GetBlock(header.Hash(), number), diffTime)
+			lastCoinAge.Age.Add(lastCoinAge.Age, bAge)
+			lastCoinAge.Value.Add(lastCoinAge.Value, bValue)
 
 			number--
 		}
@@ -179,10 +173,22 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 		currentN--
 	}
 	accumulateCoinAge(uint64(now.Unix())-engine.config.CoinAgeLifetime.Uint64(), currentN)
-	lastCoinAge.Age += engine.getPremineCoinAge().Uint64()
+
+	// Even if node has made a stake recently with premined coins,
+	// it still can use them for another stake. This ensures continuation of minting
+	// in any situation.
+	lastCoinAge.Age.Add(lastCoinAge.Age, engine.getPremineCoinAge())
+
+	// coin-days:
+	lastCoinAge.Age.Div(lastCoinAge.Age, new(big.Int).SetUint64(coinValue/(24*60*60)))
+
+	// stakeMaxAge would result in as fast kernel computation as possible,
+	// so there is no need to store meaningless information
+	if lastCoinAge.Age.Cmp(stakeMaxAge) == 1 {
+		lastCoinAge.Age.Set(stakeMaxAge)
+	}
 	lastCoinAge.Time = uint64(time.Now().Unix())
 	lastCoinAge.saveCoinAge(engine.db, engine.signer)
-
 	return lastCoinAge
 }
 
@@ -195,7 +201,9 @@ func (engine *PoS) getPremineCoinAge() *big.Int {
 	}
 	for address, genesisAccount := range genesis.Alloc {
 		if len(address) > 0 && engine.isItMe(address) {
-			return genesisAccount.Balance.Mul(genesisAccount.Balance, preAllocCoefficient)
+			premined := new(big.Int).Set(genesisAccount.Balance)
+			premined.Mul(premined, preAllocCoefficient)
+			return premined
 		}
 	}
 	return big0
@@ -231,8 +239,8 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 	for t := 60; t >= 0; t-- {
 		step := uint64(t)
 		timeWeight := header.Time.Uint64() - step - prevBlock.Time.Uint64()
-		if timeWeight > stakeMaxAge {
-			timeWeight = stakeMaxAge
+		if timeWeight > stakeMaxTime {
+			timeWeight = stakeMaxTime
 		}
 		target := new(big.Int).Set(header.Difficulty)
 		// target.Div(target, big.NewInt(100000))
@@ -243,7 +251,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 
 		rawHash := append(stakeModifier.Bytes(), prevBlock.Time.Bytes()...)
 		rawHash = append(rawHash, []byte(strconv.FormatUint(uint64(binary.Size(*header)), 10))...)
-		// rawHash = append(rawHash, []byte(strconv.FormatUint(prevBlock.Time.Uint64(), 10))...)
+		rawHash = append(rawHash, []byte(strconv.FormatUint(prevBlock.Time.Uint64(), 10))...)
 		rawHash = append(rawHash, []byte(strconv.FormatUint(header.Time.Uint64()-step, 10))...)
 		h1 := sha256.New()
 		h1.Write(rawHash)
@@ -273,7 +281,7 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 
 	hash, timestamp, err := engine.computeKernel(
 		prevBlock,
-		new(big.Int).SetUint64(stake.Age),
+		new(big.Int).Set(stake.Age),
 		header)
 	if err != nil {
 		return err
@@ -309,15 +317,8 @@ func accumulateRewards(config *params.SproutsConfig, header *types.Header, state
 	// first estimate complete reward
 	reward := new(big.Int).Set(estimateBlockReward(header))
 
-	// now form rewards to charity and r&d, which take 8% each
-	bruttoReward := new(big.Int).Set(reward)
-	bruttoReward.Mul(bruttoReward, big8)
-	bruttoReward.Div(bruttoReward, big100)
-
-	// minter's reward is the rest
-	nettoReward := new(big.Int).Set(reward)
-	nettoReward.Sub(nettoReward, bruttoReward)
-	nettoReward.Sub(nettoReward, bruttoReward)
+	// now form rewards to charity and r&d (brutto) and minter (netto)
+	bruttoReward, nettoReward := splitRewards(reward)
 
 	// add rewards to balances
 	state.AddBalance(header.Coinbase, nettoReward)
@@ -333,8 +334,25 @@ func estimateBlockReward(header *types.Header) *big.Int {
 		log.Warn(err.Error())
 		return big0
 	}
-	rewardCoinYear := uint64(centValue * 0.0212)
-	return new(big.Int).SetUint64(stake.Age * 33 / (365*33 + 8) * rewardCoinYear)
+	// 0.0212 from 1 coin
+	rewardCoinYear := uint64(21200000000000000)
+	r := stake.Value.Mul(stake.Value, new(big.Int).SetUint64(33))
+	r.Mul(r, new(big.Int).SetUint64(365*33+8))
+	return r.Mul(r, new(big.Int).SetUint64(rewardCoinYear))
+}
+
+func splitRewards(totalReward *big.Int) (brutto, netto *big.Int) {
+	// rewards to charity and r&d take 8% each
+	brutto = new(big.Int).Set(totalReward)
+	brutto.Mul(brutto, big8)
+	brutto.Div(brutto, big100)
+
+	// minter's reward is the rest
+	netto = new(big.Int).Set(totalReward)
+	netto.Sub(netto, brutto)
+	netto.Sub(netto, brutto)
+
+	return
 }
 
 // borrowing two PoA (clique) methods for signing blocks:

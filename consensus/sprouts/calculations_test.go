@@ -150,7 +150,7 @@ func TestGeneration(t *testing.T) {
 			hashedTimestamp := make([]byte, 32)
 			h.Read(hashedTimestamp)
 
-			coinAge := &coinAge{0, uint64(time.Now().Unix())}
+			coinAge := &coinAge{Time: uint64(time.Now().Unix()), Age: new(big.Int).Set(big0)}
 
 			extra := bytes.Repeat([]byte{0x00}, extraDefault+extraSeal+extraKernel+extraCoinAge)
 			copy(extra[len(extra)-extraCoinAge-extraKernel:], hash.Bytes())
@@ -206,7 +206,7 @@ func TestComputeDifficulty(t *testing.T) {
 			hashedTimestamp := make([]byte, 32)
 			h.Read(hashedTimestamp)
 
-			coinAge := &coinAge{0, uint64(time.Now().Unix())}
+			coinAge := &coinAge{Time: uint64(time.Now().Unix()), Age: new(big.Int).Set(big0)}
 
 			extra := bytes.Repeat([]byte{0x00}, extraDefault+extraSeal+extraKernel+extraCoinAge)
 			copy(extra[len(extra)-extraCoinAge-extraKernel:], hash.Bytes())
@@ -271,7 +271,7 @@ func TestCoinAge(t *testing.T) {
 			hashedTimestamp := make([]byte, 32)
 			h.Read(hashedTimestamp)
 
-			coinAge := &coinAge{0, uint64(time.Now().Unix())}
+			coinAge := &coinAge{Age: new(big.Int).Set(big0), Time: uint64(time.Now().Unix())}
 
 			extra := bytes.Repeat([]byte{0x00}, extraDefault+extraSeal+extraKernel+extraCoinAge)
 			copy(extra[len(extra)-extraCoinAge-extraKernel:], hash.Bytes())
@@ -299,7 +299,7 @@ func TestCoinAge(t *testing.T) {
 	statedb.AddBalance(rewardsAddr, big.NewInt(10))
 
 	coinageNew := engine.coinAge(blockchain)
-	if coinage.Age <= 0 || coinage.Time <= 0 || coinage.Age != coinageNew.Age || coinage.Time != coinageNew.Time {
+	if coinage.Age.Cmp(big0) <= 0 || coinage.Time <= 0 || coinage.Age.Cmp(coinageNew.Age) != 0 || coinage.Time != coinageNew.Time {
 		t.Fatal("incorrect coin age calculation, value shouldn't have changed:", coinage, coinageNew)
 	}
 }
