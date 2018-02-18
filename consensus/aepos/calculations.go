@@ -48,14 +48,20 @@ func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
 
 	diff := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Difficulty)
 
-	// 1 week / 10 min
-	targetSpacing := uint64(10 * 60)
+	// 1 week / 2.5 min
+	targetSpacing := uint64(2.5 * 60)
 	nInt := uint64((7 * 24 * 60 * 60) / targetSpacing)
 
 	prevBlockTime := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Time)
 	timeDelta := prevBlockTime.Sub(prevBlockTime, chain.GetHeaderByNumber(number-2).Time).Uint64()
 	diff.Mul(diff, new(big.Int).SetUint64(((nInt-1)*targetSpacing + 2*timeDelta)))
+	// diff.Mul(diff, new(big.Int).SetUint64(coinValue))
 	diff.Div(diff, new(big.Int).SetUint64((nInt+1)*targetSpacing))
+
+	// difficulty shouldn't be less than 1 to ensure that staking continues
+	if diff.Cmp(big1) == -1 {
+		diff.Set(big1)
+	}
 
 	return diff
 }
