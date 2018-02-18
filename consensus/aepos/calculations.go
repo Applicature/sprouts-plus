@@ -48,8 +48,8 @@ func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
 
 	diff := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Difficulty)
 
-	// 1 week / 2.5 min
-	targetSpacing := uint64(2.5 * 60)
+	// 1 week / 10 min
+	targetSpacing := uint64(10 * 60)
 	nInt := uint64((7 * 24 * 60 * 60) / targetSpacing)
 
 	prevBlockTime := new(big.Int).Set(chain.GetHeaderByNumber(number - 1).Time)
