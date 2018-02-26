@@ -203,8 +203,13 @@ func (engine *PoS) Prepare(chain consensus.ChainReader, header *types.Header) er
 		header.Time = big.NewInt(time.Now().Unix())
 	}
 
-	coinAge := engine.coinAge(chain)
-	copy(header.Extra[len(header.Extra)-extraSeal-extraCoinAge:len(header.Extra)-extraSeal], coinAge.bytes())
+	stake := engine.coinAge(chain)
+	// block coin age minimum 1 coin-day
+	if stake.Age.Cmp(big0) == 0 {
+		stake.Age.Set(big1)
+	}
+
+	copy(header.Extra[len(header.Extra)-extraSeal-extraCoinAge:len(header.Extra)-extraSeal], stake.bytes())
 
 	return nil
 }
@@ -246,14 +251,9 @@ func (engine *PoS) Seal(chain consensus.ChainReader, block *types.Block, stop <-
 	// As Seal method is alwayd called after Prepare, extractStake here
 	// can be guaranteed to work here
 	stake, _ := extractStake(header)
-	age := stake.Age
-	// block coin age minimum 1 coin-day
-	if age.Cmp(big0) == 0 {
-		age = big1
-	}
 
 	// Try to find kernel
-	hash, timestamp, err := engine.computeKernel(chain.GetHeaderByNumber(header.Number.Uint64()-1), age, block.Header())
+	hash, timestamp, err := engine.computeKernel(chain.GetHeaderByNumber(header.Number.Uint64()-1), stake, block.Header())
 	if err != nil {
 		return nil, err
 	}

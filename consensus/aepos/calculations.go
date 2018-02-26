@@ -93,6 +93,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
+				caFromTx.Mul(caFromTx, big.NewInt(1000))
 
 				// this transaction should be taken from block age
 				bAge.Sub(bAge, caFromTx)
@@ -105,7 +106,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Mul(caFromTx, big.NewInt(100)) // experiment
+				caFromTx.Mul(caFromTx, big.NewInt(1000)) // experiment
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
@@ -118,6 +119,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 			if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
+				caFromTx.Mul(caFromTx, big.NewInt(1000))
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
@@ -232,7 +234,7 @@ func equalAddresses(a, b common.Address) bool {
 	return bytes.Equal(a.Bytes(), b.Bytes())
 }
 
-func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
+func (engine *PoS) computeKernel(prevBlock *types.Header, stake *coinAge, header *types.Header) (hash *big.Int, timestamp *big.Int, err error) {
 	hash = new(big.Int)
 	timestamp = new(big.Int).SetInt64(0)
 	err = errCantFindKernel
@@ -250,7 +252,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 		}
 		target := new(big.Int).Set(header.Difficulty)
 		// target.Div(target, big.NewInt(100000))
-		target.Mul(target, stake)
+		target.Mul(target, stake.Age)
 		target.Mul(target, new(big.Int).SetUint64(timeWeight))
 		target.Div(target, new(big.Int).SetUint64(coinValue))
 		target.Div(target, new(big.Int).SetUint64(24*60*60))
@@ -265,7 +267,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *big.Int, header
 		h2.Write(h1.Sum(nil))
 
 		computedHash := new(big.Int).SetUint64(uint64(binary.LittleEndian.Uint32(h2.Sum(nil))))
-		log.Info("Attempt to find kernel", "hash", computedHash, "target", target, "diff", header.Difficulty, "stake", stake, "timeWeight", timeWeight)
+		log.Info("Attempt to find kernel", "hash", computedHash, "target", target, "diff", header.Difficulty, "value", stake.Value, "stake", stake.Age, "timeWeight", timeWeight)
 
 		if computedHash.Cmp(target) == -1 {
 			// kernel found
@@ -287,7 +289,7 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 
 	hash, timestamp, err := engine.computeKernel(
 		prevBlock,
-		new(big.Int).Set(stake.Age),
+		stake,
 		header)
 	if err != nil {
 		return err
@@ -344,7 +346,11 @@ func estimateBlockReward(header *types.Header) *big.Int {
 	rewardCoinYear := uint64(21200000000000000)
 	r := stake.Value.Mul(stake.Value, new(big.Int).SetUint64(33))
 	r.Mul(r, new(big.Int).SetUint64(365*33+8))
-	return r.Mul(r, new(big.Int).SetUint64(rewardCoinYear))
+	r.Mul(r, new(big.Int).SetUint64(rewardCoinYear))
+
+	log.Info("Estimated block reward", "n", header.Number, "staked", stake.Value, "reward", r)
+
+	return r
 }
 
 func splitRewards(totalReward *big.Int) (brutto, netto *big.Int) {
