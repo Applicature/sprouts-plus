@@ -79,6 +79,12 @@ type PoS struct {
 func New(config *params.AeposConfig, db ethdb.Database) *PoS {
 	signatures, _ := lru.NewARC(inMemorySignatures)
 	conf := *config
+
+	// don't try to create blocks too often at this time
+	if conf.BlockPeriod < 15 {
+		conf.BlockPeriod = 15
+	}
+
 	return &PoS{
 		config:        &conf,
 		db:            db,
