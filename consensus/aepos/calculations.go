@@ -31,13 +31,16 @@ var (
 
 var (
 	stakeMaxTime        uint64 // stake age of full weight
-	stakeMaxAge, _      = new(big.Int).SetString("999999999999999999999999999999999999999999999", 10)
+	stakeMaxAge         *big.Int
 	preAllocCoefficient = new(big.Int).Lsh(big.NewInt(1), 256-200)
 )
 
 func init() {
 	d, _ := time.ParseDuration("2160h") // 90 days
 	stakeMaxTime = uint64(d)
+
+	stakeMaxAge = big.NewInt(1)
+	stakeMaxAge.Lsh(stakeMaxAge, 149)
 }
 
 func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
@@ -93,7 +96,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Mul(caFromTx, big.NewInt(1000))
+				caFromTx.Mul(caFromTx, big.NewInt(100000))
 
 				// this transaction should be taken from block age
 				bAge.Sub(bAge, caFromTx)
@@ -106,7 +109,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Mul(caFromTx, big.NewInt(1000)) // experiment
+				caFromTx.Mul(caFromTx, big.NewInt(100000)) // experiment
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
@@ -119,7 +122,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 			if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Mul(caFromTx, big.NewInt(1000))
+				caFromTx.Mul(caFromTx, big.NewInt(100000))
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
@@ -162,10 +165,11 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 					// can't use the staked amount yet
 					lastCoinAge.Age.Sub(lastCoinAge.Age, stake.Age)
 				}
-				// add reward amount from the minted block to coin age
+				// add reward amount from the minted block to stake value and age
 				_, nettoReward := splitRewards(estimateBlockReward(header))
 				nettoReward.Mul(nettoReward, diffTime)
 				lastCoinAge.Age.Add(lastCoinAge.Age, nettoReward)
+				lastCoinAge.Value.Add(lastCoinAge.Value, nettoReward)
 			}
 
 			bValue, bAge := engine.blockAge(chain.GetBlock(header.Hash(), number), diffTime)
@@ -188,7 +192,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	lastCoinAge.Age.Add(lastCoinAge.Age, engine.getPremineCoinAge())
 
 	// coin-days:
-	lastCoinAge.Age.Div(lastCoinAge.Age, new(big.Int).SetUint64(coinValue/(24*60*60)))
+	lastCoinAge.Age.Div(lastCoinAge.Age, new(big.Int).SetUint64(coinValue/(24*60*60*10000)))
 
 	// stakeMaxAge would result in as fast kernel computation as possible,
 	// so there is no need to store meaningless information
@@ -343,10 +347,13 @@ func estimateBlockReward(header *types.Header) *big.Int {
 		return big0
 	}
 	// 0.0212 from 1 coin
-	rewardCoinYear := uint64(21200000000000000)
-	r := stake.Value.Mul(stake.Value, new(big.Int).SetUint64(33))
-	r.Mul(r, new(big.Int).SetUint64(365*33+8))
-	r.Mul(r, new(big.Int).SetUint64(rewardCoinYear))
+	// rewardCoinYear := uint64(21200000000000000)
+	r := new(big.Int).Set(stake.Value)
+	r.Mul(r, new(big.Int).SetUint64(212))
+	r.Div(r, new(big.Int).SetUint64(1000000))
+	// r.Mul(r, new(big.Int).SetUint64(33))
+	// r.Mul(r, new(big.Int).SetUint64(365*33+8))
+	// r.Div(r, new(big.Int).SetUint64(rewardCoinYear))
 
 	log.Info("Estimated block reward", "n", header.Number, "staked", stake.Value, "reward", r)
 
