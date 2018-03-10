@@ -90,6 +90,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 	// coin-seconds:
 	transactions := block.Transactions()
 	for _, transaction := range transactions {
+		toAddress := transaction.To()
 		if fromAddress, fromErr := From(transaction); fromErr == nil {
 			// we count regular transaction to us only when they are old enough
 			if engine.isItMe(fromAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
@@ -105,7 +106,8 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 			}
 
 			// transactions from DistributionAccount should always be counted
-			if equalAddresses(fromAddress, engine.config.DistributionAccount) {
+			if equalAddresses(fromAddress, engine.config.DistributionAccount) &&
+				(toAddress != nil && engine.isItMe(*toAddress)) {
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
@@ -117,7 +119,6 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 				continue
 			}
 		} else {
-			toAddress := transaction.To()
 
 			if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
 				caFromTx.Set(transaction.Value())
