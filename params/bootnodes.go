@@ -37,7 +37,7 @@ var RinkebyV5Bootnodes = []string{}
 var DiscoveryV5Bootnodes = []string{}
 
 var AuxiliumTestnetBootnodes = []string{
-	"enode://4bf9309ea3a5bbb8b363e0b455906f08935bf1aabbd1651fed94d842fadcb4c42d121d217e8452bbbbd877beebbfade779759f8fb01bd4b0c765d2d5914ae3fa@94.130.216.246:30308",
+	"enode://cd8ed0ea9d96828d9db09239be28d79ede25ff99f17b39ebf38edbae4157305f1fddc83ca7a7eddfb66779d7fe3f7acdfd1a9395871e868e103bddf3a32aa572@94.130.216.246:30308",
 }
 
 var AuxiliumBootnodes = []string{}
