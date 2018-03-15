@@ -272,7 +272,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *coinAge, header
 		h2.Write(h1.Sum(nil))
 
 		computedHash := new(big.Int).SetUint64(uint64(binary.LittleEndian.Uint32(h2.Sum(nil))))
-		log.Info("Attempt to find kernel", "hash", computedHash, "target", target, "diff", header.Difficulty, "value", stake.Value, "stake", stake.Age, "timeWeight", timeWeight)
+		log.Info("Attempt to find kernel", "n", header.Number, "hash", computedHash, "target", target, "diff", header.Difficulty, "value", stake.Value, "stake", stake.Age, "timeWeight", timeWeight)
 
 		if computedHash.Cmp(target) == -1 {
 			// kernel found
