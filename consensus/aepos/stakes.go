@@ -3,7 +3,6 @@ package aepos
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"math/big"
 	"time"
 
@@ -44,7 +43,6 @@ func (c *coinAge) bytes() []byte {
 }
 
 func parseStake(stakeBytes []byte) (*coinAge, error) {
-	fmt.Println(stakeBytes)
 	if len(stakeBytes) != extraCoinAge {
 		return nil, errInvalidStake
 	}

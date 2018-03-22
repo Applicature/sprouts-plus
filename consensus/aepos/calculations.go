@@ -32,6 +32,7 @@ var (
 var (
 	stakeMaxTime        uint64 // stake age of full weight
 	stakeMaxAge         *big.Int
+	stakeMaxValue       *big.Int
 	preAllocCoefficient = new(big.Int).Lsh(big.NewInt(1), 256-200)
 )
 
@@ -41,6 +42,11 @@ func init() {
 
 	stakeMaxAge = big.NewInt(1)
 	stakeMaxAge.Lsh(stakeMaxAge, 149)
+
+	// coin value is always less than coin age,
+	// so there is no need in greater coin value.
+	stakeMaxValue = big.NewInt(1)
+	stakeMaxValue.Lsh(stakeMaxValue, 149)
 }
 
 func computeDifficulty(chain consensus.ChainReader, number uint64) *big.Int {
@@ -156,7 +162,8 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 			}
 
 			t := new(big.Int).Set(header.Time).Uint64()
-			if t < fromTime {
+			if t < fromTime || lastCoinAge.Value.Cmp(stakeMaxValue) == 1 {
+				lastCoinAge.Value.Set(stakeMaxValue)
 				return
 			}
 			diffTime := new(big.Int).SetUint64(uint64(now.Unix()) - t)
@@ -329,6 +336,8 @@ func (engine *PoS) checkKernelHash(prevBlock *types.Header, header *types.Header
 func accumulateRewards(config *params.AeposConfig, header *types.Header, state *state.StateDB) {
 	// first estimate complete reward
 	reward := new(big.Int).Set(estimateBlockReward(header))
+	stake, _ := extractStake(header)
+	log.Info("Estimated block reward", "n", header.Number, "staked", stake.Value, "age", stake.Age, "reward", reward)
 
 	// now form rewards to charity and r&d (brutto) and minter (netto)
 	bruttoReward, nettoReward := splitRewards(reward)
@@ -355,8 +364,6 @@ func estimateBlockReward(header *types.Header) *big.Int {
 	// r.Mul(r, new(big.Int).SetUint64(33))
 	// r.Mul(r, new(big.Int).SetUint64(365*33+8))
 	// r.Div(r, new(big.Int).SetUint64(rewardCoinYear))
-
-	log.Info("Estimated block reward", "n", header.Number, "staked", stake.Value, "reward", r)
 
 	return r
 }

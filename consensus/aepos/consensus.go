@@ -334,7 +334,6 @@ func (engine *PoS) verifyHeader(chain consensus.ChainReader, header *types.Heade
 	if parent.Time.Uint64()+engine.config.BlockPeriod > header.Time.Uint64() {
 		return errInvalidTimestamp
 	}
-
 	stake, err := extractStake(header)
 	if err != nil {
 		return err
