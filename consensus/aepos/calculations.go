@@ -266,7 +266,7 @@ func (engine *PoS) computeKernel(prevBlock *types.Header, stake *coinAge, header
 		// target.Div(target, big.NewInt(100000))
 		target.Mul(target, stake.Age)
 		target.Mul(target, new(big.Int).SetUint64(timeWeight))
-		target.Div(target, new(big.Int).SetUint64(coinValue))
+		// target.Div(target, new(big.Int).SetUint64(coinValue))
 		target.Div(target, new(big.Int).SetUint64(24*60*60))
 
 		rawHash := append(stakeModifier.Bytes(), prevBlock.Time.Bytes()...)
