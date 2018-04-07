@@ -172,6 +172,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 				if t > holdingPeriod {
 					// can't use the staked amount yet
 					lastCoinAge.Age.Sub(lastCoinAge.Age, stake.Age)
+					lastCoinAge.Value.Sub(lastCoinAge.Value, stake.Value)
 				}
 				// add reward amount from the minted block to stake value and age
 				_, nettoReward := splitRewards(estimateBlockReward(header))
