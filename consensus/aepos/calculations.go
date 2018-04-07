@@ -148,7 +148,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	now := time.Now()
 
 	accumulateCoinAge := func(fromTime, number uint64) {
-		holdingPeriod := uint64(now.Unix()) + engine.config.CoinAgeHoldingPeriod.Uint64()
+		holdingPeriod := uint64(now.Unix()) - engine.config.CoinAgeHoldingPeriod.Uint64()
 		for {
 			if number == 0 {
 				// add premined value
