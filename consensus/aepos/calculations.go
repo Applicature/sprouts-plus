@@ -103,7 +103,6 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Mul(caFromTx, big.NewInt(100000))
 
 				// this transaction should be taken from block age
 				bAge.Sub(bAge, caFromTx)
@@ -117,7 +116,7 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 				// coin age of transaction
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Mul(caFromTx, big.NewInt(100000)) // experiment
+				caFromTx.Mul(caFromTx, big.NewInt(100)) // experiment
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
@@ -129,7 +128,6 @@ func (engine *PoS) blockAge(block *types.Block, timeDiff *big.Int) (value, age *
 			if toAddress != nil && engine.isItMe(*toAddress) && timeDiff.Cmp(engine.config.CoinAgeFermentation) == 1 {
 				caFromTx.Set(transaction.Value())
 				caFromTx.Mul(caFromTx, timeDiff)
-				caFromTx.Mul(caFromTx, big.NewInt(100000))
 
 				// this transaction should be added to block age
 				bAge.Add(bAge, caFromTx)
@@ -201,7 +199,7 @@ func (engine *PoS) coinAge(chain consensus.ChainReader) *coinAge {
 	lastCoinAge.Age.Add(lastCoinAge.Age, engine.getPremineCoinAge())
 
 	// coin-days:
-	lastCoinAge.Age.Div(lastCoinAge.Age, new(big.Int).SetUint64(coinValue/(24*60*60*10000)))
+	lastCoinAge.Age.Div(lastCoinAge.Age, new(big.Int).SetUint64(coinValue/(24*60*60)))
 
 	// stakeMaxAge would result in as fast kernel computation as possible,
 	// so there is no need to store meaningless information
@@ -358,13 +356,10 @@ func estimateBlockReward(header *types.Header) *big.Int {
 		return big0
 	}
 	// 0.0212 from 1 coin
-	// rewardCoinYear := uint64(21200000000000000)
-	r := new(big.Int).Set(stake.Value)
-	r.Mul(r, new(big.Int).SetUint64(212))
-	r.Div(r, new(big.Int).SetUint64(1000000))
-	// r.Mul(r, new(big.Int).SetUint64(33))
-	// r.Mul(r, new(big.Int).SetUint64(365*33+8))
-	// r.Div(r, new(big.Int).SetUint64(rewardCoinYear))
+	rewardCoinYear := uint64(21200000000000000)
+	r := stake.Value.Mul(stake.Value, new(big.Int).SetUint64(33))
+	r.Mul(r, new(big.Int).SetUint64(365*33+8))
+	r.Mul(r, new(big.Int).SetUint64(rewardCoinYear))
 
 	return r
 }
