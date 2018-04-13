@@ -115,8 +115,8 @@ var (
 			RewardsRDAccount:      common.HexToAddress("a3c40a1d50194c5b0febfa22acc95e13ba9fee1b"),
 			DistributionAccount:   common.HexToAddress("8a73a3174dc328b3e1a7291130897de65abca415"),
 			CoinAgeLifetime:       big.NewInt(60 * 60 * 24 * 30 * 12),
-			CoinAgeHoldingPeriod:  big.NewInt(60 * 60 * 24 * 1),
-			CoinAgeFermentation:   big.NewInt(60 * 60 * 24 * 7),
+			CoinAgeHoldingPeriod:  big.NewInt(60 * 60 * 2),
+			CoinAgeFermentation:   big.NewInt(60 * 60 * 6),
 			BlockPeriod:           10,
 		},
 	}
