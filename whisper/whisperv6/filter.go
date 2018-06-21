@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 type Filter struct {

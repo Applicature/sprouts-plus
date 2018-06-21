@@ -22,8 +22,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/log"
 	"github.com/olekukonko/tablewriter"
 )
 

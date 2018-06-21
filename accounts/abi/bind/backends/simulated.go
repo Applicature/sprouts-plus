@@ -24,17 +24,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts-plus"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/consensus/ethash"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // This nil assignment ensures compile time that SimulatedBackend implements bind.ContractBackend.

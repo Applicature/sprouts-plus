@@ -26,12 +26,12 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/internal/debug"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 const (

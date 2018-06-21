@@ -25,15 +25,15 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/common/math"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/params"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 //go:generate gencodec -type Genesis -field-override genesisSpecMarshaling -out gen_genesis.go
@@ -339,6 +339,22 @@ func DefaultRinkebyGenesisBlock() *Genesis {
 		GasLimit:   4700000,
 		Difficulty: big.NewInt(1),
 		Alloc:      decodePrealloc(rinkebyAllocData),
+	}
+}
+
+func DefaultAuxiliumGenesisBlock() *Genesis {
+	// TODO define
+	return &Genesis{}
+}
+
+func DefaultAuxiliumTestnetGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.TestAuxiliumChainConfig,
+		Timestamp:  1514520146,
+		ExtraData:  hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		GasLimit:   4700000,
+		Difficulty: big.NewInt(1),
+		Alloc:      decodePrealloc(auxiliumTestAllocData),
 	}
 }
 

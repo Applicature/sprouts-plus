@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 var (

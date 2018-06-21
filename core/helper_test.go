@@ -20,9 +20,9 @@ import (
 	"container/list"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/event"
 )
 
 // Implement our EthTest Manager

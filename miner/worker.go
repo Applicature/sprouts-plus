@@ -24,17 +24,17 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/misc"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/consensus/misc"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/params"
 	"gopkg.in/fatih/set.v0"
 )
 
@@ -271,7 +271,7 @@ func (self *worker) update() {
 				self.currentMu.Unlock()
 			} else {
 				// If we're mining, but nothing is being processed, wake on new transactions
-				if self.config.Clique != nil && self.config.Clique.Period == 0 {
+				if (self.config.Clique != nil && self.config.Clique.Period == 0) || self.config.Aepos != nil {
 					self.commitNewWork()
 				}
 			}

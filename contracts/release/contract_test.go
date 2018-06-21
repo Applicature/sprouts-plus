@@ -21,11 +21,11 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind/backends"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind/backends"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // setupReleaseTest creates a blockchain simulator and deploys a version oracle

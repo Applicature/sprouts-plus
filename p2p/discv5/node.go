@@ -30,8 +30,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 // Node represents a host on the network.

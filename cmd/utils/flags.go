@@ -28,33 +28,33 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/clique"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/dashboard"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/gasprice"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/ethstats"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/discv5"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/p2p/netutil"
-	"github.com/ethereum/go-ethereum/params"
-	whisper "github.com/ethereum/go-ethereum/whisper/whisperv5"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/consensus"
+	"github.com/applicature/sprouts-plus/consensus/clique"
+	"github.com/applicature/sprouts-plus/consensus/ethash"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/core/vm"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/dashboard"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/eth/gasprice"
+	"github.com/applicature/sprouts-plus/ethdb"
+	"github.com/applicature/sprouts-plus/ethstats"
+	"github.com/applicature/sprouts-plus/les"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/metrics"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/p2p/discv5"
+	"github.com/applicature/sprouts-plus/p2p/nat"
+	"github.com/applicature/sprouts-plus/p2p/netutil"
+	"github.com/applicature/sprouts-plus/params"
+	whisper "github.com/applicature/sprouts-plus/whisper/whisperv5"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -137,6 +137,14 @@ var (
 	RinkebyFlag = cli.BoolFlag{
 		Name:  "rinkeby",
 		Usage: "Rinkeby network: pre-configured proof-of-authority test network",
+	}
+	AuxiliumTestnetFlag = cli.BoolFlag{
+		Name:  "auxilium.testnet",
+		Usage: "Auxilium test network: pre-configured proof-of-stake network",
+	}
+	AuxiliumFlag = cli.BoolFlag{
+		Name:  "auxilium",
+		Usage: "Auxilium network: pre-configured proof-of-stake network",
 	}
 	DeveloperFlag = cli.BoolFlag{
 		Name:  "dev",
@@ -442,7 +450,7 @@ var (
 	ListenPortFlag = cli.IntFlag{
 		Name:  "port",
 		Usage: "Network listening port",
-		Value: 30303,
+		Value: 30308,
 	}
 	BootnodesFlag = cli.StringFlag{
 		Name:  "bootnodes",
@@ -524,11 +532,11 @@ var (
 // the a subdirectory of the specified datadir will be used.
 func MakeDataDir(ctx *cli.Context) string {
 	if path := ctx.GlobalString(DataDirFlag.Name); path != "" {
-		if ctx.GlobalBool(TestnetFlag.Name) {
+		if ctx.GlobalBool(AuxiliumTestnetFlag.Name) {
 			return filepath.Join(path, "testnet")
 		}
-		if ctx.GlobalBool(RinkebyFlag.Name) {
-			return filepath.Join(path, "rinkeby")
+		if ctx.GlobalBool(AuxiliumFlag.Name) {
+			return filepath.Join(path, "mainnet")
 		}
 		return path
 	}
@@ -584,6 +592,10 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.TestnetBootnodes
 	case ctx.GlobalBool(RinkebyFlag.Name):
 		urls = params.RinkebyBootnodes
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
+		urls = params.AuxiliumTestnetBootnodes
+	case ctx.GlobalBool(AuxiliumFlag.Name):
+		urls = params.AuxiliumBootnodes
 	}
 
 	cfg.BootstrapNodes = make([]*discover.Node, 0, len(urls))
@@ -595,12 +607,13 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		}
 		cfg.BootstrapNodes = append(cfg.BootstrapNodes, node)
 	}
+	fmt.Println("usual", cfg.BootstrapNodes)
 }
 
 // setBootstrapNodesV5 creates a list of bootstrap nodes from the command line
 // flags, reverting to pre-configured ones if none have been specified.
 func setBootstrapNodesV5(ctx *cli.Context, cfg *p2p.Config) {
-	urls := params.DiscoveryV5Bootnodes
+	urls := []string{} //params.DiscoveryV5Bootnodes
 	switch {
 	case ctx.GlobalIsSet(BootnodesFlag.Name) || ctx.GlobalIsSet(BootnodesV5Flag.Name):
 		if ctx.GlobalIsSet(BootnodesV5Flag.Name) {
@@ -623,6 +636,7 @@ func setBootstrapNodesV5(ctx *cli.Context, cfg *p2p.Config) {
 		}
 		cfg.BootstrapNodesV5 = append(cfg.BootstrapNodesV5, node)
 	}
+	fmt.Println("v5", cfg.BootstrapNodesV5)
 }
 
 // setListenAddress creates a TCP listening address string from set command
@@ -849,10 +863,10 @@ func SetNodeConfig(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = ctx.GlobalString(DataDirFlag.Name)
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		cfg.DataDir = "" // unless explicitly requested, use memory databases
-	case ctx.GlobalBool(TestnetFlag.Name):
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "testnet")
-	case ctx.GlobalBool(RinkebyFlag.Name):
-		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "rinkeby")
+	case ctx.GlobalBool(AuxiliumFlag.Name):
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "mainnet")
 	}
 
 	if ctx.GlobalIsSet(KeyStoreDirFlag.Name) {
@@ -954,7 +968,7 @@ func SetShhConfig(ctx *cli.Context, stack *node.Node, cfg *whisper.Config) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 	// Avoid conflicting network flags
-	checkExclusive(ctx, DeveloperFlag, TestnetFlag, RinkebyFlag)
+	checkExclusive(ctx, DeveloperFlag, TestnetFlag, RinkebyFlag, AuxiliumFlag, AuxiliumTestnetFlag)
 	checkExclusive(ctx, FastSyncFlag, LightModeFlag, SyncModeFlag)
 
 	ks := stack.AccountManager().Backends(keystore.KeyStoreType)[0].(*keystore.KeyStore)
@@ -1005,16 +1019,22 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 
 	// Override any default configs for hard coded networks.
 	switch {
-	case ctx.GlobalBool(TestnetFlag.Name):
+	case ctx.GlobalBool(AuxiliumFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
-			cfg.NetworkId = 3
+			cfg.NetworkId = 8
 		}
-		cfg.Genesis = core.DefaultTestnetGenesisBlock()
-	case ctx.GlobalBool(RinkebyFlag.Name):
+		cfg.Genesis = core.DefaultAuxiliumGenesisBlock()
+
+		// run Auxilium networks in full sync only for now
+		cfg.SyncMode = downloader.FullSync
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
-			cfg.NetworkId = 4
+			cfg.NetworkId = 88
 		}
-		cfg.Genesis = core.DefaultRinkebyGenesisBlock()
+		cfg.Genesis = core.DefaultAuxiliumTestnetGenesisBlock()
+
+		// run Auxilium networks in full sync only for now
+		cfg.SyncMode = downloader.FullSync
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		// Create new developer account or reuse existing one
 		var (
@@ -1138,6 +1158,10 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultTestnetGenesisBlock()
 	case ctx.GlobalBool(RinkebyFlag.Name):
 		genesis = core.DefaultRinkebyGenesisBlock()
+	case ctx.GlobalBool(AuxiliumFlag.Name):
+		genesis = core.DefaultAuxiliumGenesisBlock()
+	case ctx.GlobalBool(AuxiliumTestnetFlag.Name):
+		genesis = core.DefaultAuxiliumTestnetGenesisBlock()
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		Fatalf("Developer chains are ephemeral")
 	}

@@ -140,3 +140,13 @@ geth-windows-amd64:
 	build/env.sh go run build/ci.go xgo -- --go=$(GO) --targets=windows/amd64 -v ./cmd/geth
 	@echo "Windows amd64 cross compilation done:"
 	@ls -ld $(GOBIN)/geth-windows-* | grep amd64
+
+geth-sprouts: geth-linux-386 geth-windows-386 geth-linux-amd64 geth-windows-amd64 geth-darwin-amd64
+	@echo "Cross compilation for Auxilium done:"
+	@ls -ld $(GOBIN)/geth-*
+	build/env.sh go run build/ci.go archive -arch windows-4.0-amd64
+	build/env.sh go run build/ci.go archive -arch windows-4.0-386
+	build/env.sh go run build/ci.go archive -arch linux-amd64 -type tar
+	build/env.sh go run build/ci.go archive -arch linux-386 -type tar
+	build/env.sh go run build/ci.go archive -arch darwin-10.6-amd64 -type tar
+	build/env.sh go run build/ci.go mistconfig -url http://grow.auxilium.global

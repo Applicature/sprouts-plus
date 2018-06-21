@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/common/math"
 )
 
 func (s StructLog) MarshalJSON() ([]byte, error) {

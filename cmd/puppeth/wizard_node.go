@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/log"
 )
 
 // deployNode creates a new node configuration based on some user input.

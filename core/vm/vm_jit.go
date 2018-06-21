@@ -38,9 +38,9 @@ import (
 	"math/big"
 	"unsafe"
 
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts-plus/core/state"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 type JitVm struct {

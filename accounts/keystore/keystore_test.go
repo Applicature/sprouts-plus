@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/event"
 )
 
 var testSigData = make([]byte, 32)

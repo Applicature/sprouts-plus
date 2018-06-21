@@ -20,8 +20,8 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core/types"
 )
 
 // senderFromServer is a types.Signer that remembers the sender address returned by the RPC

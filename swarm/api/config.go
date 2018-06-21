@@ -24,12 +24,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/contracts/ens"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/swarm/network"
-	"github.com/ethereum/go-ethereum/swarm/services/swap"
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/contracts/ens"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/swarm/network"
+	"github.com/applicature/sprouts-plus/swarm/services/swap"
+	"github.com/applicature/sprouts-plus/swarm/storage"
 )
 
 const (

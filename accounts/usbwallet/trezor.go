@@ -27,12 +27,12 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/usbwallet/internal/trezor"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/accounts/usbwallet/internal/trezor"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/common/hexutil"
+	"github.com/applicature/sprouts-plus/core/types"
+	"github.com/applicature/sprouts-plus/log"
 	"github.com/golang/protobuf/proto"
 )
 

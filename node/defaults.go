@@ -22,8 +22,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/nat"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/nat"
 )
 
 const (
@@ -41,7 +41,7 @@ var DefaultConfig = Config{
 	WSPort:      DefaultWSPort,
 	WSModules:   []string{"net", "web3"},
 	P2P: p2p.Config{
-		ListenAddr:      ":30303",
+		ListenAddr:      ":30308",
 		DiscoveryV5Addr: ":30304",
 		MaxPeers:        25,
 		NAT:             nat.Any(),
@@ -55,11 +55,11 @@ func DefaultDataDir() string {
 	home := homeDir()
 	if home != "" {
 		if runtime.GOOS == "darwin" {
-			return filepath.Join(home, "Library", "Ethereum")
+			return filepath.Join(home, "Library", "Auxilium")
 		} else if runtime.GOOS == "windows" {
-			return filepath.Join(home, "AppData", "Roaming", "Ethereum")
+			return filepath.Join(home, "AppData", "Roaming", "Auxilium")
 		} else {
-			return filepath.Join(home, ".ethereum")
+			return filepath.Join(home, ".auxilium")
 		}
 	}
 	// As we cannot guess a stable location, return empty and handle later

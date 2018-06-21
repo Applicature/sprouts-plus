@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/console"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/console"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

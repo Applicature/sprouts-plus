@@ -34,8 +34,8 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 type allocItem struct{ Addr, Balance *big.Int }

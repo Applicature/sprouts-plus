@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 var (
@@ -77,22 +77,67 @@ var (
 		},
 	}
 
+	// AuxiliumChainConfig contains the chain parameters to run a node on the Auxilium main network.
+	AuxiliumChainConfig = &ChainConfig{
+		ChainId:        big.NewInt(8),
+		HomesteadBlock: big.NewInt(0),
+		DAOForkBlock:   nil,
+		DAOForkSupport: false,
+		EIP150Block:    nil,
+		EIP155Block:    big.NewInt(0),
+		EIP158Block:    big.NewInt(0),
+		ByzantiumBlock: big.NewInt(0),
+
+		Aepos: &AeposConfig{
+			RewardsCharityAccount: common.Address{},
+			RewardsRDAccount:      common.Address{},
+			DistributionAccount:   common.Address{},
+
+			CoinAgeLifetime:      big.NewInt(60 * 60 * 24 * 30 * 12),
+			CoinAgeHoldingPeriod: big.NewInt(60 * 60 * 24 * 1),
+			CoinAgeFermentation:  big.NewInt(60 * 60 * 24 * 7),
+			BlockPeriod:          10,
+		},
+	}
+
+	TestAuxiliumChainConfig = &ChainConfig{
+		ChainId:        big.NewInt(88),
+		HomesteadBlock: big.NewInt(0),
+		DAOForkBlock:   nil,
+		DAOForkSupport: false,
+		EIP150Block:    nil,
+		EIP155Block:    big.NewInt(0),
+		EIP158Block:    big.NewInt(0),
+		ByzantiumBlock: big.NewInt(0),
+
+		Aepos: &AeposConfig{
+			RewardsCharityAccount: common.HexToAddress("44aab7e615d0045989fd8fb06b79e7d4602d3da1"),
+			RewardsRDAccount:      common.HexToAddress("a3c40a1d50194c5b0febfa22acc95e13ba9fee1b"),
+			DistributionAccount:   common.HexToAddress("8a73a3174dc328b3e1a7291130897de65abca415"),
+			CoinAgeLifetime:       big.NewInt(60 * 60 * 24 * 30 * 12),
+			CoinAgeHoldingPeriod:  big.NewInt(60 * 60 * 24 * 1),
+			CoinAgeFermentation:   big.NewInt(60 * 60 * 24 * 7),
+			BlockPeriod:           10,
+		},
+	}
+
 	// AllEthashProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Ethash consensus.
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), new(EthashConfig), nil}
+	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), new(EthashConfig), nil, nil}
 
 	// AllCliqueProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Clique consensus.
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, &CliqueConfig{Period: 0, Epoch: 30000}}
+	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
-	TestChainConfig = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), new(EthashConfig), nil}
-	TestRules       = TestChainConfig.Rules(new(big.Int))
+	TestChainConfig = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), new(EthashConfig), nil, nil}
+
+	TestRules = TestChainConfig.Rules(new(big.Int))
 )
 
 // ChainConfig is the core config which determines the blockchain settings.
@@ -120,6 +165,7 @@ type ChainConfig struct {
 	// Various consensus engines
 	Ethash *EthashConfig `json:"ethash,omitempty"`
 	Clique *CliqueConfig `json:"clique,omitempty"`
+	Aepos  *AeposConfig  `json:"aepos,omitempty"`
 }
 
 // EthashConfig is the consensus engine configs for proof-of-work based sealing.
@@ -141,6 +187,22 @@ func (c *CliqueConfig) String() string {
 	return "clique"
 }
 
+// AeposConfig is the consensus engine configs for proof-of-stake based sealing.
+type AeposConfig struct {
+	RewardsCharityAccount common.Address `json:"rewardsCharityAcc"`
+	RewardsRDAccount      common.Address `json:"rewardsRDAcc"`
+	DistributionAccount   common.Address `json:"distributionAcc"`
+
+	CoinAgeLifetime      *big.Int `json:"coinageLifetime"`     // how far down the chain to accumulate transaction values
+	CoinAgeHoldingPeriod *big.Int `json:"coinagePeriod"`       // staking time or for how long after a successful stake, staked amount can’t be used for another stake
+	CoinAgeFermentation  *big.Int `json:"coinageFermentation"` // how long coins must be held to result in positive coin age
+	BlockPeriod          uint64   `json:"blockPeriod"`         // min period between blocks
+}
+
+func (c *AeposConfig) String() string {
+	return "aepos"
+}
+
 // String implements the fmt.Stringer interface.
 func (c *ChainConfig) String() string {
 	var engine interface{}
@@ -149,6 +211,8 @@ func (c *ChainConfig) String() string {
 		engine = c.Ethash
 	case c.Clique != nil:
 		engine = c.Clique
+	case c.Aepos != nil:
+		engine = c.Aepos
 	default:
 		engine = "unknown"
 	}

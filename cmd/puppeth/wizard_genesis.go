@@ -25,10 +25,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/params"
 )
 
 // makeGenesis creates a new genesis struct based on some user input.
@@ -52,6 +52,7 @@ func (w *wizard) makeGenesis() {
 	fmt.Println("Which consensus engine to use? (default = clique)")
 	fmt.Println(" 1. Ethash - proof-of-work")
 	fmt.Println(" 2. Clique - proof-of-authority")
+	fmt.Println(" 3. Aepos - proof-of-stake")
 
 	choice := w.read()
 	switch {
@@ -98,6 +99,53 @@ func (w *wizard) makeGenesis() {
 			copy(genesis.ExtraData[32+i*common.AddressLength:], signer[:])
 		}
 
+	case choice == "3":
+		genesis.Difficulty = big.NewInt(1)
+		genesis.Config.Aepos = &params.AeposConfig{
+			RewardsCharityAccount: common.Address{},
+			RewardsRDAccount:      common.Address{},
+			DistributionAccount:   common.Address{},
+
+			CoinAgeLifetime:      big.NewInt(60 * 60 * 24 * 30 * 12),
+			CoinAgeHoldingPeriod: big.NewInt(60 * 60 * 24 * 3),
+			CoinAgeFermentation:  big.NewInt(60 * 60 * 24 * 30),
+			BlockPeriod:          10,
+		}
+
+		// PoS doesn't participate in any forks at the moment
+		genesis.Config.ByzantiumBlock = big.NewInt(0)
+		genesis.Config.EIP158Block = big.NewInt(0)
+		genesis.Config.EIP155Block = big.NewInt(0)
+		genesis.Config.EIP150Block = big.NewInt(0)
+
+		fmt.Println()
+		fmt.Println("Who is a charity rewards account?")
+
+		if address := w.readAddress(); address != nil {
+			genesis.Config.Aepos.RewardsCharityAccount = *address
+		} else {
+			log.Crit("Can't proceed without charity rewards address")
+		}
+
+		fmt.Println()
+		fmt.Println("Who is a R&D rewards account?")
+
+		if address := w.readAddress(); address != nil {
+			genesis.Config.Aepos.RewardsRDAccount = *address
+		} else {
+			log.Crit("Can't proceed without R&D rewards address")
+		}
+
+		fmt.Println()
+		fmt.Println("Who is a distribution account?")
+
+		if address := w.readAddress(); address != nil {
+			genesis.Config.Aepos.DistributionAccount = *address
+		} else {
+			log.Crit("Can't proceed without distribution address")
+		}
+
+		genesis.ExtraData = make([]byte, 32+65+64+32)
 	default:
 		log.Crit("Invalid consensus engine choice", "choice", choice)
 	}

@@ -25,14 +25,14 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/accounts/usbwallet"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/accounts/usbwallet"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/crypto"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/discover"
 )
 
 const (

@@ -24,11 +24,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common/mclock"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/applicature/sprouts-plus/common/mclock"
+	"github.com/applicature/sprouts-plus/event"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/p2p/discover"
+	"github.com/applicature/sprouts-plus/rlp"
 )
 
 const (

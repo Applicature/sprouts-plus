@@ -25,11 +25,11 @@ import (
 	"io/ioutil"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind/backends"
-	"github.com/ethereum/go-ethereum/contracts/chequebook/contract"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind"
+	"github.com/applicature/sprouts-plus/accounts/abi/bind/backends"
+	"github.com/applicature/sprouts-plus/contracts/chequebook/contract"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/crypto"
 )
 
 var (

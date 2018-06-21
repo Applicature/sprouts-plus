@@ -25,17 +25,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/console"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/node"
+	"github.com/applicature/sprouts-plus/accounts"
+	"github.com/applicature/sprouts-plus/accounts/keystore"
+	"github.com/applicature/sprouts-plus/cmd/utils"
+	"github.com/applicature/sprouts-plus/common"
+	"github.com/applicature/sprouts-plus/console"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/ethclient"
+	"github.com/applicature/sprouts-plus/internal/debug"
+	"github.com/applicature/sprouts-plus/log"
+	"github.com/applicature/sprouts-plus/metrics"
+	"github.com/applicature/sprouts-plus/node"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -108,6 +108,8 @@ var (
 		utils.DeveloperPeriodFlag,
 		utils.TestnetFlag,
 		utils.RinkebyFlag,
+		utils.AuxiliumFlag,
+		utils.AuxiliumTestnetFlag,
 		utils.VMEnableDebugFlag,
 		utils.NetworkIdFlag,
 		utils.RPCCORSDomainFlag,

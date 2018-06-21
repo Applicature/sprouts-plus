@@ -19,7 +19,7 @@ package state
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/applicature/sprouts-plus/common"
 )
 
 type journalEntry interface {

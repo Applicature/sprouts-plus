@@ -24,17 +24,17 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/ethstats"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/params"
-	whisper "github.com/ethereum/go-ethereum/whisper/whisperv5"
+	"github.com/applicature/sprouts-plus/core"
+	"github.com/applicature/sprouts-plus/eth"
+	"github.com/applicature/sprouts-plus/eth/downloader"
+	"github.com/applicature/sprouts-plus/ethclient"
+	"github.com/applicature/sprouts-plus/ethstats"
+	"github.com/applicature/sprouts-plus/les"
+	"github.com/applicature/sprouts-plus/node"
+	"github.com/applicature/sprouts-plus/p2p"
+	"github.com/applicature/sprouts-plus/p2p/nat"
+	"github.com/applicature/sprouts-plus/params"
+	whisper "github.com/applicature/sprouts-plus/whisper/whisperv5"
 )
 
 // NodeConfig represents the collection of configuration values to fine tune the Geth
